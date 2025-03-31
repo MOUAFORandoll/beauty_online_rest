@@ -2,9 +2,6 @@ import { Logger, Module } from '@nestjs/common';
 
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
-import { ApplicationModule } from './applications/application.module';
-import { MainDatabaseModule } from './databases/main/main.database.module';
-import { LinksModule } from './links/links.module';
 
 @Module({
     imports: [
@@ -18,4 +15,4 @@ import { LinksModule } from './links/links.module';
     controllers: [],
     providers: [Logger],
 })
-export class MainAppModule {}
+export class AppModule {}

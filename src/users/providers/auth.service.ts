@@ -14,8 +14,6 @@ import {
 } from '../../databases/main/main.database.connection';
 import { StorageService } from '../../common/modules/aws/providers';
 import axios from 'axios';
-import { SubscriptionService } from '../../subscriptions/providers';
-
 @Injectable()
 export class AuthService {
     constructor(
@@ -23,7 +21,6 @@ export class AuthService {
         private userModel: UserModel,
         private firebaseAuthService: AuthFirebaseService,
         private readonly storageService: StorageService,
-        private readonly subscriptionService: SubscriptionService
     ) {}
 
     async authentication(payload: UserAuthenticationDto): Promise<User> {
@@ -66,20 +63,18 @@ export class AuthService {
 
             if (userFireBase.photoURL) {
                 // télécharge et reuploade la photo de profil de l'utilisateur
-                const image = await axios.get(
-                    userFireBase.photoURL,
-                    {responseType: "arraybuffer"}
-                );
+                const image = await axios.get(userFireBase.photoURL, {
+                    responseType: 'arraybuffer',
+                });
                 newUser.pictureUrl = await this.storageService.uploadUserProfile(
                     Buffer.from(image.data),
-                    newUser._id.toString()
+                    newUser._id.toString(),
                 );
             }
         }
         newUser = await newUser.save();
 
         // création de l'abonnement
-        await this.subscriptionService.subscribeToFreePlan(newUser._id.toString());
 
         return newUser;
     }

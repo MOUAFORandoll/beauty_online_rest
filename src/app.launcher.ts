@@ -5,7 +5,7 @@ import { HttpAdapterHost } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppErrorsHandler } from './common/errors';
 
-export class MainAppLauncher {
+export class AppLauncher {
     prefix: string | undefined;
     routeDocumentation: string | undefined;
     appName: string | undefined;
@@ -62,8 +62,6 @@ export class MainAppLauncher {
 
             .addTag('Auth', 'Login & Authentications endpoints')
             .addTag('Users', 'User Accounts management endpoints')
-            .addTag('Platforms', ' Application Platforms management endpoints')
-            .addTag('Applications', 'User Projects management endpoints')
             .addBearerAuth({
                 type: 'http',
                 scheme: 'bearer',
