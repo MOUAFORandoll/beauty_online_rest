@@ -1,0 +1,43 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { User } from '../../databases/users/entities';
+
+export class UserDto {
+    @ApiProperty({
+        type: String,
+    })
+    id: string;
+    @ApiProperty({
+        type: String,
+    })
+    email: string;
+    @ApiProperty({
+        type: String,
+    })
+    pictureUrl: string;
+    @ApiProperty({
+        type: String,
+    })
+    fullName: string;
+    @ApiProperty({
+        type: String,
+    })
+    firebaseUID: string;
+
+    @ApiProperty({ type: String })
+    authProvider: string;
+    static fromUser(user: User): UserDto {
+        return {
+            id: user._id as string,
+            pictureUrl: user.pictureUrl,
+            email: user.email,
+            fullName: user.fullName,
+            firebaseUID: user.firebaseUID,
+            authProvider: user.authProvider,
+        };
+    }
+}
+
+export class UserAuthenticationResponseDto {
+    @ApiProperty({ type: UserDto })
+    user: UserDto;
+}

@@ -24,8 +24,6 @@
 
 ## Description
 
-[Caelis Tech Studio](https://www.caelis-tech.studio) Shareable La plateforme propose une gestion centralisée des liens dynamiques organisée par projets, permettant de les associer à des applications mobiles (Android/iOS) pour une administration simplifiée. Les utilisateurs pourront créer des liens dynamiques intelligents, avec des redirections conditionnelles basées sur l’état de l’application ou les caractéristiques de l’appareil, tout en bénéficiant d’une personnalisation avancée (pages de destination, domaines personnalisés, etc.). Des outils d’analyse détaillée fourniront des statistiques sur les clics, les taux de conversion, les origines géographiques, et les informations techniques des visiteurs. En complément, la génération de QR codes personnalisables pour chaque lien renforcera l’aspect branding. Enfin, la plateforme adoptera un modèle économique freemium, offrant un plan gratuit avec des fonctionnalités limitées (1 projet et statistiques de base) et des plans payants pour accéder à des options avancées, telles que multiples projets et des statistiques enrichies.
-
 ## Project setup
 
 ```bash
@@ -54,26 +52,12 @@ AWS_SES_SENDER_NAME=
 
 # Applications settings
 
-# DynamicLink App settings
-APP_NAME="Shareable REST API"
+# Beauty online App settings
+APP_NAME="Beauty online REST API"
 PORT=8080
 APP_ROUTE_PREFIX=api
 APP_ROUTE_DOCUMENTATION='/api/documentation'
-APP_API_URL="http://localhost:8080"
-APPLICATION_DOMAIN_TEMPLATE="http://__domain__.localhost:8080"
-
-# Front Office App settings
-FRONT_OFFICE_APP_NAME="Shareable front office app"
-FRONT_OFFICE_APP_PORT=8081
-FRONT_OFFICE_APP_ROUTE_DOCUMENTATION='/api/documentation'
-FRONT_OFFICE_APP_API_URL="http://localhost:8081"
-
-# API App settings
-API_APP_NAME="Shareable Developer API"
-API_APP_PORT=8082
-API_APP_API_URL="http://localhost:8082"
-API_APP_ROUTE_DOCUMENTATION='/api/documentation'
-
+APP_API_URL="http://localhost:8080"  
 
 ```
 
