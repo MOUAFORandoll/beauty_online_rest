@@ -5,23 +5,22 @@ import { NotImplementedException } from '@nestjs/common';
 
 @Schema()
 export class BaseSchema {
-    @ApiProperty()
     @Prop({
         type: Number,
         default: () => Date.now(),
-        index: true
+        index: true,
     })
     created_at: number;
-    @ApiProperty()
+
     @Prop({ type: Number })
     updated_at: number;
-    @ApiProperty()
+
     @Prop({ type: Number })
     deleted_at: number;
 
     setDeleted(): Promise<void> {
         throw new NotImplementedException();
-    };
+    }
 }
 
 export type BaseDocument = BaseSchema & Document;

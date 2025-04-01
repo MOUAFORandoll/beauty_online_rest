@@ -17,7 +17,7 @@ export class UserDto {
     @ApiProperty({
         type: String,
     })
-    fullName: string;
+    userName: string;
     @ApiProperty({
         type: String,
     })
@@ -30,7 +30,7 @@ export class UserDto {
             id: user._id as string,
             pictureUrl: user.pictureUrl,
             email: user.email,
-            fullName: user.fullName,
+            userName: user.userName,
             firebaseUID: user.firebaseUID,
             authProvider: user.authProvider,
         };

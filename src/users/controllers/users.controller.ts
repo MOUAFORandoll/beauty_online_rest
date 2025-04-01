@@ -40,8 +40,8 @@ export class UsersController {
         @GetUser('id') id: string,
         @Body() payload: UpdateUserDto,
     ): Promise<UserDto> {
-        const { fullName } = payload;
-        const user = await this.usersService.updateUserData(id, fullName);
+        const { userName } = payload;
+        const user = await this.usersService.updateUserData(id, userName);
 
         return UserDto.fromUser(user);
     }

@@ -1,6 +1,6 @@
 // import { Injectable } from '@nestjs/common';
 // import {
-//     MAIN_DATABASE_CONNECTION,
+//     DATABASE_CONNECTION,
 //     SUBSCRIPTION_PLAN_MODEL_NAME,
 //     SubscriptionPlanModel,
 // } from '../databases/main/main.database.connection';
@@ -13,7 +13,7 @@
 //     static readonly migrationName: string = 'CreateSubscriptionPlansMigration';
 
 //     constructor(
-//         @InjectModel(SUBSCRIPTION_PLAN_MODEL_NAME, MAIN_DATABASE_CONNECTION)
+//         @InjectModel(SUBSCRIPTION_PLAN_MODEL_NAME, DATABASE_CONNECTION)
 //         private readonly subscriptionPlanModel: SubscriptionPlanModel,
 //     ) {}
 

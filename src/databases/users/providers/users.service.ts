@@ -1,13 +1,13 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { User, USER_MODEL_NAME, UserModel } from '../entities';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { MAIN_DATABASE_CONNECTION } from '../../main/main.database.connection';
-import { UserErrors } from '../../../users/errors';
+import { DATABASE_CONNECTION } from 'src/databases/main.database.connection';
+import { UserErrors } from 'src/users/errors';
 
 @Injectable()
 export class UsersService {
     constructor(
-        @InjectModel(USER_MODEL_NAME, MAIN_DATABASE_CONNECTION)
+        @InjectModel(USER_MODEL_NAME, DATABASE_CONNECTION)
         protected userModel: UserModel,
     ) {}
 

@@ -15,11 +15,11 @@ export class UserAuthenticationDto {
 export class UserRegistrationDto {
     @ApiProperty({
         type: String,
-        description: 'fullName not found',
+        description: 'userName not found',
     })
     @IsString()
     @IsNotEmpty()
-    fullName: string;
+    userName: string;
     @ApiProperty({
         type: String,
         description: 'email not found',
@@ -33,7 +33,7 @@ export class UpdateUserDto {
     @ApiProperty({ type: String, required: false })
     @IsString()
     @IsOptional()
-    fullName: string;
+    userName: string;
 }
 
 export class FirebaseVerificationDto {

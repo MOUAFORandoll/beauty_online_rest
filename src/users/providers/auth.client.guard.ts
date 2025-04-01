@@ -5,16 +5,16 @@ import { FirebaseApp } from 'src/common/services/firebase';
 import { Reflector } from '@nestjs/core';
 import { checkIsPublic } from 'src/common/apiutils';
 import {
-    MAIN_DATABASE_CONNECTION,
+    DATABASE_CONNECTION,
     USER_MODEL_NAME,
     UserModel,
-} from '../../databases/main/main.database.connection';
+} from '../../databases/main.database.connection';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthClientGuard implements CanActivate {
     constructor(
-        @InjectModel(USER_MODEL_NAME, MAIN_DATABASE_CONNECTION)
+        @InjectModel(USER_MODEL_NAME, DATABASE_CONNECTION)
         private readonly user: UserModel,
         private readonly reflector: Reflector,
         private readonly configService: ConfigService,
@@ -24,10 +24,10 @@ export class AuthClientGuard implements CanActivate {
         const environment = this.configService.get<string>('ENVIRONMENT');
 
         switch (environment) {
-            case "development":
+            case 'development':
                 return this.developmentCanActivate(context);
-            case "production":
-            case "staging":
+            case 'production':
+            case 'staging':
             default:
                 return this.productionCanActivate(context);
         }
