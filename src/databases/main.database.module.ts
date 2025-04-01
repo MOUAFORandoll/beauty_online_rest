@@ -38,11 +38,9 @@ import {
             connectionName: DATABASE_CONNECTION,
         }),
         MongooseModule.forFeature(
-            [{ name: USER_MODEL_NAME, schema: UsersSchema }],
-            DATABASE_CONNECTION,
-        ),
-        MongooseModule.forFeature(
             [
+                { name: USER_MODEL_NAME, schema: UsersSchema },
+
                 { name: USER_MODEL_NAME, schema: UsersSchema },
                 { name: POSITION_MODEL_NAME, schema: PositionsSchema },
                 { name: PROFIL_PRO_MODEL_NAME, schema: ProfilProfessionnelsSchema },
