@@ -11,8 +11,6 @@ import {
     ProfilProfessionnelsSchema,
     USER_LOCATION_MODEL_NAME,
     UserLocalisationsSchema,
-    SERVICES_MODEL_NAME,
-    ServicesSchema,
     REALISATION_MODEL_NAME,
     RealisationsSchema,
     CATALOGUE_MODEL_NAME,
@@ -22,6 +20,8 @@ import {
     RESERVATION_MODEL_NAME,
     ReservationsSchema,
 } from './main.database.connection';
+import { UsersService } from './users/providers';
+console.log('PROFIL_PRO_MODEL_NAMEdddd:', PROFIL_PRO_MODEL_NAME);
 
 @Module({
     imports: [
@@ -40,12 +40,9 @@ import {
         MongooseModule.forFeature(
             [
                 { name: USER_MODEL_NAME, schema: UsersSchema },
-
-                { name: USER_MODEL_NAME, schema: UsersSchema },
                 { name: POSITION_MODEL_NAME, schema: PositionsSchema },
                 { name: PROFIL_PRO_MODEL_NAME, schema: ProfilProfessionnelsSchema },
                 { name: USER_LOCATION_MODEL_NAME, schema: UserLocalisationsSchema },
-                { name: SERVICES_MODEL_NAME, schema: ServicesSchema },
                 { name: REALISATION_MODEL_NAME, schema: RealisationsSchema },
                 { name: CATALOGUE_MODEL_NAME, schema: CataloguesSchema },
                 { name: AGENDA_MODEL_NAME, schema: AgendasSchema },
@@ -54,7 +51,7 @@ import {
             DATABASE_CONNECTION,
         ),
     ],
-    providers: [],
-    exports: [MongooseModule],
+    providers: [UsersService],
+    exports: [MongooseModule, UsersService],
 })
 export class MainDatabaseModule {}

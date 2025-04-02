@@ -4,11 +4,15 @@ import { BaseSchema } from '../../base.schema';
 import { Document, Model, Schema as MongooseSchema } from 'mongoose';
 
 import { applySortedMongooseAdditionalFunctions } from '../../base.functions';
-import { SERVICES_MODEL_NAME } from 'src/databases/services/entities';
+// import { SERVICES_MODEL_NAME } from 'src/databases/services/entities';
 import { USER_MODEL_NAME } from './users.schema';
+export enum ServiceType {
+    COIFFURE = 'COIFFURE',
+    MANICURE = 'MANICURE',
+}
 
-// PROFIL PROFESSIONNEL
 export const PROFIL_PRO_MODEL_NAME = 'profils_professionnels';
+// PROFIL PROFESSIONNEL
 @Schema({ collection: PROFIL_PRO_MODEL_NAME })
 class ProfilProfessionnelSchema extends BaseSchema {
     @ApiProperty()
@@ -17,13 +21,12 @@ class ProfilProfessionnelSchema extends BaseSchema {
 
     @ApiProperty({ type: MongooseSchema.Types.ObjectId })
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: USER_MODEL_NAME })
-    user: string;
+    user_id: string;
 
-    @ApiProperty({ type: MongooseSchema.Types.ObjectId })
-    @Prop({ type: MongooseSchema.Types.ObjectId, ref: SERVICES_MODEL_NAME })
+    @Prop({ type: String, enum: ServiceType })
     service: string;
 }
-export type ProfilProfessionnelDocument = ProfilProfessionnelSchema & Document;
+export type ProfilProfessionnel = ProfilProfessionnelSchema & Document;
 export type ProfilProfessionnelModel = Model<ProfilProfessionnelSchema>;
 export const ProfilProfessionnelsSchema = applySortedMongooseAdditionalFunctions(
     SchemaFactory.createForClass(ProfilProfessionnelSchema),

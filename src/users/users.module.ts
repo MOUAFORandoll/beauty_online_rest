@@ -6,10 +6,7 @@ import { MainDatabaseModule } from '../databases/main.database.module';
 // import { AwsModule } from '../common/modules/aws/aws.module';
 
 @Module({
-    imports: [
-        MainDatabaseModule,
-        // AwsModule
-    ],
+    imports: [MainDatabaseModule],
     providers: [
         AuthFirebaseService,
         UsersService,

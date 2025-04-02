@@ -5,9 +5,8 @@ import { BaseSchema } from '../../base.schema';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
 import { applySortedMongooseAdditionalFunctions } from '../../base.functions';
-import { SERVICES_MODEL_NAME } from 'src/databases/services/entities';
 import { POSITION_MODEL_NAME } from './position.schema';
-import { USER_MODEL_NAME } from 'src/databases/main.database.connection';
+import { USER_MODEL_NAME } from './users.schema';
 
 // PROFIL PROFESSIONNEL
 export const USER_LOCATION_MODEL_NAME = 'user_locations';
@@ -15,11 +14,11 @@ export const USER_LOCATION_MODEL_NAME = 'user_locations';
 class UserLocationSchema extends BaseSchema {
     @ApiProperty({ type: MongooseSchema.Types.ObjectId })
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: USER_MODEL_NAME })
-    user: string;
+    user_id: string;
 
     @ApiProperty({ type: MongooseSchema.Types.ObjectId })
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: POSITION_MODEL_NAME })
-    position: string;
+    position_id: string;
 }
 export type UserLocationDocument = UserLocationSchema & Document;
 export type UserLocationModel = Model<UserLocationSchema>;

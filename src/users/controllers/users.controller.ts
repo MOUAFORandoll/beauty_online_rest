@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Patch } from '@nestjs/common';
 import { UsersService } from '../providers';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
-import { UpdateUserDto, UserAuthenticationResponseDto, UserDto } from '../dto';
+import { UpdateUserDto, UpdateUserPhoneDto, UserAuthenticationResponseDto, UserDto } from '../dto';
 import { GetUser } from '../decorators';
 import * as Database from '../../databases/users/providers';
 
@@ -42,6 +42,24 @@ export class UsersController {
     ): Promise<UserDto> {
         const { userName } = payload;
         const user = await this.usersService.updateUserData(id, userName);
+
+        return UserDto.fromUser(user);
+    }
+    /**
+     * update user information
+     */
+    @Patch('/update-phone')
+    @ApiOperation({
+        summary: 'Update user phone',
+    })
+    @ApiOkResponse({ type: UserAuthenticationResponseDto })
+    @HttpCode(HttpStatus.OK)
+    async updateUserPhone(
+        @GetUser('id') id: string,
+        @Body() payload: UpdateUserPhoneDto,
+    ): Promise<UserDto> {
+        const { countryCode, phone } = payload;
+        const user = await this.usersService.updateUserPhone(id, countryCode, phone);
 
         return UserDto.fromUser(user);
     }

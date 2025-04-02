@@ -22,15 +22,15 @@ class ReservationSchema extends BaseSchema {
     status: string;
 
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: USER_MODEL_NAME })
-    user: string;
+    user_id: string;
 
     @ApiProperty({ type: MongooseSchema.Types.ObjectId })
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: AGENDA_MODEL_NAME })
-    agenda: string;
+    agenda_id: string;
 
     @ApiProperty({ type: MongooseSchema.Types.ObjectId })
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: CATALOGUE_MODEL_NAME })
-    catalogue: string;
+    catalogue_id: string;
 }
 
 export type ReservationDocument = ReservationSchema & Document;

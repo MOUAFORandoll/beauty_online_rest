@@ -23,6 +23,15 @@ export class UserDto {
     })
     firebaseUID: string;
 
+    @ApiProperty({
+        type: String,
+    })
+    countryCode: string;
+    @ApiProperty({
+        type: String,
+    })
+    phone: string;
+
     @ApiProperty({ type: String })
     authProvider: string;
     static fromUser(user: User): UserDto {
@@ -33,6 +42,8 @@ export class UserDto {
             userName: user.userName,
             firebaseUID: user.firebaseUID,
             authProvider: user.authProvider,
+            countryCode: user.countryCode,
+            phone: user.phone,
         };
     }
 }

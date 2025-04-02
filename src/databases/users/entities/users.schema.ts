@@ -5,15 +5,10 @@ import { BaseSchema } from '../../base.schema';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
 import { applySortedMongooseAdditionalFunctions } from '../../base.functions';
-import { SERVICES_MODEL_NAME } from 'src/databases/services/entities';
-export enum UserStatus {
-    PENDING_REGISTRATION = 'PENDING_REGISTRATION',
-    ACTIVE = 'ACTIVE',
-    BLOCKED = 'BLOCKED',
-}
 
 export enum UserType {
-    DEFAULT = 'DEFAULT',
+    DEFAULT = 'CLIENT',
+    PROFESSIONNEL = 'PROFESSIONNEL',
     ADMIN = 'ADMIN',
 }
 
@@ -21,7 +16,7 @@ export const USER_MODEL_NAME = 'users';
 @Schema({ collection: USER_MODEL_NAME })
 class UserSchema extends BaseSchema {
     @ApiProperty()
-    @Prop({ required: true })
+    // @Prop({ required: true })
     userName: string;
 
     @ApiProperty()
@@ -70,4 +65,3 @@ export type UserModel = Model<UserSchema>;
 export const UsersSchema = applySortedMongooseAdditionalFunctions(
     SchemaFactory.createForClass(UserSchema),
 );
- 

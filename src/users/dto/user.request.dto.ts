@@ -35,6 +35,16 @@ export class UpdateUserDto {
     @IsOptional()
     userName: string;
 }
+export class UpdateUserPhoneDto {
+    @ApiProperty({ type: String, required: false })
+    @IsString()
+    @IsOptional()
+    phone: string;
+    @ApiProperty({ type: String, required: false })
+    @IsString()
+    @IsOptional()
+    countryCode: string;
+}
 
 export class FirebaseVerificationDto {
     uid?: string;

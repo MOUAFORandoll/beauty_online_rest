@@ -13,13 +13,14 @@ export const CATALOGUE_MODEL_NAME = 'catalogues';
 @Schema({ collection: CATALOGUE_MODEL_NAME })
 class CatalogueSchema extends BaseSchema {
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: PROFIL_PRO_MODEL_NAME })
-    profilProfessionnel: string;
+    profil_professionnel_id: string;
 
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: REALISATION_MODEL_NAME })
-    realisation: string;
+    realisation_id: string;
 }
 export type CatalogueDocument = CatalogueSchema & Document;
 export type CatalogueModel = Model<CatalogueSchema>;
 export const CataloguesSchema = applySortedMongooseAdditionalFunctions(
     SchemaFactory.createForClass(CatalogueSchema),
 );
+// 
