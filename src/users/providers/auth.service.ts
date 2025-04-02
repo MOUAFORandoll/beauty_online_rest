@@ -65,11 +65,11 @@ export class AuthService {
             newUser.authProvider = authProvider;
             newUser.pictureUrl = userFireBase.photoURL;
             // if (userFireBase.photoURL) {
-            //     // télécharge et reuploade la photo de profil de l'utilisateur
+            //     // télécharge et reuploade la photo de profile de l'utilisateur
             //     const image = await axios.get(userFireBase.photoURL, {
             //         responseType: 'arraybuffer',
             //     });
-            //     newUser.pictureUrl = await this.storageService.uploadUserProfile(
+            //     newUser.pictureUrl = await this.storageService.uploadUserProfilee(
             //         Buffer.from(image.data),
             //         newUser._id.toString(),
             //     );

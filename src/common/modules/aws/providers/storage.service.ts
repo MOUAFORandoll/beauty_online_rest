@@ -5,7 +5,7 @@
 
 // @Injectable()
 // export class StorageService {
-//     private static usersProfilePicturesPath = 'users/profile';
+//     private static usersProfileePicturesPath = 'users/profilee';
 //     private static linksSEOImagesPath = 'links/seo';
 
 //     private readonly bucket: string;
@@ -74,9 +74,9 @@
 //         await this.s3Client.send(command);
 //     }
 
-//     public async uploadUserProfile(image: Buffer, key: string): Promise<string> {
-//         await this.uploadBuffer(StorageService.usersProfilePicturesPath, key, image);
-//         return this.getUrl(StorageService.usersProfilePicturesPath, key);
+//     public async uploadUserProfilee(image: Buffer, key: string): Promise<string> {
+//         await this.uploadBuffer(StorageService.usersProfileePicturesPath, key, image);
+//         return this.getUrl(StorageService.usersProfileePicturesPath, key);
 //     }
 
 //     public async uploadLinkImage(image: Express.Multer.File, key: string): Promise<string> {

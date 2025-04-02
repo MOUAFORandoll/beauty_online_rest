@@ -8,7 +8,7 @@ import { applySortedMongooseAdditionalFunctions } from '../../base.functions';
 import { POSITION_MODEL_NAME } from './position.schema';
 import { USER_MODEL_NAME } from './users.schema';
 
-// PROFIL PROFESSIONNEL
+// PROFILE PROFESSIONNEL
 export const USER_LOCATION_MODEL_NAME = 'user_locations';
 @Schema({ collection: USER_LOCATION_MODEL_NAME })
 class UserLocationSchema extends BaseSchema {

@@ -11,10 +11,10 @@ export enum ServiceType {
     MANICURE = 'MANICURE',
 }
 
-export const PROFIL_PRO_MODEL_NAME = 'profils_professionnels';
-// PROFIL PROFESSIONNEL
-@Schema({ collection: PROFIL_PRO_MODEL_NAME })
-class ProfilProfessionnelSchema extends BaseSchema {
+export const PROFILE_PRO_MODEL_NAME = 'profiles_professionnels';
+// PROFILE PROFESSIONNEL
+@Schema({ collection: PROFILE_PRO_MODEL_NAME })
+class ProfileProfessionnelSchema extends BaseSchema {
     @ApiProperty()
     @Prop()
     namePro: string;
@@ -26,8 +26,8 @@ class ProfilProfessionnelSchema extends BaseSchema {
     @Prop({ type: String, enum: ServiceType })
     service: string;
 }
-export type ProfilProfessionnel = ProfilProfessionnelSchema & Document;
-export type ProfilProfessionnelModel = Model<ProfilProfessionnelSchema>;
-export const ProfilProfessionnelsSchema = applySortedMongooseAdditionalFunctions(
-    SchemaFactory.createForClass(ProfilProfessionnelSchema),
+export type ProfileProfessionnel = ProfileProfessionnelSchema & Document;
+export type ProfileProfessionnelModel = Model<ProfileProfessionnelSchema>;
+export const ProfileProfessionnelsSchema = applySortedMongooseAdditionalFunctions(
+    SchemaFactory.createForClass(ProfileProfessionnelSchema),
 );

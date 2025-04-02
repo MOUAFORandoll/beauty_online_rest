@@ -7,21 +7,19 @@ import {
     UsersSchema,
     POSITION_MODEL_NAME,
     PositionsSchema,
-    PROFIL_PRO_MODEL_NAME,
-    ProfilProfessionnelsSchema,
+    PROFILE_PRO_MODEL_NAME,
+    ProfileProfessionnelsSchema,
     USER_LOCATION_MODEL_NAME,
     UserLocalisationsSchema,
     REALISATION_MODEL_NAME,
     RealisationsSchema,
-    CATALOGUE_MODEL_NAME,
-    CataloguesSchema,
     AGENDA_MODEL_NAME,
     AgendasSchema,
     RESERVATION_MODEL_NAME,
     ReservationsSchema,
 } from './main.database.connection';
 import { UsersService } from './users/providers';
-console.log('PROFIL_PRO_MODEL_NAMEdddd:', PROFIL_PRO_MODEL_NAME);
+console.log('PROFILE_PRO_MODEL_NAMEdddd:', PROFILE_PRO_MODEL_NAME);
 
 @Module({
     imports: [
@@ -41,10 +39,9 @@ console.log('PROFIL_PRO_MODEL_NAMEdddd:', PROFIL_PRO_MODEL_NAME);
             [
                 { name: USER_MODEL_NAME, schema: UsersSchema },
                 { name: POSITION_MODEL_NAME, schema: PositionsSchema },
-                { name: PROFIL_PRO_MODEL_NAME, schema: ProfilProfessionnelsSchema },
+                { name: PROFILE_PRO_MODEL_NAME, schema: ProfileProfessionnelsSchema },
                 { name: USER_LOCATION_MODEL_NAME, schema: UserLocalisationsSchema },
                 { name: REALISATION_MODEL_NAME, schema: RealisationsSchema },
-                { name: CATALOGUE_MODEL_NAME, schema: CataloguesSchema },
                 { name: AGENDA_MODEL_NAME, schema: AgendasSchema },
                 { name: RESERVATION_MODEL_NAME, schema: ReservationsSchema },
             ],

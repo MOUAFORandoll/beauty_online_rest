@@ -1,13 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger';
+
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BaseSchema } from '../../base.schema';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
 import { applySortedMongooseAdditionalFunctions } from '../../base.functions';
-import { PROFIL_PRO_MODEL_NAME } from 'src/databases/users/entities';
+import { PROFILE_PRO_MODEL_NAME } from 'src/databases/users/entities';
 
-console.log('PROFIL_PRO_MODEL_NAME:', PROFIL_PRO_MODEL_NAME);
+console.log('PROFILE_PRO_MODEL_NAME:', PROFILE_PRO_MODEL_NAME);
 
 // AGENDA
 export const AGENDA_MODEL_NAME = 'agendas';
@@ -24,9 +24,9 @@ class AgendaSchema extends BaseSchema {
 
     @Prop({
         type: MongooseSchema.Types.ObjectId,
-        ref: PROFIL_PRO_MODEL_NAME,
+        ref: PROFILE_PRO_MODEL_NAME,
     })
-    profil_professionnel_id: string;
+    profile_professionnel_id: string;
 }
 export type AgendaDocument = AgendaSchema & Document;
 export type AgendaModel = Model<AgendaSchema>;
