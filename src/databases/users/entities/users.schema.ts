@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BaseSchema } from '../../base.schema';
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document } from 'mongoose';
 
 import { applySortedMongooseAdditionalFunctions } from '../../base.functions';
 

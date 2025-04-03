@@ -60,8 +60,12 @@ export class AppLauncher {
             .setVersion('1.0')
             .addServer(apiUrl, `For ${env} environment`)
 
-            .addTag('Auth', 'Login & Authentications endpoints')
-            .addTag('Users', 'User Accounts management endpoints')
+            .addTag('Auth', 'Endpoints for authentication and login')
+            .addTag('Users', 'Endpoints for managing user accounts')
+            .addTag('Realisations', 'Endpoints for managing user realisations')
+            .addTag('Agenda', 'Endpoints for managing user agendas')
+            .addTag('RendezVous', 'Endpoints for managing user appointments')
+            .addTag('ProfileProfessionnels', 'Endpoints for managing professional profiles')
             .addBearerAuth({
                 type: 'http',
                 scheme: 'bearer',

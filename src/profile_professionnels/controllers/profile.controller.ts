@@ -1,11 +1,24 @@
 // profile.controller.ts
-import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Post,
+    Put,
+    Delete,
+    Param,
+    Body,
+    Query,
+    HttpCode,
+    HttpStatus,
+    Patch,
+} from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateProfileDto, UpdateProfileDto, ProfileResponseDto, FindByServiceDto } from '../dto';
 import { ProfileService } from '../providers';
 import { GetUser } from 'src/users/decorators';
 import * as Database from '../../databases/users/providers';
 import { PaginationPayloadDto, PaginationResponseDto, Public } from 'src/common/apiutils';
+import { UpdateUserPositionDto } from 'src/users/dto';
 
 @ApiTags('ProfileProfessionnels')
 @Controller('profile-professionnels')
@@ -81,6 +94,43 @@ export class ProfileController {
         );
     }
 
+    @Get('proximity')
+    @ApiOperation({
+        summary: 'Find All profile',
+    })
+    @Public()
+    async findByProximity(
+        @Param('longitude') longitude: string,
+        @Param('latitude') latitude: string,
+
+        @Query() pagination: PaginationPayloadDto,
+    ): Promise<PaginationResponseDto<ProfileResponseDto>> {
+        const { data, total } = await this.profileService.findByProximity(
+            longitude,
+
+            latitude,
+            pagination,
+        );
+
+        return PaginationResponseDto.responseDto(pagination, data, total).map((l) =>
+            ProfileResponseDto.fromProfile(l),
+        );
+    }
+    /**
+     * update user information
+     */
+    @Patch('/:id/update-position')
+    @ApiOperation({
+        summary: 'Update user phone',
+    })
+    @ApiOkResponse()
+    @HttpCode(HttpStatus.OK)
+    async updateUserPosition(
+        @Param('id') id: string,
+        @Body() payload: UpdateUserPositionDto,
+    ): Promise<void> {
+        await this.profileService.updateProfilePosition(id, payload);
+    }
     @Put(':id')
     @ApiOperation({
         summary: 'update user profile',

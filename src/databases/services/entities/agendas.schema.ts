@@ -28,7 +28,7 @@ class AgendaSchema extends BaseSchema {
     })
     profile_professionnel_id: string;
 }
-export type AgendaDocument = AgendaSchema & Document;
+export type Agenda = AgendaSchema & Document;
 export type AgendaModel = Model<AgendaSchema>;
 export const AgendasSchema = applySortedMongooseAdditionalFunctions(
     SchemaFactory.createForClass(AgendaSchema),

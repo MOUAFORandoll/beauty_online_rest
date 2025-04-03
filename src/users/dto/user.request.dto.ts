@@ -35,6 +35,7 @@ export class UpdateUserDto {
     @IsOptional()
     userName: string;
 }
+
 export class UpdateUserPhoneDto {
     @ApiProperty({ type: String, required: false })
     @IsString()
@@ -44,6 +45,16 @@ export class UpdateUserPhoneDto {
     @IsString()
     @IsOptional()
     countryCode: string;
+}
+export class UpdateUserPositionDto {
+    @ApiProperty({ type: String, required: false })
+    @IsString()
+    @IsOptional()
+    longitude: string;
+    @ApiProperty({ type: String, required: false })
+    @IsString()
+    @IsOptional()
+    latitude: string;
 }
 
 export class FirebaseVerificationDto {

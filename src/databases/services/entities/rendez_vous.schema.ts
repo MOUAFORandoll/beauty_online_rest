@@ -6,19 +6,19 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 
 import { applySortedMongooseAdditionalFunctions } from '../../base.functions';
 import { USER_MODEL_NAME } from 'src/databases/users/entities';
-import { AGENDA_MODEL_NAME } from './agendas.schema'; 
+import { AGENDA_MODEL_NAME } from './agendas.schema';
 import { REALISATION_MODEL_NAME } from './realisations.schema';
 
-// RESERVATION
-export const RESERVATION_MODEL_NAME = 'reservations';
-@Schema({ collection: RESERVATION_MODEL_NAME })
-class ReservationSchema extends BaseSchema {
+// RENDEZ_VOUS
+export const RENDEZ_VOUS_MODEL_NAME = 'rendez_vous';
+@Schema({ collection: RENDEZ_VOUS_MODEL_NAME })
+class RendezVousSchema extends BaseSchema {
     @ApiProperty()
     @Prop()
     timeOfArrival: string;
 
     @Prop()
-    status: string;
+    status: boolean;
 
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: USER_MODEL_NAME })
     user_id: string;
@@ -31,8 +31,8 @@ class ReservationSchema extends BaseSchema {
     realisation_id: string;
 }
 
-export type ReservationDocument = ReservationSchema & Document;
-export type ReservationModel = Model<ReservationSchema>;
-export const ReservationsSchema = applySortedMongooseAdditionalFunctions(
-    SchemaFactory.createForClass(ReservationSchema),
+export type RendezVous = RendezVousSchema & Document;
+export type RendezVousModel = Model<RendezVousSchema>;
+export const RendezVoussSchema = applySortedMongooseAdditionalFunctions(
+    SchemaFactory.createForClass(RendezVousSchema),
 );

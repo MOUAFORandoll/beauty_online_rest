@@ -1,17 +1,23 @@
 import { Injectable } from '@nestjs/common';
 
-import { InjectModel } from '@nestjs/mongoose';
 import {
     DATABASE_CONNECTION,
+    POSITION_MODEL_NAME,
+    PositionModel,
     User,
-    USER_MODEL_NAME,
-    UserModel,
 } from '../../databases/main.database.connection';
 import * as Database from '../../databases/users/providers';
+import { InjectModel } from '@nestjs/mongoose';
+import { UpdateUserPositionDto } from '../dto';
 
 @Injectable()
 export class UsersService {
-    constructor(private usersService: Database.UsersService) {}
+    constructor(
+        @InjectModel(POSITION_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly positionModel: PositionModel,
+
+        private usersService: Database.UsersService,
+    ) {}
 
     async updateUserData(id: string, userName: string): Promise<User> {
         const user = await this.usersService.getUser(id);
@@ -23,5 +29,10 @@ export class UsersService {
         user.countryCode = countryCode;
         user.phone = phone;
         return user.save();
+    }
+    async updateUserPosition(user_id: string, dto: UpdateUserPositionDto): Promise<void> {
+        const position =  new this.positionModel({ ...dto }, user_id);
+
+      await position.save();
     }
 }

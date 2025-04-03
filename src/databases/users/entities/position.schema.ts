@@ -4,7 +4,9 @@ import { Model } from 'mongoose';
 import { BaseSchema } from '../../base.schema';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
-import { applySortedMongooseAdditionalFunctions } from '../../base.functions'; 
+import { applySortedMongooseAdditionalFunctions } from '../../base.functions';
+import { USER_MODEL_NAME } from './users.schema';
+import { PROFILE_PRO_MODEL_NAME } from './profile_professionnel.schema';
 
 // POSITION
 export const POSITION_MODEL_NAME = 'positions';
@@ -25,8 +27,13 @@ class PositionSchema extends BaseSchema {
     @ApiProperty()
     @Prop()
     town: string;
+    @ApiProperty({ type: MongooseSchema.Types.ObjectId })
+    @Prop({ type: MongooseSchema.Types.ObjectId, ref: USER_MODEL_NAME })
+    user_id: string;
+    @Prop({ type: MongooseSchema.Types.ObjectId, ref: PROFILE_PRO_MODEL_NAME })
+    profile_professionnel_id: string;
 }
-export type PositionDocument = PositionSchema & Document;
+export type Position = PositionSchema & Document;
 export type PositionModel = Model<PositionSchema>;
 export const PositionsSchema = applySortedMongooseAdditionalFunctions(
     SchemaFactory.createForClass(PositionSchema),
