@@ -75,7 +75,7 @@ export class UsersController {
      */
     @Patch('/update-position')
     @ApiOperation({
-        summary: 'Update user phone',
+        summary: 'Update user position',
     })
     @ApiOkResponse()
     @HttpCode(HttpStatus.OK)

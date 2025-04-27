@@ -116,21 +116,10 @@ export class ProfileController {
             ProfileResponseDto.fromProfile(l),
         );
     }
+
     /**
-     * update user information
+     * update user profile
      */
-    @Patch('/:id/update-position')
-    @ApiOperation({
-        summary: 'Update user phone',
-    })
-    @ApiOkResponse()
-    @HttpCode(HttpStatus.OK)
-    async updateUserPosition(
-        @Param('id') id: string,
-        @Body() payload: UpdateUserPositionDto,
-    ): Promise<void> {
-        await this.profileService.updateProfilePosition(id, payload);
-    }
     @Put(':id')
     @ApiOperation({
         summary: 'update user profile',
@@ -143,6 +132,22 @@ export class ProfileController {
         await this.dbUsersService.getUser(idUser);
         const profile = await this.profileService.update(id, dto);
         return ProfileResponseDto.fromProfile(profile);
+    }
+
+    /**
+     * update user position
+     */
+    @Patch('/:id/update-position')
+    @ApiOperation({
+        summary: 'Update user position',
+    })
+    @ApiOkResponse()
+    @HttpCode(HttpStatus.OK)
+    async updateUserPosition(
+        @Param('id') id: string,
+        @Body() payload: UpdateUserPositionDto,
+    ): Promise<void> {
+        await this.profileService.updateProfilePosition(id, payload);
     }
 
     @Delete(':id')
