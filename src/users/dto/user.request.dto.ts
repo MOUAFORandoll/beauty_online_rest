@@ -34,9 +34,6 @@ export class UpdateUserDto {
     @IsString()
     @IsOptional()
     userName: string;
-}
-
-export class UpdateUserPhoneDto {
     @ApiProperty({ type: String, required: false })
     @IsString()
     @IsOptional()
@@ -46,6 +43,7 @@ export class UpdateUserPhoneDto {
     @IsOptional()
     countryCode: string;
 }
+ 
 export class UpdateUserPositionDto {
     @ApiProperty({ type: String, required: false })
     @IsString()

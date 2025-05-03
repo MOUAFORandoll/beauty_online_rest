@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { AuthFirebaseService } from './auth.firebase.service';
 import { FirebaseVerificationDto, UserAuthenticationDto } from '../dto';
-import { FIREBASE_AUTH_FAILED, USER_EMAIL_ALREADY_EXISTS, UserErrors } from '../errors';
+import { FIREBASE_AUTH_FAILED,   UserErrors } from '../errors';
 import { UserRecord } from 'firebase-admin/auth';
 import { AppInternalServerError } from 'src/common/errors/internal';
 import { FirebaseApp } from 'src/common/services/firebase';
@@ -11,9 +11,7 @@ import {
     User,
     USER_MODEL_NAME,
     UserModel,
-} from '../../databases/main.database.connection';
-// import { StorageService } from '../../common/modules/aws/providers';
-import axios from 'axios';
+} from '../../databases/main.database.connection'; 
 @Injectable()
 export class AuthService {
     constructor(

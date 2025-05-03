@@ -3,7 +3,6 @@ import { UsersService } from '../providers';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import {
     UpdateUserDto,
-    UpdateUserPhoneDto,
     UpdateUserPositionDto,
     UserAuthenticationResponseDto,
     UserDto,
@@ -46,30 +45,10 @@ export class UsersController {
         @GetUser('id') id: string,
         @Body() payload: UpdateUserDto,
     ): Promise<UserDto> {
-        const { userName } = payload;
-        const user = await this.usersService.updateUserData(id, userName);
+        const user = await this.usersService.updateUserData(id, payload);
 
         return UserDto.fromUser(user);
     }
-    /**
-     * update user information
-     */
-    @Patch('/update-phone')
-    @ApiOperation({
-        summary: 'Update user phone',
-    })
-    @ApiOkResponse({ type: UserAuthenticationResponseDto })
-    @HttpCode(HttpStatus.OK)
-    async updateUserPhone(
-        @GetUser('id') id: string,
-        @Body() payload: UpdateUserPhoneDto,
-    ): Promise<UserDto> {
-        const { countryCode, phone } = payload;
-        const user = await this.usersService.updateUserPhone(id, countryCode, phone);
-
-        return UserDto.fromUser(user);
-    }
-
     /**
      * update user information
      */

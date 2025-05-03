@@ -8,7 +8,7 @@ import {
 } from '../../databases/main.database.connection';
 import * as Database from '../../databases/users/providers';
 import { InjectModel } from '@nestjs/mongoose';
-import { UpdateUserPositionDto } from '../dto';
+import { UpdateUserDto, UpdateUserPositionDto } from '../dto';
 
 @Injectable()
 export class UsersService {
@@ -18,10 +18,11 @@ export class UsersService {
 
         private usersService: Database.UsersService,
     ) {}
-
-    async updateUserData(id: string, userName: string): Promise<User> {
+    async updateUserData(id: string, data: UpdateUserDto): Promise<User> {
         const user = await this.usersService.getUser(id);
-        user.userName = userName;
+        if (data.userName) user.userName = data.userName;
+        if (data.phone) user.phone = data.phone;
+        if (data.countryCode) user.countryCode = data.countryCode;
         return user.save();
     }
     async updateUserPhone(id: string, countryCode: string, phone: string): Promise<User> {
@@ -31,8 +32,8 @@ export class UsersService {
         return user.save();
     }
     async updateUserPosition(user_id: string, dto: UpdateUserPositionDto): Promise<void> {
-        const position =  new this.positionModel({ ...dto }, user_id);
+        const position = new this.positionModel({ ...dto }, user_id);
 
-      await position.save();
+        await position.save();
     }
 }
