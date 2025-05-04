@@ -1,5 +1,5 @@
 // profile.service.ts
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateProfileDto, FindByServiceDto, UpdateProfileDto } from '../dto';
 import {
@@ -28,7 +28,17 @@ export class ProfileService {
     async create(dto: CreateProfileDto, user_id: string): Promise<ProfileProfessionnel> {
         try {
             const profile = new this.profileModel({ ...dto, user_id });
-            return await profile.save();
+            await profile.save();
+            console.log(dto);
+            await this.updateProfilePosition(profile.id, {
+                longitude: dto.longitude,
+                latitude: dto.latitude,
+                town: '',
+                country: '',
+                titleEmplacement: dto.titleEmplacement,
+            });
+
+            return this.findOneById(profile.id);
         } catch (error) {
             throw new Error(`Failed to create profile: ${error.message}`);
         }
@@ -49,7 +59,7 @@ export class ProfileService {
         if (!profile) {
             // throw new HttpException(ProfileProErrors[PROFILE_PRO_NOT_FOUND], 203);
 
-            throw new NotFoundException(ProfileProErrors[PROFILE_PRO_NOT_FOUND]);
+            throw new BadRequestException(ProfileProErrors[PROFILE_PRO_NOT_FOUND]);
         }
         return profile;
     }
@@ -71,8 +81,8 @@ export class ProfileService {
     }
 
     async findByProximity(
-        longitude: string,
-        latitude: string,
+        longitude: number,
+        latitude: number,
         pagination: PaginationPayloadDto,
     ): Promise<{ data: ProfileProfessionnel[]; total: number }> {
         const [data, total] = await Promise.all([
@@ -129,7 +139,10 @@ export class ProfileService {
         profile_professionnel_id: string,
         dto: UpdateUserPositionDto,
     ): Promise<void> {
-        const position = new this.positionModel({ ...dto }, profile_professionnel_id);
+        const position = new this.positionModel({
+            ...dto,
+            profile_professionnel_id: profile_professionnel_id,
+        });
 
         await position.save();
     }

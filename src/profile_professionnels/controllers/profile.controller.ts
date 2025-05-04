@@ -19,12 +19,35 @@ import { GetUser } from 'src/users/decorators';
 import * as Database from '../../databases/users/providers';
 import { PaginationPayloadDto, PaginationResponseDto, Public } from 'src/common/apiutils';
 import { UpdateUserPositionDto } from 'src/users/dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { POSITION_MODEL_NAME, PositionModel } from 'src/databases/users/entities';
+import {
+    AGENDA_MODEL_NAME,
+    AgendaModel,
+    DATABASE_CONNECTION,
+    REALISATION_MODEL_NAME,
+    RealisationModel,
+    RENDEZ_VOUS_MODEL_NAME,
+    RendezVousModel,
+} from 'src/databases/main.database.connection';
 
 @ApiTags('ProfileProfessionnels')
 @Controller('profile-professionnels')
 export class ProfileController {
     constructor(
         private readonly profileService: ProfileService,
+
+        @InjectModel(AGENDA_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly agendaModel: AgendaModel,
+
+        @InjectModel(POSITION_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly positionModel: PositionModel,
+
+        @InjectModel(REALISATION_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly realisationModel: RealisationModel,
+
+        @InjectModel(RENDEZ_VOUS_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly rendezVousModel: RendezVousModel,
 
         private readonly dbUsersService: Database.UsersService,
     ) {}
@@ -41,7 +64,13 @@ export class ProfileController {
     ): Promise<ProfileResponseDto> {
         await this.dbUsersService.getUser(id);
         const profile = await this.profileService.create(dto, id);
-        return ProfileResponseDto.fromProfile(profile);
+        return ProfileResponseDto.fromProfile(
+            profile,
+            this.agendaModel,
+            this.positionModel,
+            this.realisationModel,
+            this.rendezVousModel,
+        );
     }
     @Get('/me')
     @ApiOperation({
@@ -51,7 +80,13 @@ export class ProfileController {
     async findUserProfile(@GetUser('id') idUser: string): Promise<ProfileResponseDto> {
         const profile = await this.profileService.findUserProfile(idUser);
 
-        return ProfileResponseDto.fromProfile(profile);
+        return ProfileResponseDto.fromProfile(
+            profile,
+            this.agendaModel,
+            this.positionModel,
+            this.realisationModel,
+            this.rendezVousModel,
+        );
     }
 
     @Get('/filter')
@@ -69,8 +104,14 @@ export class ProfileController {
             pagination,
         );
 
-        return PaginationResponseDto.responseDto(pagination, data, total).map((l) =>
-            ProfileResponseDto.fromProfile(l),
+        return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((profile) =>
+            ProfileResponseDto.fromProfile(
+                profile,
+                this.agendaModel,
+                this.positionModel,
+                this.realisationModel,
+                this.rendezVousModel,
+            ),
         );
     }
     @Get(':id')
@@ -80,7 +121,13 @@ export class ProfileController {
     @ApiOkResponse({ type: ProfileResponseDto })
     async findOneById(@Param('id') id: string): Promise<ProfileResponseDto> {
         const profile = await this.profileService.findOneById(id);
-        return ProfileResponseDto.fromProfile(profile);
+        return ProfileResponseDto.fromProfile(
+            profile,
+            this.agendaModel,
+            this.positionModel,
+            this.realisationModel,
+            this.rendezVousModel,
+        );
     }
     @Get('')
     @ApiOperation({
@@ -93,8 +140,14 @@ export class ProfileController {
     ): Promise<PaginationResponseDto<ProfileResponseDto>> {
         const { data, total } = await this.profileService.findAll(pagination);
 
-        return PaginationResponseDto.responseDto(pagination, data, total).map((l) =>
-            ProfileResponseDto.fromProfile(l),
+        return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((profile) =>
+            ProfileResponseDto.fromProfile(
+                profile,
+                this.agendaModel,
+                this.positionModel,
+                this.realisationModel,
+                this.rendezVousModel,
+            ),
         );
     }
 
@@ -105,8 +158,8 @@ export class ProfileController {
     @Public()
     @ApiOkResponse({ type: PaginationResponseDto<ProfileResponseDto> })
     async findByProximity(
-        @Param('longitude') longitude: string,
-        @Param('latitude') latitude: string,
+        @Param('longitude') longitude: number,
+        @Param('latitude') latitude: number,
 
         @Query() pagination: PaginationPayloadDto,
     ): Promise<PaginationResponseDto<ProfileResponseDto>> {
@@ -117,8 +170,14 @@ export class ProfileController {
             pagination,
         );
 
-        return PaginationResponseDto.responseDto(pagination, data, total).map((l) =>
-            ProfileResponseDto.fromProfile(l),
+        return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((profile) =>
+            ProfileResponseDto.fromProfile(
+                profile,
+                this.agendaModel,
+                this.positionModel,
+                this.realisationModel,
+                this.rendezVousModel,
+            ),
         );
     }
 
@@ -137,7 +196,13 @@ export class ProfileController {
     ): Promise<ProfileResponseDto> {
         await this.dbUsersService.getUser(idUser);
         const profile = await this.profileService.update(id, dto);
-        return ProfileResponseDto.fromProfile(profile);
+        return ProfileResponseDto.fromProfile(
+            profile,
+            this.agendaModel,
+            this.positionModel,
+            this.realisationModel,
+            this.rendezVousModel,
+        );
     }
 
     /**

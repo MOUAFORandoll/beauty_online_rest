@@ -1,6 +1,6 @@
 // profilee.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ServiceType } from 'src/databases/users/entities';
 
 export class CreateProfileDto {
@@ -14,6 +14,24 @@ export class CreateProfileDto {
         message: 'Service must be one of the predefined values: COIFFURE, MANICURE',
     })
     service: string;
+
+    @ApiProperty()
+    @IsString()
+    description: string;
+
+    @ApiProperty({ type: Number, required: false })
+    @IsNumber()
+    @IsOptional()
+    longitude: number;
+
+    @ApiProperty({ type: Number, required: false })
+    @IsNumber()
+    @IsOptional()
+    latitude: number;
+
+    @ApiProperty()
+    @IsString()
+    titleEmplacement: string;
 }
 
 export class FindByServiceDto {
@@ -28,6 +46,8 @@ export class FindByServiceDto {
     @IsString()
     @IsOptional()
     namePro: string;
+
+    @ApiProperty()
+    @IsOptional()
+    description: string;
 }
-
-

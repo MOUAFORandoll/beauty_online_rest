@@ -10,7 +10,7 @@ export class ProfileResponseDto {
     id: string;
 
     @ApiProperty()
-    namePro: string;
+    name_pro: string;
 
     @ApiProperty()
     service: string;
@@ -55,13 +55,14 @@ export class ProfileResponseDto {
             .exec();
         const position = await positionModel
             .findOne({
-                profile_professionnel_id: profile._id,
+                profile_professionnel_id: profile.id,
             })
             .exec();
+        console.log(position);
 
         return {
             id: profile._id as string,
-            namePro: profile.namePro,
+            name_pro: profile.namePro,
             service: profile.service,
             position: PositionResponseDto.fromPosition(position),
             nombre_reservation: nombreReservation,

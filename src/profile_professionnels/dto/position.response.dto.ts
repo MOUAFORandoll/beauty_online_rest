@@ -15,11 +15,11 @@ export class PositionResponseDto {
     town: string;
 
     @ApiProperty()
-    title: string;
+    title_emplacement: string;
 
     static fromPosition(position: Position): PositionResponseDto {
         return {
-            title: position.title,
+            title_emplacement: position.titleEmplacement,
             longitude: position.longitude,
             latitude: position.latitude,
             town: position.town,

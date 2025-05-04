@@ -29,11 +29,13 @@ class PositionSchema extends BaseSchema {
     town: string;
     @ApiProperty()
     @Prop()
-    title: string;
+    titleEmplacement: string;
 
     @ApiProperty({ type: MongooseSchema.Types.ObjectId })
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: USER_MODEL_NAME })
     user_id: string;
+
+    @ApiProperty({ type: MongooseSchema.Types.ObjectId })
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: PROFILE_PRO_MODEL_NAME })
     profile_professionnel_id: string;
 }

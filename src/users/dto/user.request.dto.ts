@@ -45,14 +45,14 @@ export class UpdateUserDto {
 }
 
 export class UpdateUserPositionDto {
-    @ApiProperty({ type: String, required: false })
+    @ApiProperty({ type: Number, required: false })
     @IsString()
     @IsOptional()
-    longitude: string;
-    @ApiProperty({ type: String, required: false })
+    longitude: number;
+    @ApiProperty({ type: Number, required: false })
     @IsString()
     @IsOptional()
-    latitude: string;
+    latitude: number;
 
     @ApiProperty()
     country: string;
@@ -61,7 +61,7 @@ export class UpdateUserPositionDto {
     town: string;
 
     @ApiProperty()
-    title: string;
+    titleEmplacement: string;
 }
 
 export class FirebaseVerificationDto {
