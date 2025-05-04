@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ProfileProfessionnel } from '../../databases/users/entities';
-import { CreateProfileDto } from './profile.request.dto'; 
+import { PositionModel, ProfileProfessionnel } from '../../databases/users/entities';
+import { CreateProfileDto } from './profile.request.dto';
+import { AgendaModel, RealisationModel, RendezVousModel } from 'src/databases/services/entities';
+import { PositionResponseDto } from './position.response.dto';
 
 export class UpdateProfileDto extends CreateProfileDto {}
 export class ProfileResponseDto {
@@ -12,11 +14,59 @@ export class ProfileResponseDto {
 
     @ApiProperty()
     service: string;
-    static fromProfile(profile: ProfileProfessionnel): ProfileResponseDto {
+
+    @ApiProperty()
+    position: PositionResponseDto;
+    @ApiProperty()
+    nombre_reservation: number;
+    @ApiProperty()
+    nombre_catalogue: number;
+    @ApiProperty()
+    nombre_actes: number;
+
+    static async fromProfile(
+        profile: ProfileProfessionnel,
+
+        agendaModel: AgendaModel,
+        positionModel: PositionModel,
+        realisationModel: RealisationModel,
+        rendezVousModel: RendezVousModel,
+    ): Promise<ProfileResponseDto> {
+        // 1. Find Agendas linked to the professional profile
+        const agendas = await agendaModel
+            .find({ profile_professionnel_id: profile._id }, '_id') // Select only the IDs
+            .exec();
+
+        const agendaIds = agendas.map((a) => a._id);
+
+        // 2. Find RendezVous linked to these Agendas
+        const query = { agenda_id: { $in: agendaIds } };
+
+        const nombreReservation = await rendezVousModel.countDocuments(query).exec();
+        const nombreCatalogue = await realisationModel
+            .countDocuments({
+                profile_professionnel_id: profile._id,
+            })
+            .exec();
+        const nombreActes = await realisationModel
+            .countDocuments({
+                profile_professionnel_id: profile._id,
+            })
+            .exec();
+        const position = await positionModel
+            .findOne({
+                profile_professionnel_id: profile._id,
+            })
+            .exec();
+
         return {
             id: profile._id as string,
             namePro: profile.namePro,
             service: profile.service,
+            position: PositionResponseDto.fromPosition(position),
+            nombre_reservation: nombreReservation,
+            nombre_catalogue: nombreCatalogue,
+            nombre_actes: nombreActes,
         };
     }
 }

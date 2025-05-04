@@ -38,6 +38,7 @@ export class AuthClientGuard implements CanActivate {
         const ctx = context.switchToHttp();
 
         const request = ctx.getRequest();
+   
 
         const isPublic = checkIsPublic(this.reflector, context);
         if (isPublic) return true;

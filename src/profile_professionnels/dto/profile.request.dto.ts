@@ -29,3 +29,5 @@ export class FindByServiceDto {
     @IsOptional()
     namePro: string;
 }
+
+

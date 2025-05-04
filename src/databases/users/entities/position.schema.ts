@@ -27,6 +27,10 @@ class PositionSchema extends BaseSchema {
     @ApiProperty()
     @Prop()
     town: string;
+    @ApiProperty()
+    @Prop()
+    title: string;
+
     @ApiProperty({ type: MongooseSchema.Types.ObjectId })
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: USER_MODEL_NAME })
     user_id: string;
