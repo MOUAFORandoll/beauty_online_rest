@@ -1,5 +1,5 @@
 // profile.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateProfileDto, FindByServiceDto, UpdateProfileDto } from '../dto';
 import {
@@ -38,7 +38,7 @@ export class ProfileService {
         const profile = await this.profileModel.findById(id).exec();
 
         if (!profile) {
-            throw new NotFoundException(ProfileProErrors[PROFILE_PRO_NOT_FOUND]);
+            throw new HttpException(ProfileProErrors[PROFILE_PRO_NOT_FOUND], 203);
         }
         return profile;
     }
@@ -47,6 +47,8 @@ export class ProfileService {
         const profile = await this.profileModel.findOne({ user_id: userId }).exec();
 
         if (!profile) {
+            // throw new HttpException(ProfileProErrors[PROFILE_PRO_NOT_FOUND], 203);
+
             throw new NotFoundException(ProfileProErrors[PROFILE_PRO_NOT_FOUND]);
         }
         return profile;

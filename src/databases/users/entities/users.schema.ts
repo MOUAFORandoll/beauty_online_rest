@@ -16,7 +16,7 @@ export const USER_MODEL_NAME = 'users';
 @Schema({ collection: USER_MODEL_NAME })
 class UserSchema extends BaseSchema {
     @ApiProperty()
-    // @Prop({ required: true })
+    @Prop()
     userName: string;
 
     @ApiProperty()

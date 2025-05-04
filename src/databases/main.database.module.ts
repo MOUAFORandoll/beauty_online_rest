@@ -17,8 +17,7 @@ import {
     RendezVoussSchema,
 } from './main.database.connection';
 import { UsersService } from './users/providers';
-console.log('PROFILE_PRO_MODEL_NAMEdddd:', PROFILE_PRO_MODEL_NAME);
-
+ 
 @Module({
     imports: [
         ConfigModule.forRoot({

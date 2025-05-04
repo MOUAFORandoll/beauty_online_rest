@@ -21,20 +21,22 @@ export class AuthClientGuard implements CanActivate {
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const environment = this.configService.get<string>('ENVIRONMENT');
+        // const environment = this.configService.get<string>('ENVIRONMENT');
 
-        switch (environment) {
-            case 'development':
-                return this.developmentCanActivate(context);
-            case 'production':
-            case 'staging':
-            default:
-                return this.productionCanActivate(context);
-        }
+        return this.developmentCanActivate(context);
+        // switch (environment) {
+        //     case 'development':
+        //         return this.developmentCanActivate(context);
+        //     case 'production':
+        //     case 'staging':
+        //     default:
+        //         return this.productionCanActivate(context);
+        // }
     }
 
     async productionCanActivate(context: ExecutionContext): Promise<boolean> {
         const ctx = context.switchToHttp();
+
         const request = ctx.getRequest();
 
         const isPublic = checkIsPublic(this.reflector, context);
@@ -46,7 +48,7 @@ export class AuthClientGuard implements CanActivate {
             return false;
         }
         const [bearer, token] = authHeader.split(' ');
-
+        console.log(bearer, token);
         if (bearer !== 'Bearer' || !token) {
             return false;
         }

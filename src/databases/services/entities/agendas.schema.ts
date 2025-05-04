@@ -6,9 +6,7 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 
 import { applySortedMongooseAdditionalFunctions } from '../../base.functions';
 import { PROFILE_PRO_MODEL_NAME } from 'src/databases/users/entities';
-
-console.log('PROFILE_PRO_MODEL_NAME:', PROFILE_PRO_MODEL_NAME);
-
+ 
 // AGENDA
 export const AGENDA_MODEL_NAME = 'agendas';
 @Schema({ collection: AGENDA_MODEL_NAME })

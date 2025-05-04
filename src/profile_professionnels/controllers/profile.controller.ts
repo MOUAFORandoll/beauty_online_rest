@@ -47,6 +47,7 @@ export class ProfileController {
     @ApiOperation({
         summary: 'Find user profile',
     })
+    @ApiOkResponse({ type: ProfileResponseDto })
     async findUserProfile(@GetUser('id') idUser: string): Promise<ProfileResponseDto> {
         const profile = await this.profileService.findUserProfile(idUser);
 
@@ -58,6 +59,7 @@ export class ProfileController {
         summary: 'filter profile ',
     })
     @Public()
+    @ApiOkResponse({ type: PaginationResponseDto<ProfileResponseDto> })
     async findProfileByService(
         @Query() filterService: FindByServiceDto,
         @Query() pagination: PaginationPayloadDto,
@@ -75,6 +77,7 @@ export class ProfileController {
     @ApiOperation({
         summary: 'Find profile by id',
     })
+    @ApiOkResponse({ type: ProfileResponseDto })
     async findOneById(@Param('id') id: string): Promise<ProfileResponseDto> {
         const profile = await this.profileService.findOneById(id);
         return ProfileResponseDto.fromProfile(profile);
@@ -84,6 +87,7 @@ export class ProfileController {
         summary: 'Find All profile',
     })
     @Public()
+    @ApiOkResponse({ type: PaginationResponseDto<ProfileResponseDto> })
     async findAll(
         @Query() pagination: PaginationPayloadDto,
     ): Promise<PaginationResponseDto<ProfileResponseDto>> {
@@ -99,6 +103,7 @@ export class ProfileController {
         summary: 'Find All profile',
     })
     @Public()
+    @ApiOkResponse({ type: PaginationResponseDto<ProfileResponseDto> })
     async findByProximity(
         @Param('longitude') longitude: string,
         @Param('latitude') latitude: string,
@@ -124,6 +129,7 @@ export class ProfileController {
     @ApiOperation({
         summary: 'update user profile',
     })
+    @ApiOkResponse({ type: ProfileResponseDto })
     async update(
         @Param('id') id: string,
         @GetUser('id') idUser: string,

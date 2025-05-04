@@ -34,7 +34,14 @@ export class AuthFirebaseService {
     async verifyToken(token: string): Promise<FirebaseVerificationDto> {
         try {
             const decodedToken = await getAuth(this.app).verifyIdToken(token);
-            return {
+         console.log({
+             uid: decodedToken.uid,
+             email: decodedToken.email,
+             email_verified: decodedToken.email_verified,
+             userFireBase: await getAuth(FirebaseApp).getUser(decodedToken.uid),
+             authProvider: decodedToken.firebase.sign_in_provider,
+         });
+          return {
                 uid: decodedToken.uid,
                 email: decodedToken.email,
                 email_verified: decodedToken.email_verified,
