@@ -3,10 +3,10 @@ import { Position } from '../../databases/users/entities';
 
 export class PositionResponseDto {
     @ApiProperty()
-    longitude: number;
+    longitude: string;
 
     @ApiProperty()
-    latitude: number;
+    latitude: string;
 
     @ApiProperty()
     country: string;

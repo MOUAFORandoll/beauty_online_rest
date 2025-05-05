@@ -14,11 +14,11 @@ export const POSITION_MODEL_NAME = 'positions';
 class PositionSchema extends BaseSchema {
     @ApiProperty()
     @Prop()
-    longitude: number;
+    longitude: string;
 
     @ApiProperty()
     @Prop()
-    latitude: number;
+    latitude: string;
 
     @ApiProperty()
     @Prop()

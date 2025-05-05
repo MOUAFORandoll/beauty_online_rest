@@ -96,8 +96,8 @@ export class ProfileService {
     }
 
     async findByProximity(
-        longitude: number,
-        latitude: number,
+        longitude: string,
+        latitude: string,
         pagination: PaginationPayloadDto,
     ): Promise<{ data: ProfileProfessionnel[]; total: number }> {
         const [data, total] = await Promise.all([

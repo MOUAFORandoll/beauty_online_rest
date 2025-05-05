@@ -168,8 +168,8 @@ export class ProfileController {
     @Public()
     @ApiOkResponse({ type: PaginationResponseDto<ProfileResponseDto> })
     async findByProximity(
-        @Param('longitude') longitude: number,
-        @Param('latitude') latitude: number,
+        @Param('longitude') longitude: string,
+        @Param('latitude') latitude: string,
 
         @Query() pagination: PaginationPayloadDto,
     ): Promise<PaginationResponseDto<ProfileResponseDto>> {

@@ -45,14 +45,14 @@ export class UpdateUserDto {
 }
 
 export class UpdateUserPositionDto {
-    @ApiProperty({ type: Number, required: false })
+    @ApiProperty({ type: String, required: false })
     @IsString()
     @IsOptional()
-    longitude: number;
-    @ApiProperty({ type: Number, required: false })
+    longitude: string;
+    @ApiProperty({ type: String, required: false })
     @IsString()
     @IsOptional()
-    latitude: number;
+    latitude: string;
 
     @ApiProperty()
     country: string;

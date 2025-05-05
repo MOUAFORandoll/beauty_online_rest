@@ -1,6 +1,6 @@
 // profilee.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ServiceType } from 'src/databases/users/entities';
 
 export class CreateProfileDto {
@@ -19,15 +19,15 @@ export class CreateProfileDto {
     @IsString()
     description: string;
 
-    @ApiProperty({ type: Number, required: false })
-    @IsNumber()
+    @ApiProperty({ type: String, required: false })
+    @IsString()
     @IsOptional()
-    longitude: number;
+    longitude: string;
 
-    @ApiProperty({ type: Number, required: false })
-    @IsNumber()
+    @ApiProperty({ type: String, required: false })
+    @IsString()
     @IsOptional()
-    latitude: number;
+    latitude: string;
 
     @ApiProperty()
     @IsString()
