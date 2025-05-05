@@ -11,8 +11,10 @@ import {
     HttpCode,
     HttpStatus,
     Patch,
+    UseInterceptors,
+    UploadedFile,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateProfileDto, UpdateProfileDto, ProfileResponseDto, FindByServiceDto } from '../dto';
 import { ProfileService } from '../providers';
 import { GetUser } from 'src/users/decorators';
@@ -30,6 +32,7 @@ import {
     RENDEZ_VOUS_MODEL_NAME,
     RendezVousModel,
 } from 'src/databases/main.database.connection';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('ProfileProfessionnels')
 @Controller('profile-professionnels')
@@ -56,14 +59,21 @@ export class ProfileController {
     @ApiOperation({
         summary: 'create user profile',
     })
+    @ApiConsumes('multipart/form-data')
+    @UseInterceptors(FileInterceptor('cover'))
     @ApiOkResponse({ type: ProfileResponseDto })
     async create(
         @GetUser('id') id: string,
 
         @Body() dto: CreateProfileDto,
+        @UploadedFile() cover?: Express.Multer.File,
     ): Promise<ProfileResponseDto> {
+        console.log('==00=======');
+        dto.cover = cover;
+        console.log('===--======');
         await this.dbUsersService.getUser(id);
         const profile = await this.profileService.create(dto, id);
+
         return ProfileResponseDto.fromProfile(
             profile,
             this.agendaModel,

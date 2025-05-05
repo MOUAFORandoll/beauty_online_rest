@@ -32,6 +32,14 @@ export class CreateProfileDto {
     @ApiProperty()
     @IsString()
     titleEmplacement: string;
+    @ApiProperty({
+        type: String,
+        format: 'binary',
+        required: false,
+        description: 'Couverture Pro',
+    })
+    @IsOptional()
+    cover?: Express.Multer.File;
 }
 
 export class FindByServiceDto {

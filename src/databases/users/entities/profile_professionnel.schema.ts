@@ -29,6 +29,13 @@ class ProfileProfessionnelSchema extends BaseSchema {
 
     @Prop({ type: String, enum: ServiceType })
     service: string;
+
+    @ApiProperty({
+        type: String,
+        description: 'image URL',
+    })
+    @Prop()
+    cover?: string;
 }
 export type ProfileProfessionnel = ProfileProfessionnelSchema & Document;
 export type ProfileProfessionnelModel = Model<ProfileProfessionnelSchema>;

@@ -14,6 +14,8 @@ export class ProfileResponseDto {
 
     @ApiProperty()
     service: string;
+    @ApiProperty()
+    cover: string;
 
     @ApiProperty()
     position: PositionResponseDto;
@@ -64,6 +66,7 @@ export class ProfileResponseDto {
             id: profile._id as string,
             name_pro: profile.namePro,
             service: profile.service,
+            cover: profile.cover,
             position: PositionResponseDto.fromPosition(position),
             nombre_reservation: nombreReservation,
             nombre_catalogue: nombreCatalogue,

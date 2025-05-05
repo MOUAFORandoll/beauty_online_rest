@@ -14,6 +14,7 @@ import { DATABASE_CONNECTION } from 'src/databases/main.database.connection';
 import { PaginationPayloadDto } from 'src/common/apiutils';
 import { QueryOptions } from 'mongoose';
 import { UpdateUserPositionDto } from 'src/users/dto';
+import { StorageService } from 'src/common/modules/aws/providers';
 
 @Injectable()
 export class ProfileService {
@@ -23,13 +24,27 @@ export class ProfileService {
 
         @InjectModel(PROFILE_PRO_MODEL_NAME, DATABASE_CONNECTION)
         private readonly profileModel: ProfileProfessionnelModel,
+        private readonly storageService: StorageService,
     ) {}
 
     async create(dto: CreateProfileDto, user_id: string): Promise<ProfileProfessionnel> {
         try {
-            const profile = new this.profileModel({ ...dto, user_id });
+            console.log('=========');
+            const profile = new this.profileModel({
+                namePro: dto.namePro,
+                description: dto.description,
+                service: dto.service,
+
+                user_id: user_id,
+            });
+            console.log('===ddd======');
+            if (dto.cover) {
+                profile.cover = await this.storageService.uploadCoverImage(
+                    dto.cover,
+                    profile._id.toString(),
+                );
+            }
             await profile.save();
-            console.log(dto);
             await this.updateProfilePosition(profile.id, {
                 longitude: dto.longitude,
                 latitude: dto.latitude,
