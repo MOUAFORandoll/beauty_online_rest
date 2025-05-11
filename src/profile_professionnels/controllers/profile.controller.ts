@@ -64,7 +64,6 @@ export class ProfileController {
     @ApiOkResponse({ type: ProfileResponseDto })
     async create(
         @GetUser('id') id: string,
-
         @Body() dto: CreateProfileDto,
         @UploadedFile() cover?: Express.Multer.File,
     ): Promise<ProfileResponseDto> {

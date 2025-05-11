@@ -8,16 +8,18 @@ import {
     POSITION_MODEL_NAME,
     PositionsSchema,
     PROFILE_PRO_MODEL_NAME,
-    ProfileProfessionnelsSchema, 
+    ProfileProfessionnelsSchema,
     REALISATION_MODEL_NAME,
     RealisationsSchema,
     AGENDA_MODEL_NAME,
     AgendasSchema,
     RENDEZ_VOUS_MODEL_NAME,
     RendezVoussSchema,
+    RealisationFilesSchema,
+    REALISATION_FILE_MODEL_NAME,
 } from './main.database.connection';
 import { UsersService } from './users/providers';
- 
+
 @Module({
     imports: [
         ConfigModule.forRoot({
@@ -37,7 +39,8 @@ import { UsersService } from './users/providers';
                 { name: USER_MODEL_NAME, schema: UsersSchema },
                 { name: POSITION_MODEL_NAME, schema: PositionsSchema },
                 { name: PROFILE_PRO_MODEL_NAME, schema: ProfileProfessionnelsSchema },
-                 { name: REALISATION_MODEL_NAME, schema: RealisationsSchema },
+                { name: REALISATION_MODEL_NAME, schema: RealisationsSchema },
+                { name: REALISATION_FILE_MODEL_NAME, schema: RealisationFilesSchema },
                 { name: AGENDA_MODEL_NAME, schema: AgendasSchema },
                 { name: RENDEZ_VOUS_MODEL_NAME, schema: RendezVoussSchema },
             ],

@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class StorageService {
     private static professionalCoverPath = 'professional/cover';
+    private static professionalRealisationPath = 'professional/realisation';
 
     private readonly bucket: string;
     private readonly cloudfrontUrl: string;
@@ -74,10 +75,19 @@ export class StorageService {
         await this.s3Client.send(command);
     }
 
+    ;
     public async uploadCoverImage(image: Express.Multer.File, key: string): Promise<string> {
         try {
             await this.upload(StorageService.professionalCoverPath, key, image);
             return this.getUrl(StorageService.professionalCoverPath, key, 600, 600);
+        } catch (error) {
+            console.log('=========', error);
+        }
+    }
+    public async uploadRealisationImage(image: Express.Multer.File, key: string): Promise<string> {
+        try {
+            await this.upload(StorageService.professionalRealisationPath, key, image);
+            return this.getUrl(StorageService.professionalRealisationPath, key, 600, 600);
         } catch (error) {
             console.log('=========', error);
         }

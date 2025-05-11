@@ -7,6 +7,8 @@ import {
     Realisation,
     REALISATION_MODEL_NAME,
     RealisationModel,
+    RealisationFileModel,
+    REALISATION_FILE_MODEL_NAME,
 } from 'src/databases/main.database.connection';
 import { PaginationPayloadDto } from 'src/common/apiutils';
 import { QueryOptions } from 'mongoose';
@@ -23,6 +25,7 @@ import {
     RealisationErrors,
 } from '../errors';
 import { ProfileService } from './profile.service';
+import { StorageService } from 'src/common/modules/aws/providers';
 
 @Injectable()
 export class RealisationService {
@@ -30,7 +33,11 @@ export class RealisationService {
         @InjectModel(REALISATION_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationModel: RealisationModel,
 
+        @InjectModel(REALISATION_FILE_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly realisationFileModel: RealisationFileModel,
+
         private readonly profileService: ProfileService,
+        private readonly storageService: StorageService,
     ) {}
 
     async create(dto: CreateRealisationDto, user_id: string): Promise<Realisation> {
@@ -41,7 +48,20 @@ export class RealisationService {
                 throw new NotFoundException(ProfileProErrors[PROFILE_PRO_NOT_FOUND]);
             }
             const realisation = new this.realisationModel({ ...dto }, profilePro._id);
-            return await realisation.save();
+            await realisation.save();
+            for (const image of dto.images) {
+                const realisationFile = new this.realisationFileModel({
+                    image,
+                    realisation_id: realisation._id,
+                });
+                realisationFile.file_path = await this.storageService.uploadRealisationImage(
+                    image,
+                    realisationFile._id.toString(),
+                );
+                await realisationFile.save();
+            }
+
+            return realisation;
         } catch (error) {
             throw new Error(`Failed to create realisation: ${error.message}`);
         }

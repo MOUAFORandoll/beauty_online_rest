@@ -3,7 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 // realisation.dto.ts
- 
 
 export class CreateRealisationDto {
     @ApiProperty({ description: 'Titre de la réalisation' })
@@ -11,10 +10,13 @@ export class CreateRealisationDto {
     @IsNotEmpty()
     title: string;
 
-    @ApiProperty({ description: "Chemin de l'image de la réalisation" })
-    @IsString()
-    @IsNotEmpty()
-    image_path: string;
+    @ApiProperty({
+        type: [String],
+        required: false,
+        description: 'Liste des images',
+    })
+    @IsOptional()
+    images?: Express.Multer.File[];
 }
 
 export class UpdateRealisationDto {

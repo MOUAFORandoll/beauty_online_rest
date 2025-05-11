@@ -1,6 +1,17 @@
 // profile.controller.ts
-import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+    Controller,
+    Get,
+    Post,
+    Put,
+    Delete,
+    Param,
+    Body,
+    Query,
+    UploadedFile,
+    UseInterceptors,
+} from '@nestjs/common';
+import { ApiConsumes, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RealisationResponseDto } from '../dto';
 import { RealisationService } from '../providers';
 import { GetUser } from 'src/users/decorators';
@@ -11,6 +22,7 @@ import {
     FindRealisationDto,
     UpdateRealisationDto,
 } from '../dto/realisation.request.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Realisations')
 @Controller('realisations')
@@ -25,13 +37,19 @@ export class RealisationController {
     @ApiOperation({
         summary: 'create realisation profile',
     })
+    @ApiConsumes('multipart/form-data')
+    @UseInterceptors(FilesInterceptor('images'))
     @ApiOkResponse({ type: RealisationResponseDto })
     async create(
         @GetUser('id') id: string,
-
         @Body() dto: CreateRealisationDto,
+        @UploadedFile() images?: Express.Multer.File[],
     ): Promise<RealisationResponseDto> {
-       
+        console.log('==00=======', images);
+
+        dto.images = images;
+        console.log('==00=======', dto.images);
+
         await this.dbUsersService.getUser(id);
         const profile = await this.realisationService.create(dto, id);
         return RealisationResponseDto.fromRealisation(profile);
