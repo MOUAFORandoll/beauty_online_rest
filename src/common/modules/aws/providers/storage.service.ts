@@ -53,10 +53,11 @@ export class StorageService {
     }
 
     private async upload(path: string, key: string, media: Express.Multer.File): Promise<void> {
+        const base64Media = media.buffer.toString('base64');
         const command = new PutObjectCommand({
             Bucket: this.bucket,
             Key: Path.join(path, key),
-            Body: media.buffer,
+            Body: base64Media,
             ContentType: media.mimetype,
         });
 

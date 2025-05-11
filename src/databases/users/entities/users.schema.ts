@@ -31,6 +31,10 @@ class UserSchema extends BaseSchema {
     @Prop()
     countryCode: string;
 
+    @ApiProperty()
+    @Prop()
+    codePhone: string;
+
     @Prop({ type: String, enum: UserType })
     typeUser: string;
 

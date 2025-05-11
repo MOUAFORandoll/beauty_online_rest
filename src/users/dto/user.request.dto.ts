@@ -42,6 +42,10 @@ export class UpdateUserDto {
     @IsString()
     @IsOptional()
     countryCode: string;
+    @ApiProperty({ type: String, required: false })
+    @IsString()
+    @IsOptional()
+    codePhone: string;
 }
 
 export class UpdateUserPositionDto {

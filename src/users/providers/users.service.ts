@@ -20,14 +20,23 @@ export class UsersService {
     ) {}
     async updateUserData(id: string, data: UpdateUserDto): Promise<User> {
         const user = await this.usersService.getUser(id);
+      
+        console.log(data);
         if (data.userName) user.userName = data.userName;
         if (data.phone) user.phone = data.phone;
         if (data.countryCode) user.countryCode = data.countryCode;
+        if (data.codePhone) user.codePhone = data.codePhone;
         return user.save();
     }
-    async updateUserPhone(id: string, countryCode: string, phone: string): Promise<User> {
+    async updateUserPhone(
+        id: string,
+        countryCode: string,
+        codePhone: string,
+        phone: string,
+    ): Promise<User> {
         const user = await this.usersService.getUser(id);
         user.countryCode = countryCode;
+        user.codePhone = codePhone;
         user.phone = phone;
         return user.save();
     }
