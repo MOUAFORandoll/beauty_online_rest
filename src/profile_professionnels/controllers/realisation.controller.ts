@@ -8,8 +8,8 @@ import {
     Param,
     Body,
     Query,
-    UploadedFile,
     UseInterceptors,
+    UploadedFiles,
 } from '@nestjs/common';
 import { ApiConsumes, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RealisationResponseDto } from '../dto';
@@ -23,11 +23,16 @@ import {
     UpdateRealisationDto,
 } from '../dto/realisation.request.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { REALISATION_FILE_MODEL_NAME, RealisationFileModel } from 'src/databases/services/entities';
+import { DATABASE_CONNECTION } from 'src/databases/main.database.connection';
+import { InjectModel } from '@nestjs/mongoose';
 
 @ApiTags('Realisations')
 @Controller('realisations')
 export class RealisationController {
     constructor(
+        @InjectModel(REALISATION_FILE_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly realisationFileModel: RealisationFileModel,
         private readonly realisationService: RealisationService,
 
         private readonly dbUsersService: Database.UsersService,
@@ -38,21 +43,18 @@ export class RealisationController {
         summary: 'create realisation profile',
     })
     @ApiConsumes('multipart/form-data')
-    @UseInterceptors(FilesInterceptor('images'))
+    @UseInterceptors(FilesInterceptor('images[]'))
     @ApiOkResponse({ type: RealisationResponseDto })
     async create(
         @GetUser('id') id: string,
         @Body() dto: CreateRealisationDto,
-        @UploadedFile() images?: Express.Multer.File[],
+        @UploadedFiles() images: Array<Express.Multer.File>,
     ): Promise<RealisationResponseDto> {
-        console.log('==00=======', images);
-
         dto.images = images;
-        console.log('==00=======', dto.images);
 
         await this.dbUsersService.getUser(id);
         const profile = await this.realisationService.create(dto, id);
-        return RealisationResponseDto.fromRealisation(profile);
+        return RealisationResponseDto.fromRealisation(profile, this.realisationFileModel);
     }
     @Get('/me')
     @ApiOperation({
@@ -67,8 +69,8 @@ export class RealisationController {
             idUser,
             pagination,
         );
-        return PaginationResponseDto.responseDto(pagination, data, total).map((l) =>
-            RealisationResponseDto.fromRealisation(l),
+        return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) =>
+            RealisationResponseDto.fromRealisation(l, this.realisationFileModel),
         );
     }
     @Get(':idProfessionnel')
@@ -84,8 +86,8 @@ export class RealisationController {
             pagination,
         );
 
-        return PaginationResponseDto.responseDto(pagination, data, total).map((l) =>
-            RealisationResponseDto.fromRealisation(l),
+        return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) =>
+            RealisationResponseDto.fromRealisation(l, this.realisationFileModel),
         );
     }
 
@@ -103,8 +105,8 @@ export class RealisationController {
             pagination,
         );
 
-        return PaginationResponseDto.responseDto(pagination, data, total).map((l) =>
-            RealisationResponseDto.fromRealisation(l),
+        return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) =>
+            RealisationResponseDto.fromRealisation(l, this.realisationFileModel),
         );
     }
 
@@ -118,8 +120,8 @@ export class RealisationController {
     ): Promise<PaginationResponseDto<RealisationResponseDto>> {
         const { data, total } = await this.realisationService.findAll(pagination);
 
-        return PaginationResponseDto.responseDto(pagination, data, total).map((l) =>
-            RealisationResponseDto.fromRealisation(l),
+        return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) =>
+            RealisationResponseDto.fromRealisation(l, this.realisationFileModel),
         );
     }
 
@@ -134,7 +136,7 @@ export class RealisationController {
     ): Promise<RealisationResponseDto> {
         await this.dbUsersService.getUser(idUser);
         const profile = await this.realisationService.update(id, dto);
-        return RealisationResponseDto.fromRealisation(profile);
+        return RealisationResponseDto.fromRealisation(profile, this.realisationFileModel);
     }
 
     @Delete(':id')

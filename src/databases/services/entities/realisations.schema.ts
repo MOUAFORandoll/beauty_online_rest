@@ -12,6 +12,9 @@ class RealisationSchema extends BaseSchema {
     @Prop()
     title: string;
 
+    @Prop()
+    price: string;
+
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: PROFILE_PRO_MODEL_NAME })
     profile_professionnel_id: string;
 }

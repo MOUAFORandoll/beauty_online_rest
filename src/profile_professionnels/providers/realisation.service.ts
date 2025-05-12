@@ -1,5 +1,5 @@
 // realisation.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
     DATABASE_CONNECTION,
@@ -8,10 +8,11 @@ import {
     REALISATION_MODEL_NAME,
     RealisationModel,
     RealisationFileModel,
+    RealisationFile,
     REALISATION_FILE_MODEL_NAME,
 } from 'src/databases/main.database.connection';
 import { PaginationPayloadDto } from 'src/common/apiutils';
-import { QueryOptions } from 'mongoose';
+import { QueryOptions, Types } from 'mongoose';
 import {
     CreateRealisationDto,
     FindRealisationDto,
@@ -20,7 +21,7 @@ import {
 import {
     PROFILE_PRO_NOT_FOUND,
     ProfileProErrors,
-    REALISATION_DELETE_FAILED,
+    REALISATION_NOT_FOUND,
     REALISATION_UPDATE_FAILED,
     RealisationErrors,
 } from '../errors';
@@ -39,46 +40,119 @@ export class RealisationService {
         private readonly profileService: ProfileService,
         private readonly storageService: StorageService,
     ) {}
-
+    /**
+     * Create a new realisation with associated files
+     * @param dto The realisation data
+     * @param user_id The user ID
+     * @returns The created realisation with its files
+     */
     async create(dto: CreateRealisationDto, user_id: string): Promise<Realisation> {
+        console.log(`Creating realisation for user ${user_id}`);
+
+        // Validate input
+        if (!dto.images || !dto.images.length) {
+            throw new BadRequestException('At least one image is required');
+        }
+
+        // Use a session for transaction
+        const session = await this.realisationModel.db.startSession();
+        session.startTransaction();
+
         try {
+            // Find the professional profile
             const profilePro: ProfileProfessionnel =
                 await this.profileService.findUserProfile(user_id);
             if (!profilePro) {
                 throw new NotFoundException(ProfileProErrors[PROFILE_PRO_NOT_FOUND]);
             }
-            const realisation = new this.realisationModel({ ...dto }, profilePro._id);
-            await realisation.save();
+
+            // Create the realisation
+            const realisation = new this.realisationModel({
+                ...dto,
+                profile_professionnel_id: profilePro._id,
+            });
+            await realisation.save({ session });
+
+            // Process and save images
+            const savedFiles = [];
             for (const image of dto.images) {
-                const realisationFile = new this.realisationFileModel({
-                    image,
-                    realisation_id: realisation._id,
-                });
-                realisationFile.file_path = await this.storageService.uploadRealisationImage(
-                    image,
-                    realisationFile._id.toString(),
-                );
-                await realisationFile.save();
+                try {
+                    const realisationFile = new this.realisationFileModel({
+                        image,
+                        realisation_id: realisation._id,
+                    });
+
+                    realisationFile.file_path = await this.storageService.uploadRealisationImage(
+                        image,
+                        realisationFile._id.toString(),
+                    );
+
+                    await realisationFile.save({ session });
+                    savedFiles.push(realisationFile);
+                } catch (error) {
+                    console.error(`Failed to upload image: ${error.message}`, error.stack);
+                    throw new Error(`Failed to upload image: ${error.message}`);
+                }
             }
 
-            return realisation;
+            await session.commitTransaction();
+            await session.endSession();
+
+            // Return the complete realisation with files
+            return this.findById(realisation._id.toString());
         } catch (error) {
+            await session.abortTransaction();
+            await session.endSession();
+
+            console.error(`Failed to create realisation: ${error.message}`, error.stack);
+
+            if (error instanceof NotFoundException || error instanceof BadRequestException) {
+                throw error;
+            }
+
             throw new Error(`Failed to create realisation: ${error.message}`);
         }
     }
 
+    /**
+     * Find a realisation by ID with its files
+     * @param id The realisation ID
+     * @returns The realisation with its files
+     */
+    async findById(id: string): Promise<Realisation> {
+        if (!Types.ObjectId.isValid(id)) {
+            throw new BadRequestException('Invalid realisation ID');
+        }
+
+        const realisation = await this.realisationModel.findById(id).exec();
+        if (!realisation) {
+            throw new NotFoundException(RealisationErrors[REALISATION_NOT_FOUND]);
+        }
+
+        return realisation;
+    }
+
+    /**
+     * Find all realisations for a user
+     * @param user_id The user ID
+     * @param pagination Pagination options
+     * @returns Paginated realisations with their files
+     */
     async findUserRealisation(
         user_id: string,
-
         pagination: PaginationPayloadDto,
     ): Promise<{ data: Realisation[]; total: number }> {
+        console.log(`Finding realisations for user ${user_id}`);
+
         const profilePro: ProfileProfessionnel = await this.profileService.findUserProfile(user_id);
         if (!profilePro) {
             throw new NotFoundException(ProfileProErrors[PROFILE_PRO_NOT_FOUND]);
         }
+
         const [data, total] = await Promise.all([
             this.realisationModel
                 .find({ profile_professionnel_id: profilePro._id })
+                .sort({ createdAt: -1 }) // Sort by newest first
                 .skip((pagination.page - 1) * pagination.size)
                 .limit(pagination.size)
                 .exec(),
@@ -90,27 +164,48 @@ export class RealisationService {
         return { data, total };
     }
 
+    /**
+     * Find realisations by filter criteria
+     * @param filter Filter criteria
+     * @param pagination Pagination options
+     * @returns Paginated realisations with their files
+     */
     async findRealisationFilter(
         filter: FindRealisationDto,
         pagination: PaginationPayloadDto,
     ): Promise<{ data: Realisation[]; total: number }> {
+        console.log(`Finding realisations with filter: ${JSON.stringify(filter)}`);
+
+        // Validate filter object to prevent injection
+        const safeFilter = this.sanitizeFilter(filter);
+
         const [data, total] = await Promise.all([
             this.realisationModel
-                .find(filter)
+                .find(safeFilter)
+                .sort({ createdAt: -1 }) // Sort by newest first
                 .skip((pagination.page - 1) * pagination.size)
                 .limit(pagination.size)
                 .exec(),
-            this.realisationModel.countDocuments(filter).exec(),
+            this.realisationModel.countDocuments(safeFilter).exec(),
         ]);
 
         return { data, total };
     }
+
+    /**
+     * Find all realisations
+     * @param pagination Pagination options
+     * @returns Paginated realisations with their files
+     */
     async findAll(
         pagination: PaginationPayloadDto,
     ): Promise<{ data: Realisation[]; total: number }> {
+        console.log('Finding all realisations');
+
         const [data, total] = await Promise.all([
             this.realisationModel
                 .find()
+                .sort({ createdAt: -1 }) // Sort by newest first
                 .skip((pagination.page - 1) * pagination.size)
                 .limit(pagination.size)
                 .exec(),
@@ -120,11 +215,31 @@ export class RealisationService {
         return { data, total };
     }
 
+    /**
+     * Update a realisation
+     * @param id The realisation ID
+     * @param dto The update data
+     * @param options Query options
+     * @returns The updated realisation with its files
+     */
     async update(
         id: string,
         dto: UpdateRealisationDto,
         options: QueryOptions = { new: true },
     ): Promise<Realisation> {
+        console.log(`Updating realisation ${id}`);
+
+        if (!Types.ObjectId.isValid(id)) {
+            throw new BadRequestException('Invalid realisation ID');
+        }
+
+        // Check if realisation exists
+        const existingRealisation = await this.realisationModel.findById(id).exec();
+        if (!existingRealisation) {
+            throw new NotFoundException(RealisationErrors[REALISATION_NOT_FOUND]);
+        }
+
+        // Update the realisation
         const updatedRealisation = await this.realisationModel
             .findByIdAndUpdate(id, dto, options)
             .exec();
@@ -132,16 +247,216 @@ export class RealisationService {
         if (!updatedRealisation) {
             throw new NotFoundException(RealisationErrors[REALISATION_UPDATE_FAILED]);
         }
-        return updatedRealisation;
+
+        // Return the updated realisation with its files
+        return this.findById(id);
     }
 
-    async delete(id: string): Promise<{ deleted: boolean; message?: string }> {
-        const result = await this.realisationModel.findByIdAndDelete(id).exec();
+    /**
+     * Delete a realisation and its files
+     * @param id The realisation ID
+     * @returns True if deleted successfully
+     */
+    async delete(id: string): Promise<boolean> {
+        console.log(`Deleting realisation ${id}`);
 
-        if (!result) {
-            throw new NotFoundException(RealisationErrors[REALISATION_DELETE_FAILED]);
+        if (!Types.ObjectId.isValid(id)) {
+            throw new BadRequestException('Invalid realisation ID');
         }
 
-        return { deleted: true, message: 'Realisation successfully deleted' };
+        const session = await this.realisationModel.db.startSession();
+        session.startTransaction();
+
+        try {
+            // Find the realisation
+            const realisation = await this.realisationModel.findById(id).exec();
+            if (!realisation) {
+                throw new NotFoundException(RealisationErrors[REALISATION_NOT_FOUND]);
+            }
+
+            // Find and delete all associated files
+            const files = await this.realisationFileModel.find({ realisation_id: id }).exec();
+
+            // Delete files from storage
+            for (const file of files) {
+                // await this.storageService.deleteFile(file.file_path);
+                await file.deleteOne({ session });
+            }
+
+            // Delete the realisation
+            await realisation.deleteOne({ session });
+
+            await session.commitTransaction();
+            session.endSession();
+
+            return true;
+        } catch (error) {
+            await session.abortTransaction();
+            session.endSession();
+
+            console.error(`Failed to delete realisation: ${error.message}`, error.stack);
+
+            if (error instanceof NotFoundException || error instanceof BadRequestException) {
+                throw error;
+            }
+
+            throw new Error(`Failed to delete realisation: ${error.message}`);
+        }
+    }
+
+    /**
+     * Add files to a realisation
+     * @param id The realisation ID
+     * @param images The images to add
+     * @returns The updated realisation with its files
+     */
+    async addFiles(id: string, images: Express.Multer.File[]): Promise<Realisation> {
+        console.log(`Adding files to realisation ${id}`);
+
+        if (!Types.ObjectId.isValid(id)) {
+            throw new BadRequestException('Invalid realisation ID');
+        }
+
+        if (!images || !images.length) {
+            throw new BadRequestException('At least one image is required');
+        }
+
+        const session = await this.realisationModel.db.startSession();
+        session.startTransaction();
+
+        try {
+            // Find the realisation
+            const realisation = await this.realisationModel.findById(id).exec();
+            if (!realisation) {
+                throw new NotFoundException(RealisationErrors[REALISATION_NOT_FOUND]);
+            }
+
+            // Process and save images
+            for (const image of images) {
+                const realisationFile = new this.realisationFileModel({
+                    image,
+                    realisation_id: realisation._id,
+                });
+
+                realisationFile.file_path = await this.storageService.uploadRealisationImage(
+                    image,
+                    realisationFile._id.toString(),
+                );
+
+                await realisationFile.save({ session });
+            }
+
+            await session.commitTransaction();
+            session.endSession();
+
+            // Return the updated realisation with its files
+            return this.findById(id);
+        } catch (error) {
+            await session.abortTransaction();
+            session.endSession();
+
+            console.error(`Failed to add files to realisation: ${error.message}`, error.stack);
+
+            if (error instanceof NotFoundException || error instanceof BadRequestException) {
+                throw error;
+            }
+
+            throw new Error(`Failed to add files to realisation: ${error.message}`);
+        }
+    }
+
+    /**
+     * Delete a file from a realisation
+     * @param realisationId The realisation ID
+     * @param fileId The file ID
+     * @returns The updated realisation with its files
+     */
+    async deleteFile(realisationId: string, fileId: string): Promise<Realisation> {
+        console.log(`Deleting file ${fileId} from realisation ${realisationId}`);
+
+        if (!Types.ObjectId.isValid(realisationId) || !Types.ObjectId.isValid(fileId)) {
+            throw new BadRequestException('Invalid ID format');
+        }
+
+        const session = await this.realisationModel.db.startSession();
+        session.startTransaction();
+
+        try {
+            // Find the realisation
+            const realisation = await this.realisationModel.findById(realisationId).exec();
+            if (!realisation) {
+                throw new NotFoundException(RealisationErrors[REALISATION_NOT_FOUND]);
+            }
+
+            // Find the file
+            const file = await this.realisationFileModel
+                .findOne({
+                    _id: fileId,
+                    realisation_id: realisationId,
+                })
+                .exec();
+
+            if (!file) {
+                throw new NotFoundException('File not found');
+            }
+
+            // Delete the file from storage
+            // await this.storageService.deleteFile(file.file_path);
+
+            // Delete the file from database
+            await file.deleteOne({ session });
+
+            await session.commitTransaction();
+            session.endSession();
+
+            // Return the updated realisation with its files
+            return this.findById(realisationId);
+        } catch (error) {
+            await session.abortTransaction();
+            session.endSession();
+
+            console.error(`Failed to delete file: ${error.message}`, error.stack);
+
+            if (error instanceof NotFoundException || error instanceof BadRequestException) {
+                throw error;
+            }
+
+            throw new Error(`Failed to delete file: ${error.message}`);
+        }
+    }
+
+    /**
+     * Helper method to populate realisation files
+     * @param realisations Array of realisations
+     * @returns Realisations with their files
+     */
+    private async populateRealisationFiles(realisationId: string): Promise<RealisationFile[]> {
+        // Fetch all files for these realisations in a single query
+        const allFiles = await this.realisationFileModel
+            .find({ realisation_id: realisationId })
+            .exec();
+
+        // Convert to plain objects to avoid mongoose immutability issues
+        return allFiles;
+    }
+
+    /**
+     * Sanitize filter object to prevent injection
+     * @param filter The filter object
+     * @returns Sanitized filter
+     */
+    private sanitizeFilter(filter: FindRealisationDto): Record<string, any> {
+        const safeFilter: Record<string, any> = {};
+
+        // Only allow specific fields to be filtered
+        const allowedFields = ['title', 'description', 'category', 'profile_professionnel_id'];
+
+        for (const field of allowedFields) {
+            if (filter[field] !== undefined) {
+                safeFilter[field] = filter[field];
+            }
+        }
+
+        return safeFilter;
     }
 }

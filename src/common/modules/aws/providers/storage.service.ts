@@ -54,11 +54,10 @@ export class StorageService {
     }
 
     private async upload(path: string, key: string, media: Express.Multer.File): Promise<void> {
-        const base64Media = media.buffer.toString('base64');
         const command = new PutObjectCommand({
             Bucket: this.bucket,
             Key: Path.join(path, key),
-            Body: base64Media,
+            Body: media.buffer,
             ContentType: media.mimetype,
         });
 
@@ -75,7 +74,6 @@ export class StorageService {
         await this.s3Client.send(command);
     }
 
-    ;
     public async uploadCoverImage(image: Express.Multer.File, key: string): Promise<string> {
         try {
             await this.upload(StorageService.professionalCoverPath, key, image);

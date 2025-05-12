@@ -9,6 +9,10 @@ export class CreateRealisationDto {
     @IsString()
     @IsNotEmpty()
     title: string;
+    @ApiProperty({ description: 'Titre de la réalisation' })
+    @IsString()
+    @IsNotEmpty()
+    price: string;
 
     @ApiProperty({
         type: [String],

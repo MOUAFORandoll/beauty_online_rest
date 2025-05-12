@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AgendaModel, RealisationModel, RendezVous } from '../../databases/services/entities';
+import {
+    AgendaModel,
+    RealisationModel,
+    RendezVous,
+    RealisationFileModel,
+} from '../../databases/services/entities';
 import { UserDto } from 'src/users/dto';
 import { UserModel } from 'src/databases/users/entities';
 import { AgendaResponseDto, RealisationResponseDto } from 'src/profile_professionnels/dto';
@@ -25,14 +30,17 @@ export class RendezVousResponseDto {
         userModel: UserModel,
         agendaModel: AgendaModel,
         realisationModel: RealisationModel,
+        realisationFileModel: RealisationFileModel,
+
         rendezVous: RendezVous,
     ): Promise<RendezVousResponseDto> {
         const _user: UserDto = UserDto.fromUser(await userModel.findById(rendezVous.user_id));
         const _agenda: AgendaResponseDto = AgendaResponseDto.fromAgenda(
             await agendaModel.findById(rendezVous.agenda_id),
         );
-        const _realisation: RealisationResponseDto = RealisationResponseDto.fromRealisation(
+        const _realisation: RealisationResponseDto = await RealisationResponseDto.fromRealisation(
             await realisationModel.findById(rendezVous.realisation_id),
+            realisationFileModel,
         );
 
         return {

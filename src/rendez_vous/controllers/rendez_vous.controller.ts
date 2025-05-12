@@ -24,8 +24,10 @@ import {
     DATABASE_CONNECTION,
     REALISATION_MODEL_NAME,
     RealisationModel,
+    REALISATION_FILE_MODEL_NAME,
     USER_MODEL_NAME,
     UserModel,
+    RealisationFileModel,
 } from 'src/databases/main.database.connection';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
@@ -43,6 +45,8 @@ export class RendezVousController {
         private readonly agendaModel: AgendaModel,
         @InjectModel(REALISATION_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationModel: RealisationModel,
+        @InjectModel(REALISATION_FILE_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly realisationFileModel: RealisationFileModel,
     ) {}
 
     @Post()
@@ -57,6 +61,8 @@ export class RendezVousController {
             this.userModel,
             this.agendaModel,
             this.realisationModel,
+
+            this.realisationFileModel,
             rendezVous,
         );
     }
@@ -75,6 +81,8 @@ export class RendezVousController {
                 this.userModel,
                 this.agendaModel,
                 this.realisationModel,
+                this.realisationFileModel,
+
                 l,
             ),
         );
@@ -102,6 +110,8 @@ export class RendezVousController {
                 this.userModel,
                 this.agendaModel,
                 this.realisationModel,
+                this.realisationFileModel,
+
                 l,
             ),
         );
@@ -120,6 +130,8 @@ export class RendezVousController {
             this.userModel,
             this.agendaModel,
             this.realisationModel,
+
+            this.realisationFileModel,
             rendezVous,
         );
     }
@@ -137,6 +149,8 @@ export class RendezVousController {
             this.userModel,
             this.agendaModel,
             this.realisationModel,
+
+            this.realisationFileModel,
             rendezVous,
         );
     }
