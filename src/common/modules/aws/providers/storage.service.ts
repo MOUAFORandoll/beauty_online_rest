@@ -86,6 +86,7 @@ export class StorageService {
 
     public async userProfilePath(image: Express.Multer.File, key: string): Promise<string> {
         try {
+            console.log('=========', key, StorageService.userProfilePath);
             await this.upload(StorageService.userProfilePath, key, image);
             return this.getUrl(StorageService.userProfilePath, key, 600, 600);
         } catch (error) {

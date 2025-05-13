@@ -43,7 +43,7 @@ export class UsersService {
         return user.save();
     }
 
-    async updateUserPhoto(photo: any, id: string): Promise<User> {
+    async updateUserPhoto(photo: Express.Multer.File, id: string): Promise<User> {
         try {
             console.log('===ddd======');
 
@@ -51,7 +51,10 @@ export class UsersService {
 
             console.log(photo);
             if (photo) {
-                user.pictureUrl = await this.storageService.userProfilePath(photo, id);
+                user.pictureUrl = await this.storageService.userProfilePath(
+                    photo,
+                    user._id.toString(),
+                );
             }
             return user.save();
         } catch (error) {

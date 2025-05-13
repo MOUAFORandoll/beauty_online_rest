@@ -61,6 +61,7 @@ export class AppLauncher {
             .addServer(apiUrl, `For ${env} environment`)
 
             .addTag('Auth', 'Endpoints for authentication and login')
+            .addTag('Actus', 'Endpoints for All Users Actu')
             .addTag('Users', 'Endpoints for managing user accounts')
             .addTag('Realisations', 'Endpoints for managing user realisations')
             .addTag('Agenda', 'Endpoints for managing user agendas')

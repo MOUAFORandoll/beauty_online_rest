@@ -1,7 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Realisation, RealisationFileModel } from 'src/databases/main.database.connection';
+import {
+    RealisationModel,
+    PositionModel,
+    AgendaModel,
+    Realisation,
+    RealisationFileModel,
+    RendezVousModel,
+} from 'src/databases/main.database.connection';
+import { ProfileResponseDto } from 'src/profile_professionnels/dto';
+import { ProfileService } from 'src/profile_professionnels/providers';
 
-export class RealisationResponseDto {
+export class ActuResponseDto {
     @ApiProperty()
     id: string;
 
@@ -10,18 +19,24 @@ export class RealisationResponseDto {
 
     @ApiProperty()
     price: string;
+
     @ApiProperty()
-    profile_professionnel_id: string;
+    profile_professionnel: ProfileResponseDto;
 
     @ApiProperty()
     realisation_files: {
         id: string;
         file_path: string;
     }[];
-    static async fromRealisation(
+    static async fromActu(
         realisation: Realisation,
         realisationFileModel: RealisationFileModel,
-    ): Promise<RealisationResponseDto> {
+        agendaModel: AgendaModel,
+        positionModel: PositionModel,
+        realisationModel: RealisationModel,
+        rendezVousModel: RendezVousModel,
+        profileService: ProfileService,
+    ): Promise<ActuResponseDto> {
         const allFiles = await realisationFileModel
             .find({ realisation_id: realisation._id as string })
             .exec();
@@ -29,11 +44,20 @@ export class RealisationResponseDto {
             id: file._id.toString(),
             file_path: file.file_path,
         }));
+
+        const profile = await profileService.findOneById(realisation.profile_professionnel_id);
+        const profileProfessionnel = await ProfileResponseDto.fromProfile(
+            profile,
+            agendaModel,
+            positionModel,
+            realisationModel,
+            rendezVousModel,
+        );
         return {
             id: realisation._id as string,
             title: realisation.title,
             price: realisation.price,
-            profile_professionnel_id: realisation.profile_professionnel_id,
+            profile_professionnel: profileProfessionnel,
             realisation_files: formattedFiles,
         };
     }
