@@ -9,6 +9,7 @@ import {
 import * as Database from '../../databases/users/providers';
 import { InjectModel } from '@nestjs/mongoose';
 import { UpdateUserDto, UpdateUserPositionDto } from '../dto';
+import { StorageService } from 'src/common/modules/aws/providers';
 
 @Injectable()
 export class UsersService {
@@ -17,10 +18,11 @@ export class UsersService {
         private readonly positionModel: PositionModel,
 
         private usersService: Database.UsersService,
+        private readonly storageService: StorageService,
     ) {}
     async updateUserData(id: string, data: UpdateUserDto): Promise<User> {
         const user = await this.usersService.getUser(id);
-      
+
         console.log(data);
         if (data.userName) user.userName = data.userName;
         if (data.phone) user.phone = data.phone;
@@ -40,6 +42,23 @@ export class UsersService {
         user.phone = phone;
         return user.save();
     }
+
+    async updateUserPhoto(photo: any, id: string): Promise<User> {
+        try {
+            console.log('===ddd======');
+
+            const user = await this.usersService.getUser(id);
+
+            console.log(photo);
+            if (photo) {
+                user.pictureUrl = await this.storageService.userProfilePath(photo, id);
+            }
+            return user.save();
+        } catch (error) {
+            throw new Error(`Failed to create profile: ${error.message}`);
+        }
+    }
+
     async updateUserPosition(user_id: string, dto: UpdateUserPositionDto): Promise<void> {
         const position = new this.positionModel({ ...dto }, user_id);
 

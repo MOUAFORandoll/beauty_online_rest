@@ -51,7 +51,7 @@ export class RealisationController {
         @UploadedFiles() images: Array<Express.Multer.File>,
     ): Promise<RealisationResponseDto> {
         dto.images = images;
-
+        console.log(dto.images);
         await this.dbUsersService.getUser(id);
         const profile = await this.realisationService.create(dto, id);
         return RealisationResponseDto.fromRealisation(profile, this.realisationFileModel);

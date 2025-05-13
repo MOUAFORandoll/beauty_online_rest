@@ -1,6 +1,15 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Patch } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Patch,
+    UploadedFile,
+    UseInterceptors,
+} from '@nestjs/common';
 import { UsersService } from '../providers';
-import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiConsumes, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import {
     UpdateUserDto,
     UpdateUserPositionDto,
@@ -9,6 +18,7 @@ import {
 } from '../dto';
 import { GetUser } from '../decorators';
 import * as Database from '../../databases/users/providers';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UsersController {
@@ -46,6 +56,23 @@ export class UsersController {
         @Body() payload: UpdateUserDto,
     ): Promise<UserDto> {
         const user = await this.usersService.updateUserData(id, payload);
+
+        return UserDto.fromUser(user);
+    }
+    @Patch('/picture')
+    @ApiOperation({
+        summary: 'create user profile',
+    })
+    @ApiConsumes('multipart/form-data')
+    @UseInterceptors(FileInterceptor('image'))
+    @ApiOkResponse({ type: UserDto })
+    async create(
+        @GetUser('id') id: string,
+
+        @UploadedFile() image?: Express.Multer.File,
+    ): Promise<UserDto> {
+        await this.dbUsersService.getUser(id);
+        const user = await this.usersService.updateUserPhoto(image, id);
 
         return UserDto.fromUser(user);
     }

@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class StorageService {
+    private static userProfilePath = 'users/profile';
     private static professionalCoverPath = 'professional/cover';
     private static professionalRealisationPath = 'professional/realisation';
 
@@ -78,6 +79,15 @@ export class StorageService {
         try {
             await this.upload(StorageService.professionalCoverPath, key, image);
             return this.getUrl(StorageService.professionalCoverPath, key, 600, 600);
+        } catch (error) {
+            console.log('=========', error);
+        }
+    }
+
+    public async userProfilePath(image: Express.Multer.File, key: string): Promise<string> {
+        try {
+            await this.upload(StorageService.userProfilePath, key, image);
+            return this.getUrl(StorageService.userProfilePath, key, 600, 600);
         } catch (error) {
             console.log('=========', error);
         }
