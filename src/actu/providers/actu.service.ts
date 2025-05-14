@@ -31,8 +31,7 @@ export class ActuService {
   async findAll(
     pagination: PaginationPayloadDto,
   ): Promise<{ data: Realisation[]; total: number }> {
-    console.log('Finding all realisations');
-
+   
     const [data, total] = await Promise.all([
       this.realisationModel
         .find()
