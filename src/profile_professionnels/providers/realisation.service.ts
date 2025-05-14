@@ -139,25 +139,26 @@ export class RealisationService {
      * @returns Paginated realisations with their files
      */
     async findUserRealisation(
-        user_id: string,
+        idProfessionnel: string,
         pagination: PaginationPayloadDto,
     ): Promise<{ data: Realisation[]; total: number }> {
-        console.log(`Finding realisations for user ${user_id}`);
+        console.log(`Finding realisations for user ${idProfessionnel}`);
 
-        const profilePro: ProfileProfessionnel = await this.profileService.findUserProfile(user_id);
-        if (!profilePro) {
-            throw new NotFoundException(ProfileProErrors[PROFILE_PRO_NOT_FOUND]);
-        }
+        // const profilePro: ProfileProfessionnel =
+        //     await this.profileService.findOneById(idProfessionnel);
+        // if (!profilePro) {
+        //     throw new NotFoundException(ProfileProErrors[PROFILE_PRO_NOT_FOUND]);
+        // }
 
         const [data, total] = await Promise.all([
             this.realisationModel
-                .find({ profile_professionnel_id: profilePro._id })
+                .find({ profile_professionnel_id: idProfessionnel })
                 .sort({ createdAt: -1 }) // Sort by newest first
                 .skip((pagination.page - 1) * pagination.size)
                 .limit(pagination.size)
                 .exec(),
             this.realisationModel
-                .countDocuments({ profile_professionnel_id: profilePro._id })
+                .countDocuments({ profile_professionnel_id: idProfessionnel })
                 .exec(),
         ]);
 

@@ -53,7 +53,7 @@ export class UsersService {
             if (photo) {
                 user.pictureUrl = await this.storageService.userProfilePath(
                     photo,
-                    user._id.toString(),
+                  (  user._id as string ).toString(),
                 );
             }
             return user.save();
