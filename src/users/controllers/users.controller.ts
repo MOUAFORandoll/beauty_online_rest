@@ -66,7 +66,7 @@ export class UsersController {
     @ApiConsumes('multipart/form-data')
     @UseInterceptors(FileInterceptor('image'))
     @ApiOkResponse({ type: UserDto })
-    async create(
+    async updateUserPicture(
         @GetUser('id') id: string,
 
         @UploadedFile() image?: Express.Multer.File,

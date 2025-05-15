@@ -74,29 +74,32 @@ export class StorageService {
 
         await this.s3Client.send(command);
     }
-
     public async uploadCoverImage(image: Express.Multer.File, key: string): Promise<string> {
         try {
-            await this.upload(StorageService.professionalCoverPath, key, image);
-            return this.getUrl(StorageService.professionalCoverPath, key, 600, 600);
+            const uploadKey = key + Date.now().toString();
+            await this.upload(StorageService.professionalCoverPath, uploadKey, image);
+            return this.getUrl(StorageService.professionalCoverPath, uploadKey, 600, 600);
         } catch (error) {
-            console.log('=========', error);
+            console.error('Error uploading cover image:', error);
+            throw error; // Rethrow the error to allow it to be handled by the caller
         }
     }
 
     public async userProfilePath(image: Express.Multer.File, key: string): Promise<string> {
         try {
+            const uploadKey = key + Date.now().toString();
             console.log('=========', key, StorageService.userProfilePath);
-            await this.upload(StorageService.userProfilePath, key, image);
-            return this.getUrl(StorageService.userProfilePath, key, 600, 600);
+            await this.upload(StorageService.userProfilePath, uploadKey, image);
+            return this.getUrl(StorageService.userProfilePath, uploadKey, 600, 600);
         } catch (error) {
             console.log('=========', error);
         }
     }
     public async uploadRealisationImage(image: Express.Multer.File, key: string): Promise<string> {
         try {
-            await this.upload(StorageService.professionalRealisationPath, key, image);
-            return this.getUrl(StorageService.professionalRealisationPath, key, 600, 600);
+            const uploadKey = key + Date.now().toString();
+            await this.upload(StorageService.professionalRealisationPath, uploadKey, image);
+            return this.getUrl(StorageService.professionalRealisationPath, uploadKey, 600, 600);
         } catch (error) {
             console.log('=========', error);
         }

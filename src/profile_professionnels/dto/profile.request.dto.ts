@@ -42,6 +42,17 @@ export class CreateProfileDto {
     cover?: Express.Multer.File;
 }
 
+export class UpdateProfileDto {
+    @ApiProperty()
+    @IsString()
+    @IsOptional()
+    name_pro: string;
+
+    @ApiProperty()
+    @IsString()
+    @IsOptional()
+    description: string;
+}
 export class FindByServiceDto {
     @ApiProperty({ enum: ServiceType, example: ServiceType.COIFFURE })
     @IsEnum(ServiceType, {

@@ -1,10 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { PositionModel, ProfileProfessionnel } from '../../databases/users/entities';
-import { CreateProfileDto } from './profile.request.dto';
+
 import { AgendaModel, RealisationModel, RendezVousModel } from 'src/databases/services/entities';
 import { PositionResponseDto } from './position.response.dto';
 
-export class UpdateProfileDto extends CreateProfileDto {}
 export class ProfileResponseDto {
     @ApiProperty()
     id: string;
@@ -16,6 +15,8 @@ export class ProfileResponseDto {
     service: string;
     @ApiProperty()
     cover: string;
+    @ApiProperty()
+    description: string;
 
     @ApiProperty()
     position: PositionResponseDto;
@@ -67,6 +68,7 @@ export class ProfileResponseDto {
             name_pro: profile.namePro,
             service: profile.service,
             cover: profile.cover,
+            description: profile.description,
             position: PositionResponseDto.fromPosition(position),
             nombre_reservation: nombreReservation,
             nombre_catalogue: nombreCatalogue,

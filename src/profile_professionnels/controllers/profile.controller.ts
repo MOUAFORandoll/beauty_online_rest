@@ -3,7 +3,7 @@ import {
     Controller,
     Get,
     Post,
-    Put,
+     
     Delete,
     Param,
     Body,
@@ -193,18 +193,21 @@ export class ProfileController {
     /**
      * update user profile
      */
-    @Put(':id')
+    @Patch('')
     @ApiOperation({
         summary: 'update user profile',
     })
     @ApiOkResponse({ type: ProfileResponseDto })
     async update(
-        @Param('id') id: string,
         @GetUser('id') idUser: string,
         @Body() dto: UpdateProfileDto,
     ): Promise<ProfileResponseDto> {
         await this.dbUsersService.getUser(idUser);
-        const profile = await this.profileService.update(id, dto);
+        let profile = await this.profileService.findUserProfile(idUser);
+        console.log('dto========', profile._id);
+        console.log(dto);
+
+        profile = await this.profileService.update(profile._id as string, dto);
         return ProfileResponseDto.fromProfile(
             profile,
             this.agendaModel,
@@ -213,7 +216,28 @@ export class ProfileController {
             this.rendezVousModel,
         );
     }
+    @Patch('/cover')
+    @ApiOperation({
+        summary: 'create user profile',
+    })
+    @ApiConsumes('multipart/form-data')
+    @UseInterceptors(FileInterceptor('image'))
+    @ApiOkResponse({ type: ProfileResponseDto })
+    async updateProfileCover(
+        @GetUser('id') id: string,
+        @UploadedFile() image?: Express.Multer.File,
+    ): Promise<ProfileResponseDto> {
+        let profile = await this.profileService.findUserProfile(id);
+        profile = await this.profileService.updateProfileCover(image, profile._id as string);
 
+        return ProfileResponseDto.fromProfile(
+            profile,
+            this.agendaModel,
+            this.positionModel,
+            this.realisationModel,
+            this.rendezVousModel,
+        );
+    }
     /**
      * update user position
      */

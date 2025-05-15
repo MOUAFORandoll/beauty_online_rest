@@ -12,7 +12,6 @@ import {
 import { PROFILE_PRO_NOT_FOUND, ProfileProErrors } from '../errors';
 import { DATABASE_CONNECTION } from 'src/databases/main.database.connection';
 import { PaginationPayloadDto } from 'src/common/apiutils';
-import { QueryOptions } from 'mongoose';
 import { UpdateUserPositionDto } from 'src/users/dto';
 import { StorageService } from 'src/common/modules/aws/providers';
 
@@ -126,18 +125,12 @@ export class ProfileService {
 
         return { data, total };
     }
-
-    async update(
-        id: string,
-        dto: UpdateProfileDto,
-        options: QueryOptions = { new: true },
-    ): Promise<ProfileProfessionnel> {
-        const updatedProfile = await this.profileModel.findByIdAndUpdate(id, dto, options).exec();
-
-        if (!updatedProfile) {
-            throw new NotFoundException(ProfileProErrors[PROFILE_PRO_NOT_FOUND]);
-        }
-        return updatedProfile;
+    async update(id: string, dto: UpdateProfileDto): Promise<ProfileProfessionnel> {
+        const profile = await this.findOneById(id);
+        console.log(dto);
+        if (dto.name_pro) profile.namePro = dto.name_pro;
+        if (dto.description) profile.description = dto.description;
+        return profile.save();
     }
 
     async delete(id: string): Promise<{ deleted: boolean; message?: string }> {
@@ -160,5 +153,30 @@ export class ProfileService {
         });
 
         await position.save();
+    }
+    async updateProfileCover(
+        photo: Express.Multer.File,
+        id: string,
+    ): Promise<ProfileProfessionnel> {
+        try {
+            const profile = await this.profileModel.findById(id).exec();
+
+            if (!profile) {
+                // throw new HttpException(ProfileProErrors[PROFILE_PRO_NOT_FOUND], 203);
+
+                throw new BadRequestException(ProfileProErrors[PROFILE_PRO_NOT_FOUND]);
+            }
+            console.log(photo);
+            console.log(id);
+            if (photo) {
+                profile.cover = await this.storageService.uploadCoverImage(
+                    photo,
+                    profile._id.toString(),
+                );
+            }
+            return profile.save();
+        } catch (error) {
+            throw new Error(`Failed to create profile: ${error.message}`);
+        }
     }
 }

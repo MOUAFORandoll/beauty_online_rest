@@ -73,7 +73,7 @@ export class RealisationController {
             RealisationResponseDto.fromRealisation(l, this.realisationFileModel),
         );
     }
-    @Get('/professional/:id')
+    @Get('/professional/:idProfessionnel')
     @ApiOperation({
         summary: 'Find user profile',
     })

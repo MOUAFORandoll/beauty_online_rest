@@ -50,10 +50,11 @@ export class UsersService {
             const user = await this.usersService.getUser(id);
 
             console.log(photo);
+            console.log(id);
             if (photo) {
                 user.pictureUrl = await this.storageService.userProfilePath(
                     photo,
-                  (  user._id as string ).toString(),
+                    user._id.toString(),
                 );
             }
             return user.save();
