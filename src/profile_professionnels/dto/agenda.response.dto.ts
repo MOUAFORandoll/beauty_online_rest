@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Agenda, Crenau, CrenauModel } from '../../databases/services/entities';
+import { Agenda, Creneau, CreneauModel } from '../../databases/services/entities';
 
-export class CrenauResponseDto {
+export class CreneauResponseDto {
     @ApiProperty()
     id: string;
 
@@ -11,11 +11,11 @@ export class CrenauResponseDto {
     @ApiProperty()
     endTimeAvailable: string;
 
-    static fromCrenau(crenau: Crenau): CrenauResponseDto {
+    static fromCreneau(creneau: Creneau): CreneauResponseDto {
         return {
-            id: crenau._id as string,
-            startTimeAvailable: crenau.startTimeAvailable,
-            endTimeAvailable: crenau.endTimeAvailable,
+            id: creneau._id as string,
+            startTimeAvailable: creneau.startTimeAvailable,
+            endTimeAvailable: creneau.endTimeAvailable,
         };
     }
 }
@@ -27,15 +27,18 @@ export class AgendaResponseDto {
     @ApiProperty()
     day: Date;
 
-    @ApiProperty({ type: [CrenauResponseDto] })
-    crenaux: CrenauResponseDto[];
+    @ApiProperty({ type: [CreneauResponseDto] })
+    creneaux: CreneauResponseDto[];
 
-    static async fromAgenda(agenda: Agenda, crenauModel: CrenauModel): Promise<AgendaResponseDto> {
-        const crenaux = await crenauModel.find({ agenda_id: agenda._id }).exec();
+    static async fromAgenda(
+        agenda: Agenda,
+        creneauModel: CreneauModel,
+    ): Promise<AgendaResponseDto> {
+        const creneaux = await creneauModel.find({ agenda_id: agenda._id }).exec();
         return {
             id: agenda._id as string,
             day: agenda.day,
-            crenaux: crenaux.map((cr) => CrenauResponseDto.fromCrenau(cr)),
+            creneaux: creneaux.map((cr) => CreneauResponseDto.fromCreneau(cr)),
         };
     }
 }

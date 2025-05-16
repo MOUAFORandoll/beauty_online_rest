@@ -7,12 +7,12 @@ import {
     Agenda,
     AGENDA_MODEL_NAME,
     AgendaModel,
-    CRENAU_MODEL_NAME,
-    CrenauModel,
+    CRENEAU_MODEL_NAME,
+    CreneauModel,
 } from 'src/databases/main.database.connection';
 import { PaginationPayloadDto } from 'src/common/apiutils';
 import { QueryOptions } from 'mongoose';
-import { UpdateAgendaDto, CreateAgendaDto, AddCrenauxAgendaDto } from '../dto/agenda.request.dto';
+import { UpdateAgendaDto, CreateAgendaDto, AddCreneauxAgendaDto } from '../dto/agenda.request.dto';
 import {
     PROFILE_PRO_NOT_FOUND,
     ProfileProErrors,
@@ -27,8 +27,8 @@ export class AgendaService {
     constructor(
         @InjectModel(AGENDA_MODEL_NAME, DATABASE_CONNECTION)
         private readonly agendaModel: AgendaModel,
-        @InjectModel(CRENAU_MODEL_NAME, DATABASE_CONNECTION)
-        private readonly crenauModel: CrenauModel,
+        @InjectModel(CRENEAU_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly creneauModel: CreneauModel,
 
         private readonly profileService: ProfileService,
     ) {}
@@ -45,15 +45,15 @@ export class AgendaService {
             });
 
             const newAgenda = await agenda.save();
-            console.log(dto.crenaux);
+            console.log(dto.creneaux);
             // Création des créneaux de façon séquentielle et fiable
-            const crenauxData = dto.crenaux.map((e) => ({
+            const creneauxData = dto.creneaux.map((e) => ({
                 ...e,
                 agenda_id: newAgenda._id,
             }));
-            console.log(crenauxData);
+            console.log(creneauxData);
 
-            await this.crenauModel.insertMany(crenauxData); // insertMany est plus performant que save() en boucle
+            await this.creneauModel.insertMany(creneauxData); // insertMany est plus performant que save() en boucle
 
             return newAgenda;
         } catch (error) {
@@ -99,18 +99,18 @@ export class AgendaService {
         return { data, total };
     }
 
-    async addCrenauxToAgenda(idAgenda: string, dto: AddCrenauxAgendaDto): Promise<Agenda> {
+    async addCreneauxToAgenda(idAgenda: string, dto: AddCreneauxAgendaDto): Promise<Agenda> {
         try {
             // Création de l'agenda
             let agenda = await this.agendaModel.findById(idAgenda).exec();
 
             // Création des créneaux de façon séquentielle et fiable
-            const crenauxData = dto.crenaux.map((e) => ({
+            const creneauxData = dto.creneaux.map((e) => ({
                 ...e,
                 agenda: agenda._id,
             }));
 
-            await this.crenauModel.insertMany(crenauxData); // insertMany est plus performant que save() en boucle
+            await this.creneauModel.insertMany(creneauxData); // insertMany est plus performant que save() en boucle
             agenda = await this.agendaModel.findById(idAgenda).exec();
 
             return agenda;
@@ -132,8 +132,8 @@ export class AgendaService {
         return updatedAgenda;
     }
 
-    async deleteCrenau(idCrenaud: string): Promise<{ deleted: boolean; message?: string }> {
-        const result = await this.crenauModel.findByIdAndDelete(idCrenaud).exec();
+    async deleteCreneau(idCreneaud: string): Promise<{ deleted: boolean; message?: string }> {
+        const result = await this.creneauModel.findByIdAndDelete(idCreneaud).exec();
 
         if (!result) {
             throw new NotFoundException(AgendaErrors[AGENDA_DELETE_FAILED]);

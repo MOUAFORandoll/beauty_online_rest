@@ -4,7 +4,7 @@ import {
     RealisationModel,
     RendezVous,
     RealisationFileModel,
-    CrenauModel,
+    CreneauModel,
 } from '../../databases/services/entities';
 import { UserDto } from 'src/users/dto';
 import { UserModel } from 'src/databases/users/entities';
@@ -33,13 +33,13 @@ export class RendezVousResponseDto {
         realisationModel: RealisationModel,
         realisationFileModel: RealisationFileModel,
 
-        crenauModel: CrenauModel,
-        rendezVous: RendezVous, 
+        creneauModel: CreneauModel,
+        rendezVous: RendezVous,
     ): Promise<RendezVousResponseDto> {
         const _user: UserDto = UserDto.fromUser(await userModel.findById(rendezVous.user_id));
         const _agenda: AgendaResponseDto = await AgendaResponseDto.fromAgenda(
             await agendaModel.findById(rendezVous.agenda_id),
-            crenauModel,
+            creneauModel,
         );
         const _realisation: RealisationResponseDto = await RealisationResponseDto.fromRealisation(
             await realisationModel.findById(rendezVous.realisation_id),

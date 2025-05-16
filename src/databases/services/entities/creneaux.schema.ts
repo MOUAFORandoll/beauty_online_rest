@@ -5,10 +5,10 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 
 import { applySortedMongooseAdditionalFunctions } from '../../base.functions';
 import { AGENDA_MODEL_NAME } from './agendas.schema';
-// AGENDA
-export const CRENAU_MODEL_NAME = 'crenaux';
-@Schema({ collection: CRENAU_MODEL_NAME })
-class CrenauSchema extends BaseSchema {
+// creneau
+export const CRENEAU_MODEL_NAME = 'creneaux';
+@Schema({ collection: CRENEAU_MODEL_NAME })
+class CreneauSchema extends BaseSchema {
     @Prop()
     startTimeAvailable: string;
 
@@ -20,10 +20,9 @@ class CrenauSchema extends BaseSchema {
         ref: AGENDA_MODEL_NAME,
     })
     agenda_id: string;
-    
 }
-export type Crenau = CrenauSchema & Document;
-export type CrenauModel = Model<CrenauSchema>;
-export const CrenauxSchema = applySortedMongooseAdditionalFunctions(
-    SchemaFactory.createForClass(CrenauSchema),
+export type Creneau = CreneauSchema & Document;
+export type CreneauModel = Model<CreneauSchema>;
+export const CreneauxSchema = applySortedMongooseAdditionalFunctions(
+    SchemaFactory.createForClass(CreneauSchema),
 );

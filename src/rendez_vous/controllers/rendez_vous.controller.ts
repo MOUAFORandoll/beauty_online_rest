@@ -28,8 +28,8 @@ import {
     USER_MODEL_NAME,
     UserModel,
     RealisationFileModel,
-    CRENAU_MODEL_NAME,
-    CrenauModel,
+    CRENEAU_MODEL_NAME,
+    CreneauModel,
 } from 'src/databases/main.database.connection';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
@@ -50,8 +50,8 @@ export class RendezVousController {
         @InjectModel(REALISATION_FILE_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationFileModel: RealisationFileModel,
 
-        @InjectModel(CRENAU_MODEL_NAME, DATABASE_CONNECTION)
-        private readonly crenauModel: CrenauModel,
+        @InjectModel(CRENEAU_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly creneauModel: CreneauModel,
     ) {}
 
     @Post()
@@ -68,7 +68,7 @@ export class RendezVousController {
             this.realisationModel,
 
             this.realisationFileModel,
-            this.crenauModel,
+            this.creneauModel,
             rendezVous,
         );
     }
@@ -88,7 +88,7 @@ export class RendezVousController {
                 this.agendaModel,
                 this.realisationModel,
                 this.realisationFileModel,
-                this.crenauModel,
+                this.creneauModel,
 
                 l,
             ),
@@ -118,7 +118,7 @@ export class RendezVousController {
                 this.agendaModel,
                 this.realisationModel,
                 this.realisationFileModel,
-                this.crenauModel,
+                this.creneauModel,
 
                 l,
             ),
@@ -140,7 +140,7 @@ export class RendezVousController {
             this.realisationModel,
 
             this.realisationFileModel,
-            this.crenauModel,
+            this.creneauModel,
             rendezVous,
         );
     }
@@ -160,7 +160,7 @@ export class RendezVousController {
             this.realisationModel,
 
             this.realisationFileModel,
-            this.crenauModel,
+            this.creneauModel,
             rendezVous,
         );
     }

@@ -7,12 +7,12 @@ export class CreateAgendaDto {
     day: string;
     @ApiProperty()
     @IsNotEmpty()
-    crenaux: { startTimeAvailable: string; endTimeAvailable: string }[];
+    creneaux: { startTimeAvailable: string; endTimeAvailable: string }[];
 }
-export class AddCrenauxAgendaDto {
+export class AddCreneauxAgendaDto {
     @ApiProperty()
     @IsNotEmpty()
-    crenaux: Array<{ startTimeAvailable: string; endTimeAvailable: string }>;
+    creneaux: Array<{ startTimeAvailable: string; endTimeAvailable: string }>;
 }
 
 export class UpdateAgendaDto {

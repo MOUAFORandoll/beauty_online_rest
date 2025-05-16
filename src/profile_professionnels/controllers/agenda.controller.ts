@@ -1,15 +1,15 @@
 // agenda.controller.ts
-import { Controller, Get, Post, Put, Delete, Param, Body, Query, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body, Query, Patch } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AgendaResponseDto } from '../dto';
 import { AgendaService } from '../providers';
 import { GetUser } from 'src/users/decorators';
 import * as Database from '../../databases/users/providers';
 import { PaginationPayloadDto, PaginationResponseDto } from 'src/common/apiutils';
-import { AddCrenauxAgendaDto, CreateAgendaDto, UpdateAgendaDto } from '../dto/agenda.request.dto';
+import { AddCreneauxAgendaDto, CreateAgendaDto, UpdateAgendaDto } from '../dto/agenda.request.dto';
 import {
-    CRENAU_MODEL_NAME,
-    CrenauModel,
+    CRENEAU_MODEL_NAME,
+    CreneauModel,
     DATABASE_CONNECTION,
 } from 'src/databases/main.database.connection';
 import { InjectModel } from '@nestjs/mongoose';
@@ -18,8 +18,8 @@ import { InjectModel } from '@nestjs/mongoose';
 @Controller('agendas')
 export class AgendaController {
     constructor(
-        @InjectModel(CRENAU_MODEL_NAME, DATABASE_CONNECTION)
-        private readonly crenauModel: CrenauModel,
+        @InjectModel(CRENEAU_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly creneauModel: CreneauModel,
 
         private readonly agendaService: AgendaService,
 
@@ -38,7 +38,7 @@ export class AgendaController {
     ): Promise<AgendaResponseDto> {
         await this.dbUsersService.getUser(id);
         const agenda = await this.agendaService.create(dto, id);
-        return await AgendaResponseDto.fromAgenda(agenda, this.crenauModel);
+        return await AgendaResponseDto.fromAgenda(agenda, this.creneauModel);
     }
     @Get('/me')
     @ApiOperation({
@@ -54,7 +54,7 @@ export class AgendaController {
             pagination,
         );
         return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) =>
-            AgendaResponseDto.fromAgenda(l, this.crenauModel),
+            AgendaResponseDto.fromAgenda(l, this.creneauModel),
         );
     }
 
@@ -72,30 +72,30 @@ export class AgendaController {
             pagination,
         );
         return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) =>
-            AgendaResponseDto.fromAgenda(l, this.crenauModel),
+            AgendaResponseDto.fromAgenda(l, this.creneauModel),
         );
     }
-    @Post('/:idAgenda/crenau')
+    @Post('/:idAgenda/creneau')
     @ApiOperation({
         summary: 'add creneau user agenda',
     })
-    async addCrenauxToAgenda(
+    async addCreneauxToAgenda(
         @Param('idAgenda') idAgenda: string,
         @GetUser('id') idUser: string,
-        @Body() dto: AddCrenauxAgendaDto,
+        @Body() dto: AddCreneauxAgendaDto,
     ): Promise<AgendaResponseDto> {
         await this.dbUsersService.getUser(idUser);
-        const agenda = await this.agendaService.addCrenauxToAgenda(idAgenda, dto);
-        return await AgendaResponseDto.fromAgenda(agenda, this.crenauModel);
+        const agenda = await this.agendaService.addCreneauxToAgenda(idAgenda, dto);
+        return await AgendaResponseDto.fromAgenda(agenda, this.creneauModel);
     }
 
-    @Delete('/crenau/:idCrenau')
-    async deleteCrenau(
-        @Param('idCrenau') idCrenau: string,
+    @Delete('/creneau/:idCreneau')
+    async deleteCreneau(
+        @Param('idCreneau') idCreneau: string,
         @GetUser('id') idUser: string,
     ): Promise<void> {
         await this.dbUsersService.getUser(idUser);
-        await this.agendaService.deleteCrenau(idCrenau);
+        await this.agendaService.deleteCreneau(idCreneau);
     }
 
     @Patch(':id')
@@ -109,7 +109,7 @@ export class AgendaController {
     ): Promise<AgendaResponseDto> {
         await this.dbUsersService.getUser(idUser);
         const agenda = await this.agendaService.update(id, dto);
-        return await AgendaResponseDto.fromAgenda(agenda, this.crenauModel);
+        return await AgendaResponseDto.fromAgenda(agenda, this.creneauModel);
     }
 
     @Delete(':id')
