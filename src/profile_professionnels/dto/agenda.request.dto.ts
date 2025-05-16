@@ -3,26 +3,23 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class CreateAgendaDto {
     @ApiProperty()
-    @IsDate()
     @IsNotEmpty()
-    day: Date;
-
+    day: string;
     @ApiProperty()
-    @IsString()
     @IsNotEmpty()
-    startTimeAvailable: string;
-
+    crenaux: { startTimeAvailable: string; endTimeAvailable: string }[];
+}
+export class AddCrenauxAgendaDto {
     @ApiProperty()
-    @IsString()
     @IsNotEmpty()
-    endTimeAvailable: string;
+    crenaux: Array<{ startTimeAvailable: string; endTimeAvailable: string }>;
 }
 
 export class UpdateAgendaDto {
     @ApiProperty()
     @IsDate()
     @IsOptional()
-    day: Date;
+    day: string;
 
     @ApiProperty()
     @IsString()

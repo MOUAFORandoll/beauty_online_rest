@@ -28,6 +28,8 @@ import {
     USER_MODEL_NAME,
     UserModel,
     RealisationFileModel,
+    CRENAU_MODEL_NAME,
+    CrenauModel,
 } from 'src/databases/main.database.connection';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
@@ -47,6 +49,9 @@ export class RendezVousController {
         private readonly realisationModel: RealisationModel,
         @InjectModel(REALISATION_FILE_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationFileModel: RealisationFileModel,
+
+        @InjectModel(CRENAU_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly crenauModel: CrenauModel,
     ) {}
 
     @Post()
@@ -63,6 +68,7 @@ export class RendezVousController {
             this.realisationModel,
 
             this.realisationFileModel,
+            this.crenauModel,
             rendezVous,
         );
     }
@@ -82,6 +88,7 @@ export class RendezVousController {
                 this.agendaModel,
                 this.realisationModel,
                 this.realisationFileModel,
+                this.crenauModel,
 
                 l,
             ),
@@ -111,6 +118,7 @@ export class RendezVousController {
                 this.agendaModel,
                 this.realisationModel,
                 this.realisationFileModel,
+                this.crenauModel,
 
                 l,
             ),
@@ -132,6 +140,7 @@ export class RendezVousController {
             this.realisationModel,
 
             this.realisationFileModel,
+            this.crenauModel,
             rendezVous,
         );
     }
@@ -151,6 +160,7 @@ export class RendezVousController {
             this.realisationModel,
 
             this.realisationFileModel,
+            this.crenauModel,
             rendezVous,
         );
     }

@@ -62,7 +62,6 @@ export class RealisationController {
     })
     async findUserRealisation(
         @GetUser('id') idUser: string,
-
         @Query() pagination: PaginationPayloadDto,
     ): Promise<PaginationResponseDto<RealisationResponseDto>> {
         const { data, total } = await this.realisationService.findUserRealisation(
@@ -81,7 +80,7 @@ export class RealisationController {
         @Param('idProfessionnel') idProfessionnel: string,
         @Query() pagination: PaginationPayloadDto,
     ): Promise<PaginationResponseDto<RealisationResponseDto>> {
-        const { data, total } = await this.realisationService.findUserRealisation(
+        const { data, total } = await this.realisationService.findProfessionalRealisation(
             idProfessionnel,
             pagination,
         );
