@@ -311,11 +311,11 @@ export class RealisationService {
             // Delete files from storage
             for (const file of files) {
                 // await this.storageService.deleteFile(file.file_path);
-                await file.deleteOne({ session });
+                await file.setDeleted();
             }
 
             // Delete the realisation
-            await realisation.deleteOne({ session });
+            await realisation.setDeleted();
 
             await session.commitTransaction();
             session.endSession();

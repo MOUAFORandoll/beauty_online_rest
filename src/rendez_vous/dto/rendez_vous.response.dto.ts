@@ -55,6 +55,8 @@ export class RendezVousResponseDto {
 
         const _creneau: CreneauResponseDto = CreneauResponseDto.fromCreneau(_crenauReq);
         const _agenda = await agendaModel.findById(_crenauReq.agenda_id);
+
+        console.log(rendezVous.realisation_id);
         const _realisation: RealisationResponseDto = await RealisationResponseDto.fromRealisation(
             await realisationModel.findById(rendezVous.realisation_id),
             realisationFileModel,

@@ -85,24 +85,25 @@ export class RendezVousService {
         pagination: PaginationPayloadDto,
     ): Promise<{ data: RendezVous[]; total: number }> {
         try {
+            console.log(user_id);
             const profile = await this.profileService.findUserProfile(user_id);
             if (!profile) {
                 return { data: [], total: 0 };
             }
-
+            console.log(profile);
             const pipeline: PipelineStage[] = [
-                // 1. Jointure avec Creneau
+                // 1. Join with Creneau
                 {
                     $lookup: {
-                        from: 'creneaux', // attention au nom exact de la collection
+                        from: 'creneaux',
                         localField: 'creneau_id',
                         foreignField: '_id',
                         as: 'creneau',
                     },
                 },
-                { $unwind: '$creneau' },
+                { $unwind: { path: '$creneau', preserveNullAndEmptyArrays: false } },
 
-                // 2. Jointure avec Agenda
+                // 2. Join with Agenda
                 {
                     $lookup: {
                         from: 'agendas',
@@ -111,16 +112,16 @@ export class RendezVousService {
                         as: 'agenda',
                     },
                 },
-                { $unwind: '$agenda' },
+                { $unwind: { path: '$agenda', preserveNullAndEmptyArrays: false } },
 
-                // 3. Filtre par professionnel
+                // 3. Filter by professionnel
                 {
                     $match: {
                         'agenda.profile_professionnel_id': profile._id,
                     },
                 },
 
-                // 4. Facette pour pagination et total
+                // 4. Facet for pagination + total count
                 {
                     $facet: {
                         data: [
@@ -132,7 +133,6 @@ export class RendezVousService {
                     },
                 },
             ];
-
             const result = await this.rendezVousModel.aggregate(pipeline).exec();
 
             const data = result[0]?.data ?? [];

@@ -16,10 +16,12 @@ export class BaseSchema {
     updated_at: number;
 
     @Prop({ type: Number })
-    deleted_at: number;
+    deleted_at: Date;
 
-    setDeleted(): Promise<void> {
-        throw new NotImplementedException();
+    setDeleted() {
+        this.deleted_at = new Date();
+
+        // throw new NotImplementedException();
     }
 }
 
