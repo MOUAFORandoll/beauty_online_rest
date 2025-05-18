@@ -11,7 +11,7 @@ export class AppErrorsHandler implements ExceptionFilter {
             exception instanceof HttpException
                 ? exception.getStatus()
                 : HttpStatus.INTERNAL_SERVER_ERROR;
-        const url = httpAdapter.getRequestUrl(ctx.getRequest()) as string;
+        const url = httpAdapter.getRequestUrl(ctx.getRequest()).toString();
         const cause = exception instanceof HttpException ? exception.cause : exception;
         const errorRaw = exception instanceof HttpException ? exception.getResponse() : exception;
         if (!(exception instanceof HttpException)) {
@@ -71,9 +71,11 @@ export class AppErrorsHandler implements ExceptionFilter {
                     code: iResponse.code,
                 };
             } else {
-                const message = (response['message'] ||
+                const message = (
+                    response['message'] ||
                     cause?.['message'] ||
-                    'An error occurred!') as string;
+                    'An error occurred!'
+                ).toString();
                 return {
                     details: {
                         cause,
@@ -95,7 +97,7 @@ export class AppErrorsHandler implements ExceptionFilter {
                 };
             }
         } else {
-            const message = (cause?.['message'] || 'An error occurred!') as string;
+            const message = (cause?.['message'] || 'An error occurred!').toString();
             return {
                 details: {
                     cause,

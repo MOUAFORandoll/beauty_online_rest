@@ -6,26 +6,54 @@ import {
     RendezVous,
     RENDEZ_VOUS_MODEL_NAME,
     RendezVousModel,
-    AGENDA_MODEL_NAME,
-    AgendaModel,
+    StatusRendezVous,
+    REALISATION_MODEL_NAME,
+    RealisationModel,
 } from 'src/databases/main.database.connection';
 import { PaginationPayloadDto } from 'src/common/apiutils';
 import { CreateRendezVousDto } from '../dto/rendez_vous.request.dto';
 import { RENDEZ_VOUS_DELETE_FAILED, RendezVousErrors } from '../errors';
-import mongoose from 'mongoose';
+
+import { PipelineStage, Types } from 'mongoose';
+
+import { SendNotificationsService } from 'src/common/modules/notifications/providers';
+import * as Database from '../../databases/users/providers';
+import { ProfileService } from 'src/profile_professionnels/providers';
 @Injectable()
 export class RendezVousService {
     constructor(
         @InjectModel(RENDEZ_VOUS_MODEL_NAME, DATABASE_CONNECTION)
         private readonly rendezVousModel: RendezVousModel,
-        @InjectModel(AGENDA_MODEL_NAME, DATABASE_CONNECTION)
-        private readonly agendaModel: AgendaModel,
+        @InjectModel(REALISATION_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly realisationModel: RealisationModel,
+        private readonly dbUsersService: Database.UsersService,
+        private profileService: ProfileService,
+        private readonly sendNotificationsService: SendNotificationsService,
     ) {}
 
     async create(dto: CreateRendezVousDto, user_id: string): Promise<RendezVous> {
         try {
-            const rendezVous = new this.rendezVousModel({ ...dto }, user_id);
-            return await rendezVous.save();
+            const rendezVous = new this.rendezVousModel({
+                creneau_id: new Types.ObjectId(dto.creneau_id),
+                realisation_id: new Types.ObjectId(dto.realisation_id),
+                status: StatusRendezVous.ATTENTE,
+                user_id: new Types.ObjectId(user_id),
+            });
+            // Ñotifications au prestataire
+
+            await rendezVous.save();
+            const realisation = await this.realisationModel.findById(rendezVous.realisation_id);
+            const profile = await this.profileService.findOneById(
+                realisation.profile_professionnel_id,
+            );
+
+            const user = await this.dbUsersService.getUser(profile.user_id);
+            await this.sendNotificationsService.sendNewRdvNotification(
+                user,
+                rendezVous._id.toString(),
+            );
+
+            return this.findRendezVousById(rendezVous.id);
         } catch (error) {
             throw new Error(`Failed to create rendezVous: ${error.message}`);
         }
@@ -53,46 +81,67 @@ export class RendezVousService {
      * Assumes AgendaModel has a 'profile_professionnel_id' field.
      */
     async findPrestataireRendezVous(
-        profile_professionnel_id: string,
+        user_id: string,
         pagination: PaginationPayloadDto,
     ): Promise<{ data: RendezVous[]; total: number }> {
         try {
-            const profileObjectId = new mongoose.Types.ObjectId(profile_professionnel_id);
-
-            // 1. Find Agendas linked to the professional profile
-            const agendas = await this.agendaModel
-                .find({ profile_professionnel_id: profileObjectId }, '_id') // Select only the IDs
-                .exec();
-
-            if (!agendas || agendas.length === 0) {
-                return { data: [], total: 0 }; // No agendas found for this profile
+            const profile = await this.profileService.findUserProfile(user_id);
+            if (!profile) {
+                return { data: [], total: 0 };
             }
 
-            const agendaIds = agendas.map((a) => a._id);
+            const pipeline: PipelineStage[] = [
+                // 1. Jointure avec Creneau
+                {
+                    $lookup: {
+                        from: 'creneaux', // attention au nom exact de la collection
+                        localField: 'creneau_id',
+                        foreignField: '_id',
+                        as: 'creneau',
+                    },
+                },
+                { $unwind: '$creneau' },
 
-            // 2. Find RendezVous linked to these Agendas
-            const query = { agenda_id: { $in: agendaIds } };
+                // 2. Jointure avec Agenda
+                {
+                    $lookup: {
+                        from: 'agendas',
+                        localField: 'creneau.agenda_id',
+                        foreignField: '_id',
+                        as: 'agenda',
+                    },
+                },
+                { $unwind: '$agenda' },
 
-            const [rawRendezVous, total] = await Promise.all([
-                this.rendezVousModel
-                    .find(query)
-                    .sort({ timeOfArrival: 1 }) // Optional: sort by arrival time
-                    .skip((pagination.page - 1) * pagination.size)
-                    .limit(pagination.size)
-                    .exec(),
-                this.rendezVousModel.countDocuments(query).exec(),
-            ]);
+                // 3. Filtre par professionnel
+                {
+                    $match: {
+                        'agenda.profile_professionnel_id': profile._id,
+                    },
+                },
 
-            // 3. Map raw data to DTOs
+                // 4. Facette pour pagination et total
+                {
+                    $facet: {
+                        data: [
+                            { $sort: { timeOfArrival: 1 } },
+                            { $skip: (pagination.page - 1) * pagination.size },
+                            { $limit: pagination.size },
+                        ],
+                        totalCount: [{ $count: 'count' }],
+                    },
+                },
+            ];
 
-            return { data: rawRendezVous, total: total };
+            const result = await this.rendezVousModel.aggregate(pipeline).exec();
+
+            const data = result[0]?.data ?? [];
+            const total = result[0]?.totalCount[0]?.count ?? 0;
+
+            return { data, total };
         } catch (error) {
-            console.error(
-                `Error finding prestataire rendez-vous for profile ${profile_professionnel_id}:`,
-                error,
-            );
-            // Depending on requirements, you might want to throw or return an empty result
-            throw new Error(`Failed to find prestataire rendez-vous: ${error.message}`);
+            console.error(`Error during aggregation for prestataire ${user_id}:`, error);
+            throw new Error(`Failed to fetch rendez-vous: ${error.message}`);
         }
     }
 
@@ -101,9 +150,6 @@ export class RendezVousService {
      * Helper function to avoid repetition.
      */
     private async findRendezVousById(id: string): Promise<RendezVous> {
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            throw new NotFoundException(`Invalid RendezVous ID format: ${id}`);
-        }
         const rendezVous = await this.rendezVousModel.findById(id).exec();
         if (!rendezVous) {
             throw new NotFoundException(RendezVousErrors.RENDEZ_VOUS_NOT_FOUND);
@@ -116,8 +162,10 @@ export class RendezVousService {
      */
     async acceptRdv(id: string): Promise<RendezVous> {
         const rendezVous = await this.findRendezVousById(id);
-        rendezVous.status = true; // Assuming true means accepted
+        rendezVous.status = StatusRendezVous.ACCEPTER; // Assuming true means accepted
         const updatedRendezVous = await rendezVous.save();
+        const user = await this.dbUsersService.getUser(updatedRendezVous.user_id);
+        await this.sendNotificationsService.sendRdvAcceptedNotification(user, id);
 
         return updatedRendezVous;
     }
@@ -127,9 +175,10 @@ export class RendezVousService {
      */
     async declineRdv(id: string): Promise<RendezVous> {
         const rendezVous = await this.findRendezVousById(id);
-        rendezVous.status = false; // Assuming false means declined/pending
-        // You might want a more specific status like 'DECLINED' if your schema supports it
+        rendezVous.status = StatusRendezVous.REFUSER;
         const updatedRendezVous = await rendezVous.save();
+        const user = await this.dbUsersService.getUser(updatedRendezVous.user_id);
+        await this.sendNotificationsService.sendRdvRefusedNotification(user, id);
 
         return updatedRendezVous;
     }
@@ -142,9 +191,7 @@ export class RendezVousService {
         // First, find it to ensure it exists and to return its data
 
         // Now, perform the deletion
-        const result = await this.rendezVousModel
-            .deleteOne({ _id: new mongoose.Types.ObjectId(id) })
-            .exec();
+        const result = await this.rendezVousModel.deleteOne({ _id: id }).exec();
 
         if (result.deletedCount === 0) {
             // This case should ideally be caught by findRendezVousById, but double-check

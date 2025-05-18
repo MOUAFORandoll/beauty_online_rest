@@ -23,7 +23,6 @@ export class UsersService {
     async updateUserData(id: string, data: UpdateUserDto): Promise<User> {
         const user = await this.usersService.getUser(id);
 
-        console.log(data);
         if (data.userName) user.userName = data.userName;
         if (data.phone) user.phone = data.phone;
         if (data.countryCode) user.countryCode = data.countryCode;
@@ -67,5 +66,15 @@ export class UsersService {
         const position = new this.positionModel({ ...dto }, user_id);
 
         await position.save();
+    }
+    async notificationToken(user_id: string, notification_token: string): Promise<void> {
+        const user = await this.usersService.getUser(user_id);
+
+        console.log(notification_token);
+
+        if (notification_token) {
+            user.firebaseNotificationToken = notification_token;
+        }
+        await user.save();
     }
 }

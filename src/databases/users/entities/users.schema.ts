@@ -51,7 +51,12 @@ class UserSchema extends BaseSchema {
         description: 'Firebase identifiant of the user',
     })
     firebaseUID: string;
-
+    @Prop()
+    @ApiProperty({
+        type: String,
+        description: 'Firebase notification token of the user',
+    })
+    firebaseNotificationToken: string;
     @ApiProperty({
         type: String,
         description: 'Email address of the user',

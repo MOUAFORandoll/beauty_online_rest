@@ -38,7 +38,7 @@ export class ActuResponseDto {
         profileService: ProfileService,
     ): Promise<ActuResponseDto> {
         const allFiles = await realisationFileModel
-            .find({ realisation_id: realisation._id as string })
+            .find({ realisation_id: realisation._id.toString() })
             .exec();
         const formattedFiles = allFiles.map((file) => ({
             id: file._id.toString(),
@@ -54,7 +54,7 @@ export class ActuResponseDto {
             rendezVousModel,
         );
         return {
-            id: realisation._id as string,
+            id: realisation._id.toString(),
             title: realisation.title,
             price: realisation.price,
             profile_professionnel: profileProfessionnel,

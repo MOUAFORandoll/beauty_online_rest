@@ -64,7 +64,7 @@ export class ProfileResponseDto {
         console.log(position);
 
         return {
-            id: profile._id as string,
+            id: profile._id.toString(),
             name_pro: profile.namePro,
             service: profile.service,
             cover: profile.cover,

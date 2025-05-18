@@ -24,31 +24,40 @@
 
 ## Description
 
-## Project setup
+Nest is a framework for building efficient, scalable Node.js server-side applications. It uses modern JavaScript, is built with TypeScript and combines elements of OOP (Object Oriented Programming), FP (Functional Programming), and FRP (Functional Reactive Programming).
 
+Under the hood, Nest makes use of Express, allowing for easy use of the myriad third-party libraries already available for the framework. This allows for rapid development and gives developers the freedom to choose the tools that best fit their needs.
+
+## Project Setup
+
+To set up the project, run the following command in your terminal:
 ```bash
 $ npm install
 ```
 
-## Variable d'environnement
+## Environment Variables
+
+The following environment variables are required for the project to function correctly:
 
 ```bash
 # MongoDB connection URI
 MONGO_URI=""
+
 # Environment variable to specify the environment : development, staging or production
 ENVIRONMENT=""
+
 # Firebase configuration
 FIREBASE_SECRET_PATH="./firebase-adminsdk.json"
 
 # AWS S3 and SES settings
-AWS_ACCESS_KEY_ID=
-AWS_ACCESS_KEY_SECRET=
-AWS_REGION=
-AWS_BUCKET=
-AWS_CLOUDFRONT_URL=
+AWS_ACCESS_KEY_ID=""
+AWS_ACCESS_KEY_SECRET=""
+AWS_REGION=""
+AWS_BUCKET=""
+AWS_CLOUDFRONT_URL=""
 
-AWS_SES_SENDER_EMAIL=
-AWS_SES_SENDER_NAME=
+AWS_SES_SENDER_EMAIL=""
+AWS_SES_SENDER_NAME=""
 
 # Applications settings
 
@@ -59,9 +68,13 @@ APP_ROUTE_PREFIX=api
 APP_ROUTE_DOCUMENTATION='/api/documentation'
 APP_API_URL="http://localhost:8080"  
 
+# Firebase notification server
+NOTIFICATION_URL=http://localhost:2000/api/send-notification
 ```
 
-## Compile and run the project
+## Compile and Run the Project
+
+To compile and run the project, use the following commands:
 
 ```bash
 # development
@@ -74,7 +87,9 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Run tests
+## Run Tests
+
+To run the tests, use the following commands:
 
 ```bash
 # unit tests

@@ -8,6 +8,7 @@ import { RendezVousModule } from './rendez_vous/rendez_vous.module';
 import { ActuModule } from './actu/actu.module';
 import HttpLoggerService from './common/logger/providers/http_logger.service';
 import { LoggerModule } from './common/logger/logger.module';
+import { NotificationsModule } from './common/modules/notifications/notifications.module';
 
 @Module({
     imports: [
@@ -16,6 +17,7 @@ import { LoggerModule } from './common/logger/logger.module';
             envFilePath: '.env',
         }),
         LoggerModule,
+        NotificationsModule,
         UsersModule,
         ProfileModule,
         RendezVousModule,

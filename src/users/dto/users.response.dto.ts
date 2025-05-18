@@ -40,7 +40,7 @@ export class UserDto {
 
     static fromUser(user: User): UserDto {
         return {
-            id: user._id as string,
+            id: user._id.toString(),
             pictureUrl: user.pictureUrl,
             email: user.email,
             userName: user.userName,

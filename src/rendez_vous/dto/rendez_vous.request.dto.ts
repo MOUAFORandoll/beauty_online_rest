@@ -5,16 +5,7 @@ export class CreateRendezVousDto {
     @ApiProperty()
     @IsString()
     @IsNotEmpty()
-    agenda_id: string;
-    @ApiProperty()
-    @IsString()
-    @IsNotEmpty()
-    timeOfArrival: string;
-
-    @ApiProperty()
-    @IsBoolean()
-    @IsNotEmpty()
-    status: string;
+    creneau_id: string;
 
     @ApiProperty()
     @IsString()

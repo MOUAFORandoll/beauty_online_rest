@@ -23,17 +23,17 @@ export class RealisationResponseDto {
         realisationFileModel: RealisationFileModel,
     ): Promise<RealisationResponseDto> {
         const allFiles = await realisationFileModel
-            .find({ realisation_id: realisation._id as string })
+            .find({ realisation_id: realisation._id })
             .exec();
         const formattedFiles = allFiles.map((file) => ({
             id: file._id.toString(),
             file_path: file.file_path,
         }));
         return {
-            id: realisation._id as string,
+            id: realisation._id.toString(),
             title: realisation.title,
             price: realisation.price,
-            profile_professionnel_id: realisation.profile_professionnel_id,
+            profile_professionnel_id: realisation.profile_professionnel_id.toString(),
             realisation_files: formattedFiles,
         };
     }

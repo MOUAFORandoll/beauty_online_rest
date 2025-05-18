@@ -6,7 +6,7 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 
 import { applySortedMongooseAdditionalFunctions } from '../../base.functions';
 import { USER_MODEL_NAME } from './users.schema';
-import { PROFILE_PRO_MODEL_NAME } from './profile_professionnel.schema';
+import { PROFILE_PRO_MODEL_NAME } from './profile.schema';
 
 // POSITION
 export const POSITION_MODEL_NAME = 'positions';

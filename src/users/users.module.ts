@@ -4,11 +4,13 @@ import { AuthClientGuard, AuthFirebaseService, AuthService, UsersService } from 
 import { APP_GUARD } from '@nestjs/core';
 import { MainDatabaseModule } from '../databases/main.database.module';
 import { AwsModule } from '../common/modules/aws/aws.module';
+import { NotificationsModule } from '../common/modules/notifications/notifications.module';
 
 @Module({
-    imports: [MainDatabaseModule, AwsModule],
+    imports: [MainDatabaseModule, AwsModule, NotificationsModule],
     providers: [
         AuthFirebaseService,
+
         UsersService,
         AuthService,
         {

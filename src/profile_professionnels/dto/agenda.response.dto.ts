@@ -13,7 +13,7 @@ export class CreneauResponseDto {
 
     static fromCreneau(creneau: Creneau): CreneauResponseDto {
         return {
-            id: creneau._id as string,
+            id: creneau._id.toString(),
             startTimeAvailable: creneau.startTimeAvailable,
             endTimeAvailable: creneau.endTimeAvailable,
         };
@@ -36,7 +36,7 @@ export class AgendaResponseDto {
     ): Promise<AgendaResponseDto> {
         const creneaux = await creneauModel.find({ agenda_id: agenda._id }).exec();
         return {
-            id: agenda._id as string,
+            id: agenda._id.toString(),
             day: agenda.day,
             creneaux: creneaux.map((cr) => CreneauResponseDto.fromCreneau(cr)),
         };

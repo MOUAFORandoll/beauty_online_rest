@@ -21,7 +21,7 @@ import {
     AgendaErrors,
 } from '../errors';
 import { ProfileService } from './profile.service';
-
+import dayjs from 'dayjs';
 @Injectable()
 export class AgendaService {
     constructor(
@@ -35,29 +35,56 @@ export class AgendaService {
 
     async create(dto: CreateAgendaDto, user_id: string): Promise<Agenda> {
         try {
-            const profilePro: ProfileProfessionnel =
-                await this.profileService.findUserProfile(user_id);
+            const profilePro = await this.profileService.findUserProfile(user_id);
+            if (!profilePro) {
+                throw new NotFoundException(ProfileProErrors[PROFILE_PRO_NOT_FOUND]);
+            }
 
-            // Création de l'agenda
-            const agenda = new this.agendaModel({
-                day: dto.day,
-                profile_professionnel_id: profilePro._id, // Assure-toi que le champ correspond dans le modèle
+            // Normalise la date : compare uniquement Y-M-D
+            const targetDay = dayjs(dto.day).startOf('day').toDate();
+
+            let agenda = await this.agendaModel.findOne({
+                profile_professionnel_id: profilePro._id,
+                day: {
+                    $gte: dayjs(targetDay).startOf('day').toDate(),
+                    $lte: dayjs(targetDay).endOf('day').toDate(),
+                },
             });
 
-            const newAgenda = await agenda.save();
-            console.log(dto.creneaux);
-            // Création des créneaux de façon séquentielle et fiable
-            const creneauxData = dto.creneaux.map((e) => ({
-                ...e,
-                agenda_id: newAgenda._id,
-            }));
-            console.log(creneauxData);
+            // Si l'agenda n'existe pas, on le crée
+            if (!agenda) {
+                agenda = new this.agendaModel({
+                    day: targetDay,
+                    profile_professionnel_id: profilePro._id,
+                });
+                agenda = await agenda.save();
+            }
 
-            await this.creneauModel.insertMany(creneauxData); // insertMany est plus performant que save() en boucle
+            // Vérifie les créneaux déjà présents pour cet agenda
+            const existingCreneaux = await this.creneauModel.find({ agenda_id: agenda._id }).exec();
 
-            return newAgenda;
+            // Filtrage des créneaux déjà existants (même heure début/fin)
+            const newCreneaux = dto.creneaux.filter((newCreneau) => {
+                return !existingCreneaux.some(
+                    (existing) =>
+                        existing.startTimeAvailable === newCreneau.startTimeAvailable &&
+                        existing.endTimeAvailable === newCreneau.endTimeAvailable,
+                );
+            });
+
+            // Ajout uniquement des nouveaux créneaux
+            if (newCreneaux.length > 0) {
+                const creneauxToInsert = newCreneaux.map((e) => ({
+                    ...e,
+                    agenda_id: agenda._id,
+                }));
+
+                await this.creneauModel.insertMany(creneauxToInsert);
+            }
+
+            return agenda;
         } catch (error) {
-            throw new Error('Failed to create agenda: ' + error.message);
+            throw new Error(`Failed to create/update agenda: ${error.message}`);
         }
     }
 

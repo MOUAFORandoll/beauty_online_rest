@@ -3,7 +3,6 @@ import {
     Controller,
     Get,
     Post,
-     
     Delete,
     Param,
     Body,
@@ -67,10 +66,9 @@ export class ProfileController {
         @Body() dto: CreateProfileDto,
         @UploadedFile() cover?: Express.Multer.File,
     ): Promise<ProfileResponseDto> {
-        console.log('==00=======');
+      
         dto.cover = cover;
-        console.log('===--======');
-        await this.dbUsersService.getUser(id);
+         await this.dbUsersService.getUser(id);
         const profile = await this.profileService.create(dto, id);
 
         return ProfileResponseDto.fromProfile(
@@ -204,10 +202,9 @@ export class ProfileController {
     ): Promise<ProfileResponseDto> {
         await this.dbUsersService.getUser(idUser);
         let profile = await this.profileService.findUserProfile(idUser);
-        console.log('dto========', profile._id);
-        console.log(dto);
+      
 
-        profile = await this.profileService.update(profile._id as string, dto);
+        profile = await this.profileService.update(profile._id.toString(), dto);
         return ProfileResponseDto.fromProfile(
             profile,
             this.agendaModel,
@@ -228,7 +225,7 @@ export class ProfileController {
         @UploadedFile() image?: Express.Multer.File,
     ): Promise<ProfileResponseDto> {
         let profile = await this.profileService.findUserProfile(id);
-        profile = await this.profileService.updateProfileCover(image, profile._id as string);
+        profile = await this.profileService.updateProfileCover(image, profile._id.toString());
 
         return ProfileResponseDto.fromProfile(
             profile,

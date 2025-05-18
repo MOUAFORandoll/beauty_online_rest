@@ -5,54 +5,80 @@ import {
     RendezVous,
     RealisationFileModel,
     CreneauModel,
+    RendezVousModel,
 } from '../../databases/services/entities';
 import { UserDto } from 'src/users/dto';
-import { UserModel } from 'src/databases/users/entities';
-import { AgendaResponseDto, RealisationResponseDto } from 'src/profile_professionnels/dto';
+import { PositionModel, ProfileProfessionnelModel, UserModel } from 'src/databases/users/entities';
+import {
+    CreneauResponseDto,
+    ProfileResponseDto,
+    RealisationResponseDto,
+} from 'src/profile_professionnels/dto';
 export class RendezVousResponseDto {
     @ApiProperty()
     id: string;
-    @ApiProperty()
-    timeOfArrival: string;
 
     @ApiProperty()
-    status: boolean;
+    status: string;
 
     @ApiProperty()
     user: UserDto;
 
     @ApiProperty()
-    agenda: AgendaResponseDto;
+    day: Date;
 
     @ApiProperty()
     realisation: RealisationResponseDto;
+    @ApiProperty()
+    professional: ProfileResponseDto;
 
+    @ApiProperty()
+    professional_phone: string;
+
+    @ApiProperty()
+    creneau: CreneauResponseDto;
     static async fromRendezVous(
         userModel: UserModel,
         agendaModel: AgendaModel,
         realisationModel: RealisationModel,
         realisationFileModel: RealisationFileModel,
-
         creneauModel: CreneauModel,
+        profileModel: ProfileProfessionnelModel,
+        rendezVousModel: RendezVousModel,
+        positionModel: PositionModel,
+
         rendezVous: RendezVous,
     ): Promise<RendezVousResponseDto> {
         const _user: UserDto = UserDto.fromUser(await userModel.findById(rendezVous.user_id));
-        const _agenda: AgendaResponseDto = await AgendaResponseDto.fromAgenda(
-            await agendaModel.findById(rendezVous.agenda_id),
-            creneauModel,
-        );
+
+        const _crenauReq = await creneauModel.findById(rendezVous.creneau_id);
+
+        const _creneau: CreneauResponseDto = CreneauResponseDto.fromCreneau(_crenauReq);
+        const _agenda = await agendaModel.findById(_crenauReq.agenda_id);
         const _realisation: RealisationResponseDto = await RealisationResponseDto.fromRealisation(
             await realisationModel.findById(rendezVous.realisation_id),
             realisationFileModel,
         );
 
+        const profile = await profileModel.findById(_agenda.profile_professionnel_id).exec();
+        const _profile = await ProfileResponseDto.fromProfile(
+            profile,
+            agendaModel,
+            positionModel,
+            realisationModel,
+            rendezVousModel,
+        );
+        const _userPro: UserDto = await userModel.findById(profile.user_id);
+
         return {
-            id: rendezVous._id as string,
+            id: rendezVous._id.toString(),
             user: _user,
-            timeOfArrival: rendezVous.timeOfArrival,
+            professional_phone: _userPro.phone,
+            creneau: _creneau,
             status: rendezVous.status,
-            agenda: _agenda,
+            day: _agenda.day,
             realisation: _realisation,
+            professional: _profile,
         };
     }
 }
