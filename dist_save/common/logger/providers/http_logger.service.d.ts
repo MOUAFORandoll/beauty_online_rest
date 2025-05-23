@@ -1,0 +1,31 @@
+import { Logger, NestMiddleware } from '@nestjs/common';
+import { ServerResponse } from 'http';
+import { StringsHelperService } from './strings_helper.service';
+export default class HttpLoggerService implements NestMiddleware {
+    private readonly logger;
+    private readonly stringsHelperService;
+    private static TOKENS;
+    private static FORMATS;
+    private static MONTHS;
+    private appName;
+    constructor(logger: Logger, stringsHelperService: StringsHelperService);
+    setAppName(appName: string): void;
+    __clfDate(dateTime: Date): string;
+    __headersSent(res: any): boolean;
+    __recordStartTime(this: ServerResponse | any): void;
+    user(req: any): string;
+    remoteAddress(req: any): string | undefined;
+    ipAddress(req: any): string | undefined;
+    requestDate(req: any, format: string | undefined): string;
+    requestMethod(req: any): string;
+    url(req: any): string;
+    httpVersion(req: any): string;
+    resStatus(req: any, res: any): string | undefined;
+    resTime(req: any, res: any): string | undefined;
+    referrer(req: any): string | undefined;
+    userAgent(req: any): string | undefined;
+    __formatLogLine(req: any, res: any, format: string): string;
+    logRequest(print: boolean, req: any, res: any, fmt: string): void;
+    httpLogger(format: string | undefined | null, options: any): (req: any, res: any, next: (e?: any) => any) => any;
+    use(req: any, res: any, next: (error?: any) => void): any;
+}
