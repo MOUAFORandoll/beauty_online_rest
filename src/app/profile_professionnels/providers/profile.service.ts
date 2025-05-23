@@ -14,9 +14,16 @@ import { DATABASE_CONNECTION } from 'src/databases/main.database.connection';
 import { PaginationPayloadDto } from 'src/common/apiutils';
 import { UpdateUserPositionDto } from 'src/app/users/dto';
 import { StorageService } from 'src/common/modules/aws/providers';
+import { Shareable, ShareableProperties } from 'src/common/ClassActions/action.shareable';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
+@Shareable({
+    sharePath: 'professionnel',
+})
 export class ProfileService {
+    private self: ProfileService & ShareableProperties;
+
     constructor(
         @InjectModel(POSITION_MODEL_NAME, DATABASE_CONNECTION)
         private readonly positionModel: PositionModel,
@@ -24,7 +31,10 @@ export class ProfileService {
         @InjectModel(PROFILE_PRO_MODEL_NAME, DATABASE_CONNECTION)
         private readonly profileModel: ProfileProfessionnelModel,
         private readonly storageService: StorageService,
-    ) {}
+        private configService: ConfigService,
+    ) {
+        this.self = this as unknown as ProfileService & ShareableProperties;
+    }
 
     async create(dto: CreateProfileDto, user_id: string): Promise<ProfileProfessionnel> {
         try {
@@ -178,5 +188,9 @@ export class ProfileService {
         } catch (error) {
             throw new Error(`Failed to create profile: ${error.message}`);
         }
+    }
+
+    shareProfile(profileId: string): string {
+        return this.self.share(profileId.toString());
     }
 }

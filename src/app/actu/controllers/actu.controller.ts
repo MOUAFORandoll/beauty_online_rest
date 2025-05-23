@@ -1,5 +1,5 @@
 // profile.controller.ts
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ActuResponseDto } from '../dto';
 import { ActuService } from '../providers';
@@ -23,6 +23,7 @@ import {
 } from 'src/databases/main.database.connection';
 import { InjectModel } from '@nestjs/mongoose';
 import { ProfileService } from 'src/app/profile_professionnels/providers';
+import { ShareLink } from 'src/common/ClassActions/response.dto';
 
 @ApiTags('Actus')
 @Controller('actus')
@@ -47,7 +48,7 @@ export class ActuController {
         private readonly dbUsersService: Database.UsersService,
     ) {}
 
-    @Get('')
+    @Get()
     @ApiOperation({
         summary: 'Find All profile',
     })
@@ -61,15 +62,44 @@ export class ActuController {
         return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) =>
             ActuResponseDto.fromActu(
                 l,
-
                 this.realisationFileModel,
                 this.agendaModel,
                 this.positionModel,
                 this.realisationModel,
-
                 this.rendezVousModel,
                 this.profileService,
             ),
         );
+    }
+
+    @Get(':id')
+    @ApiOperation({
+        summary: 'Find actu by id',
+    })
+    @Public()
+    @ApiOkResponse({ type: ActuResponseDto })
+    async findOneById(@Param('id') id: string): Promise<ActuResponseDto> {
+        const actu = await this.actuService.findOneById(id);
+        return ActuResponseDto.fromActu(
+            actu,
+            this.realisationFileModel,
+            this.agendaModel,
+            this.positionModel,
+            this.realisationModel,
+            this.rendezVousModel,
+            this.profileService,
+        );
+    }
+    @Get(':id/share')
+    @ApiOkResponse({ type: ShareLink })
+    @ApiOperation({
+        summary: 'Actu Share link',
+    })
+    @HttpCode(HttpStatus.OK)
+    @Public()
+    shareActu(@Param('id') actuId: string): ShareLink {
+        console.log(actuId);
+        const shareLink = this.actuService.shareActu(actuId);
+        return { shareLink };
     }
 }

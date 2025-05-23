@@ -32,6 +32,7 @@ import {
     RendezVousModel,
 } from 'src/databases/main.database.connection';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ShareLink } from 'src/common/ClassActions/response.dto';
 
 @ApiTags('ProfileProfessionnels')
 @Controller('profile-professionnels')
@@ -253,5 +254,17 @@ export class ProfileController {
     async delete(@Param('id') id: string, @GetUser('id') idUser: string): Promise<void> {
         await this.dbUsersService.getUser(idUser);
         await this.profileService.delete(id);
+    }
+
+    @Get(':id/share')
+    @ApiOkResponse({ type: ShareLink })
+    @Public()
+    @ApiOperation({
+        summary: 'Profile share link',
+    })
+    @HttpCode(HttpStatus.OK)
+    shareProfile(@Param('id') actuId: string): ShareLink {
+        const shareLink = this.profileService.shareProfile(actuId);
+        return { shareLink };
     }
 }
