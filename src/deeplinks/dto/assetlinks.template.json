@@ -1,0 +1,15 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls",
+            "delegate_permission/common.get_login_creds"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "com.beauty.online",
+            "sha256_cert_fingerprints": [
+                "C6:BF:A4:B8:28:F6:5C:4D:44:B5:5E:1D:F4:E4:D1:E6:4C:61:55:07:59:59:A9:5B:B7:6E:3B:96:CE:97:A6:EB"
+            ]
+        }
+    }
+]

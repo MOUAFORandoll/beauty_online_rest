@@ -1,11 +1,11 @@
 import { Logger, MiddlewareConsumer, Module } from '@nestjs/common';
 
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './app/users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { MainDatabaseModule } from './databases/main.database.module';
-import { ProfileModule } from './profile_professionnels/profile.module';
-import { RendezVousModule } from './rendez_vous/rendez_vous.module';
-import { ActuModule } from './actu/actu.module';
+import { ProfileModule } from './app/profile_professionnels/profile.module';
+import { RendezVousModule } from './app/rendez_vous/rendez_vous.module';
+import { ActuModule } from './app/actu/actu.module';
 import HttpLoggerService from './common/logger/providers/http_logger.service';
 import { LoggerModule } from './common/logger/logger.module';
 import { NotificationsModule } from './common/modules/notifications/notifications.module';

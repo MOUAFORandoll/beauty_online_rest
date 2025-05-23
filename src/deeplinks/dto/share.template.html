@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-itunes-app" content="app-id={{appleAppId}}, app-argument={{site}}">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="white">
+    <meta name="apple-mobile-web-app-title" content="{{appName}}">
+
+    <!-- <link rel="icon" type="image/png" href="..."> -->
+    <link rel="mask-icon" href="" color="#ffffff">
+    <meta name="application-name" content="appName">
+
+    <title>{{pageTitle}}</title>
+    <meta name="title" content="{{title}}" />
+    <meta name="description" content="{{description}}" />
+    <meta property="og:title" content="{{title}}" />
+    <meta property="og:description" content="{{description}}" />
+    <meta property="og:image" content="{{image}}" />
+    <meta property="og:image_height" content="{{imageHeight}}" />
+    <meta property="og:image_width" content="{{imageWidth}}" />
+    <meta property="og:sitename" content="{{sitename}}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="app"/>
+    <meta name="twitter:title" content="{{title}}"/>
+    <meta name="twitter:description" content="{{description}}"/>
+    <meta name="twitter:image" content="{{image}}"/>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Detect.js/2.2.2/detect.min.js" rossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<body>
+    <!-- YOUR PAGE CONTENT HERE -->
+</body>
+
+<script>
+  // Optional: redirect users on mobile platforms to the according store
+    const result = detect.parse(navigator.userAgent);
+    if (result.os.family === 'iOS') {
+        window.location.href = 'https://apps.apple.com/us/app/id{{appleAppId}}';
+    } else if (result.os.family.includes('Android')) {
+        window.location.href = 'https://play.google.com/store/apps/details?id={{googleAppId}}';
+    } else {
+        const website = '{{site}}';
+        if (website !== '')
+            window.location.href = website;
+    }
+</script>
+</html>

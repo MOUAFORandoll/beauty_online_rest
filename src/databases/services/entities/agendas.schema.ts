@@ -3,7 +3,6 @@ import { Model } from 'mongoose';
 import { BaseSchema } from '../../base.schema';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
-
 import { applySortedMongooseAdditionalFunctions } from '../../base.functions';
 import { PROFILE_PRO_MODEL_NAME } from 'src/databases/users/entities';
 
