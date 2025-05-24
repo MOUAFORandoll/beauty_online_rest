@@ -8,8 +8,10 @@ export declare class RealisationController {
     private readonly realisationFileModel;
     private readonly realisationService;
     private readonly dbUsersService;
+    private readonly localDirectory;
     constructor(realisationFileModel: RealisationFileModel, realisationService: RealisationService, dbUsersService: Database.UsersService);
     create(id: string, dto: CreateRealisationDto, images: Array<Express.Multer.File>): Promise<RealisationResponseDto>;
+    fakeData(): Promise<RealisationResponseDto[]>;
     findUserRealisation(idUser: string, pagination: PaginationPayloadDto): Promise<PaginationResponseDto<RealisationResponseDto>>;
     findProRealisation(idProfessionnel: string, pagination: PaginationPayloadDto): Promise<PaginationResponseDto<RealisationResponseDto>>;
     findRealisationFilter(filter: FindRealisationDto, pagination: PaginationPayloadDto): Promise<PaginationResponseDto<RealisationResponseDto>>;

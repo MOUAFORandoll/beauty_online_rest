@@ -58,11 +58,14 @@ const platform_express_1 = require("@nestjs/platform-express");
 const entities_1 = require("../../../databases/services/entities");
 const main_database_connection_1 = require("../../../databases/main.database.connection");
 const mongoose_1 = require("@nestjs/mongoose");
+const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
 let RealisationController = class RealisationController {
     constructor(realisationFileModel, realisationService, dbUsersService) {
         this.realisationFileModel = realisationFileModel;
         this.realisationService = realisationService;
         this.dbUsersService = dbUsersService;
+        this.localDirectory = path.join(__dirname, '../../../../upload');
     }
     async create(id, dto, images) {
         dto.images = images;
@@ -70,6 +73,59 @@ let RealisationController = class RealisationController {
         await this.dbUsersService.getUser(id);
         const profile = await this.realisationService.create(dto, id);
         return dto_1.RealisationResponseDto.fromRealisation(profile, this.realisationFileModel);
+    }
+    async fakeData() {
+        console.log('titles======', this.localDirectory);
+        const titles = [
+            'Nattes collées',
+            'Vanilles',
+            'Tresses africaines',
+            'Chignon',
+            'Coupe dégradée',
+            'Tissage',
+            'Perruque lace',
+            'Crochet braids',
+            'Coiffure protectrice',
+            'Locks',
+            'Twists',
+            'Braids',
+            'Fulani braids',
+        ];
+        console.log(titles);
+        console.log('allImageFiles======');
+        const allImageFiles = fs
+            .readdirSync(this.localDirectory)
+            .filter((file) => fs.statSync(path.join(this.localDirectory, file)).isFile());
+        console.log(allImageFiles);
+        const userId = '68156b0b5ad449e5c595ebb6';
+        const realisations = [];
+        const getRandomFromArray = (arr, count) => [...arr].sort(() => 0.5 - Math.random()).slice(0, count);
+        const getRandomPrice = () => Math.floor(Math.random() * 30 + 20).toString();
+        for (let i = 0; i < 50; i++) {
+            const selectedImages = getRandomFromArray(allImageFiles, 3);
+            console.log(selectedImages);
+            const imagesBuffer = selectedImages.map((fileName) => {
+                const filePath = path.join(this.localDirectory, fileName);
+                const buffer = fs.readFileSync(filePath);
+                return {
+                    fieldname: 'images',
+                    originalname: fileName,
+                    encoding: '7bit',
+                    mimetype: 'image/jpeg',
+                    buffer,
+                    size: buffer.length,
+                };
+            });
+            const dto = {
+                title: titles[Math.floor(Math.random() * titles.length)],
+                price: getRandomPrice(),
+                images: imagesBuffer,
+            };
+            const realisation = await this.realisationService.create(dto, userId);
+            const responseDto = await dto_1.RealisationResponseDto.fromRealisation(realisation, this.realisationService['realisationFileModel']);
+            realisations.push(responseDto);
+        }
+        return realisations;
     }
     async findUserRealisation(idUser, pagination) {
         const { data, total } = await this.realisationService.findUserRealisation(idUser, pagination);
@@ -114,6 +170,16 @@ __decorate([
         Array]),
     __metadata("design:returntype", Promise)
 ], RealisationController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)('/fake-data'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Create fake realisations for a test profile',
+    }),
+    (0, apiutils_1.Public)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], RealisationController.prototype, "fakeData", null);
 __decorate([
     (0, common_1.Get)('/me'),
     (0, swagger_1.ApiOperation)({

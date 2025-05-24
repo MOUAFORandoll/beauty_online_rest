@@ -26,15 +26,18 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { REALISATION_FILE_MODEL_NAME, RealisationFileModel } from 'src/databases/services/entities';
 import { DATABASE_CONNECTION } from 'src/databases/main.database.connection';
 import { InjectModel } from '@nestjs/mongoose';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @ApiTags('Realisations')
 @Controller('realisations')
 export class RealisationController {
+    private readonly localDirectory = path.join(__dirname, '../../../../upload');
     constructor(
         @InjectModel(REALISATION_FILE_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationFileModel: RealisationFileModel,
         private readonly realisationService: RealisationService,
-     
+
         private readonly dbUsersService: Database.UsersService,
     ) {}
 
@@ -56,6 +59,80 @@ export class RealisationController {
         const profile = await this.realisationService.create(dto, id);
         return RealisationResponseDto.fromRealisation(profile, this.realisationFileModel);
     }
+
+    @Get('/fake-data')
+    @ApiOperation({
+        summary: 'Create fake realisations for a test profile',
+    })
+    @Public()
+    async fakeData(): Promise<RealisationResponseDto[]> {
+        console.log('titles======', this.localDirectory);
+        const titles: string[] = [
+            'Nattes collées',
+            'Vanilles',
+            'Tresses africaines',
+            'Chignon',
+            'Coupe dégradée',
+            'Tissage',
+            'Perruque lace',
+            'Crochet braids',
+            'Coiffure protectrice',
+            'Locks',
+            'Twists',
+            'Braids',
+            'Fulani braids',
+        ];
+        console.log(titles);
+        console.log('allImageFiles======');
+
+        const allImageFiles = fs
+            .readdirSync(this.localDirectory)
+            .filter((file) => fs.statSync(path.join(this.localDirectory, file)).isFile());
+        console.log(allImageFiles);
+
+        const userId = '68156b0b5ad449e5c595ebb6';
+        const realisations: RealisationResponseDto[] = [];
+
+        const getRandomFromArray = <T>(arr: T[], count: number): T[] =>
+            [...arr].sort(() => 0.5 - Math.random()).slice(0, count);
+
+        const getRandomPrice = (): string => Math.floor(Math.random() * 30 + 20).toString(); // entre 20 et 50€
+
+        for (let i = 0; i < 50; i++) {
+            const selectedImages = getRandomFromArray(allImageFiles, 3);
+
+            console.log(selectedImages);
+            const imagesBuffer = selectedImages.map((fileName) => {
+                const filePath = path.join(this.localDirectory, fileName);
+                const buffer = fs.readFileSync(filePath);
+                return {
+                    fieldname: 'images',
+                    originalname: fileName,
+                    encoding: '7bit',
+                    mimetype: 'image/jpeg', // ou image/png selon ton cas
+                    buffer,
+                    size: buffer.length,
+                } as Express.Multer.File;
+            });
+
+            const dto = {
+                title: titles[Math.floor(Math.random() * titles.length)],
+                price: getRandomPrice(),
+                images: imagesBuffer,
+            };
+
+            const realisation = await this.realisationService.create(dto, userId);
+
+            const responseDto = await RealisationResponseDto.fromRealisation(
+                realisation,
+                this.realisationService['realisationFileModel'],
+            );
+            realisations.push(responseDto);
+        }
+
+        return realisations;
+    }
+
     @Get('/me')
     @ApiOperation({
         summary: 'Find user profile',
