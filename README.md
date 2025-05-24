@@ -24,6 +24,7 @@
 
 > **Beauty Online** est une application backend développée avec **NestJS**.  
 > Elle se compose de **deux modules indépendants** :
+>
 > - 🌐 **REST API** : Gestion des utilisateurs, services, notifications, etc.
 > - 🔗 **DeepLinks** : Génération de liens universels pour mobile (iOS & Android).
 
@@ -93,14 +94,14 @@ module.exports = {
   apps: [
     {
       name: 'api-rest',
-      script: 'dist/main-rest.js',
+      script: 'dist/main_api.js',
       env: {
         NODE_ENV: 'production',
       },
     },
     {
       name: 'deeplinks',
-      script: 'dist/main-redirect.js',
+      script: 'dist/main_deeplink.js',
       env: {
         NODE_ENV: 'production',
       },
@@ -113,3 +114,4 @@ module.exports = {
 pm2 start ecosystem.config.js
 pm2 save
 pm2 startup
+```
