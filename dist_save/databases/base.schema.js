@@ -11,9 +11,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseEntitySchema = exports.BaseSchema = void 0;
 const mongoose_1 = require("@nestjs/mongoose");
+const common_1 = require("@nestjs/common");
 let BaseSchema = class BaseSchema {
     setDeleted() {
-        this.deleted_at = new Date();
+        throw new common_1.NotImplementedException();
     }
 };
 exports.BaseSchema = BaseSchema;

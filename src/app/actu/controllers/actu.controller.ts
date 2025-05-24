@@ -1,10 +1,10 @@
 // profile.controller.ts
-import { Controller, Delete, Get, Post, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
+import { Controller,  Get, Post, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ActuResponseDto } from '../dto';
 import { ActuService } from '../providers';
 import * as Database from '../../../databases/users/providers';
-import { PaginationPayloadDto, PaginationResponseDto, Public } from 'src/common/apiutils';
+import { PaginationPayloadDto, PaginationResponseDto, } from 'src/common/apiutils';
 
 import {
     AgendaModel,

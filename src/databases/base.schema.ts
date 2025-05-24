@@ -19,9 +19,10 @@ export class BaseSchema {
     deleted_at: Date;
 
     setDeleted() {
-        this.deleted_at = new Date();
+      //  this.deleted_at = new Date();
 
-        // throw new NotImplementedException();
+        // 
+        throw new NotImplementedException();
     }
 }
 
