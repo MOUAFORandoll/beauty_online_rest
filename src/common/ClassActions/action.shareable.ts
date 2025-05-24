@@ -2,10 +2,10 @@ export interface ShareableProperties {
     share(elementId: string): string;
 }
 
-export interface ShareableOptions {
+export interface ShareReableOptions {
     sharePath: string;
 }
-export function Shareable(options: ShareableOptions): ClassDecorator {
+export function Shareable(options:ShareReableOptions): ClassDecorator {
     return function (target: Function) {
         target.prototype.share = function (id: string): string {
             if (!this.configService) {

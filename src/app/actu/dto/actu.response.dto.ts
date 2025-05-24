@@ -6,8 +6,9 @@ import {
     Realisation,
     RealisationFileModel,
     RendezVousModel,
-    VueModel,
-    ShareModel,
+    VueRealisationModel,
+    ShareRealisationModel,
+    LikeRealisationModel
 } from 'src/databases/main.database.connection';
 import { ProfileResponseDto } from 'src/app/profile_professionnels/dto';
 import { ProfileService } from 'src/app/profile_professionnels/providers';
@@ -25,6 +26,11 @@ export class ActuResponseDto {
     @ApiProperty()
     nombre_vues: number;
     @ApiProperty()
+    nombre_likes: number;
+
+    @ApiProperty()
+    has_liked: boolean;
+    @ApiProperty()
     nombre_partages: number;
 
     @ApiProperty()
@@ -37,19 +43,32 @@ export class ActuResponseDto {
     }[];
     static async fromActu(
         realisation: Realisation,
+        userId: string,
         realisationFileModel: RealisationFileModel,
         agendaModel: AgendaModel,
         positionModel: PositionModel,
         realisationModel: RealisationModel,
         rendezVousModel: RendezVousModel,
-        vueModel: VueModel,
-        shareModel: ShareModel,
+        vueModel: VueRealisationModel,
+        shareModel: ShareRealisationModel,
+        likeModel: LikeRealisationModel,
         profileService: ProfileService,
     ): Promise<ActuResponseDto> {
         const numbreDeVues = await vueModel
             .find({ realisation_id: realisation._id.toString() })
             .countDocuments()
             .exec();
+        const numbreDeLikes = await likeModel
+            .find({ realisation_id: realisation._id.toString() })
+            .countDocuments()
+            .exec();
+        const hasLiked =
+            userId == null
+                ? false
+                : (await likeModel
+                      .find({ realisation_id: realisation._id.toString(), user_id: userId })
+                      .countDocuments()
+                      .exec()) != 0;
         const nombreDePartages = await shareModel
             .find({ realisation_id: realisation._id.toString() })
             .countDocuments()
@@ -77,7 +96,9 @@ export class ActuResponseDto {
             profile_professionnel: profileProfessionnel,
             realisation_files: formattedFiles,
             nombre_vues: numbreDeVues,
+            nombre_likes: numbreDeLikes,
             nombre_partages: nombreDePartages,
+            has_liked: hasLiked,
         };
     }
 }

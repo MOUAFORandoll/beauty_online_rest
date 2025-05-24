@@ -75,9 +75,12 @@ export class AuthClientGuard implements CanActivate {
 
         const isPublic = checkIsPublic(this.reflector, context);
         if (isPublic) return true;
+        console.log('request.headers', request.headers);
 
         const userId = request.headers.uid;
         const user = await this.user.findById(userId).lean().exec();
+        console.log('uiduser');
+        console.log(request.user);
         if (!user) return false;
 
         request['user'] = { id: user._id };

@@ -14,7 +14,10 @@ import { DATABASE_CONNECTION } from 'src/databases/main.database.connection';
 import { PaginationPayloadDto } from 'src/common/apiutils';
 import { UpdateUserPositionDto } from 'src/app/users/dto';
 import { StorageService } from 'src/common/modules/aws/providers';
-import { Shareable, ShareableProperties } from 'src/common/ClassActions/action.shareable';
+import {
+    Shareable,
+    ShareableProperties,
+} from 'src/common/ClassActions/action.shareable';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

@@ -1,5 +1,5 @@
 // realisation.service.ts
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
     DATABASE_CONNECTION,
@@ -8,10 +8,12 @@ import {
     RealisationModel,
     RealisationFileModel,
     REALISATION_FILE_MODEL_NAME,
-    VUE_MODEL_NAME,
-    VueModel,
-    ShareModel,
-    SHARE_MODEL_NAME,
+    VUE_REALISATION_MODEL_NAME,
+    VueRealisationModel,
+    ShareRealisationModel,
+    SHARE_REALISATION_MODEL_NAME,
+    LikeRealisationModel,
+    LIKE_REALISATION_MODEL_NAME,
 } from 'src/databases/main.database.connection';
 import { PaginationPayloadDto } from 'src/common/apiutils';
 import { Shareable, ShareableProperties } from 'src/common/ClassActions/action.shareable';
@@ -23,12 +25,14 @@ import { ConfigService } from '@nestjs/config';
 export class ActuService {
     private self: ActuService & ShareableProperties;
     constructor(
-        @InjectModel(VUE_MODEL_NAME, DATABASE_CONNECTION)
-        private readonly vueModel: VueModel,
+        @InjectModel(VUE_REALISATION_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly vueModel: VueRealisationModel,
         @InjectModel(REALISATION_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationModel: RealisationModel,
-        @InjectModel(SHARE_MODEL_NAME, DATABASE_CONNECTION)
-        private readonly shareModel: ShareModel,
+        @InjectModel(SHARE_REALISATION_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly shareModel: ShareRealisationModel,
+        @InjectModel(LIKE_REALISATION_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly likeModel: LikeRealisationModel,
 
         @InjectModel(REALISATION_FILE_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationFileModel: RealisationFileModel,
@@ -88,5 +92,44 @@ export class ActuService {
         } catch (error) {
             throw new Error(`Failed to create profile: ${error.message}`);
         }
+    }
+    /**
+     * Like a realisation
+     */
+    async likeRealisation(userId: string, realisationId: string): Promise<void> {
+        const alreadyLiked = await this.likeModel.findOne({
+            user_id: userId,
+            realisation_id: realisationId,
+        });
+
+        if (alreadyLiked) {
+            await this.likeModel.deleteOne({
+                user_id: userId,
+                realisation_id: realisationId,
+            });
+        } else {
+            await this.likeModel.create({
+                user_id: userId,
+                realisation_id: realisationId,
+            });
+        }
+    }
+
+    /**
+     * Get number of likes for a realisation
+     */
+    async countLikes(realisationId: string): Promise<number> {
+        return this.likeModel.countDocuments({ realisation_id: realisationId });
+    }
+
+    /**
+     * Check if user liked the realisation
+     */
+    async hasLiked(userId: string, realisationId: string): Promise<boolean> {
+        const liked = await this.likeModel.exists({
+            user_id: userId,
+            realisation_id: realisationId,
+        });
+        return !!liked;
     }
 }

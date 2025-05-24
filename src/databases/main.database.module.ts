@@ -19,10 +19,12 @@ import {
     REALISATION_FILE_MODEL_NAME,
     CRENEAU_MODEL_NAME,
     CreneauxSchema,
-    VuesSchema,
-    VUE_MODEL_NAME,
-    SHARE_MODEL_NAME,
-    SharesSchema,
+    VueRealisationsSchema,
+    VUE_REALISATION_MODEL_NAME,
+    SHARE_REALISATION_MODEL_NAME,
+    ShareRealisationsSchema,
+    LIKE_REALISATION_MODEL_NAME,
+    LikeRealisationsSchema,
 } from './main.database.connection';
 import { UsersService } from './users/providers';
 
@@ -50,8 +52,9 @@ import { UsersService } from './users/providers';
                 { name: AGENDA_MODEL_NAME, schema: AgendasSchema },
                 { name: CRENEAU_MODEL_NAME, schema: CreneauxSchema },
                 { name: RENDEZ_VOUS_MODEL_NAME, schema: RendezVoussSchema },
-                { name: VUE_MODEL_NAME, schema: VuesSchema },
-                { name: SHARE_MODEL_NAME, schema: SharesSchema },
+                { name: VUE_REALISATION_MODEL_NAME, schema: VueRealisationsSchema },
+                { name: SHARE_REALISATION_MODEL_NAME, schema: ShareRealisationsSchema },
+                { name: LIKE_REALISATION_MODEL_NAME, schema: LikeRealisationsSchema },
             ],
             DATABASE_CONNECTION,
         ),

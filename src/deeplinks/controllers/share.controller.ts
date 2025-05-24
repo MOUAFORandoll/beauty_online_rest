@@ -21,10 +21,12 @@ import {
     DATABASE_CONNECTION,
     POSITION_MODEL_NAME,
     PositionModel,
-    VUE_MODEL_NAME,
-    VueModel,
-    SHARE_MODEL_NAME,
-    ShareModel,
+    VUE_REALISATION_MODEL_NAME,
+    VueRealisationModel,
+    SHARE_REALISATION_MODEL_NAME,
+    ShareRealisationModel,
+    LIKE_REALISATION_MODEL_NAME,
+    LikeRealisationModel,
 } from 'src/databases/main.database.connection';
 import { InjectModel } from '@nestjs/mongoose';
 import { ActuResponseDto } from 'src/app/actu/dto/actu.response.dto';
@@ -50,10 +52,12 @@ export class ShareController {
 
         @InjectModel(RENDEZ_VOUS_MODEL_NAME, DATABASE_CONNECTION)
         private readonly rendezVousModel: RendezVousModel,
-        @InjectModel(VUE_MODEL_NAME, DATABASE_CONNECTION)
-        private readonly vueModel: VueModel,
-        @InjectModel(SHARE_MODEL_NAME, DATABASE_CONNECTION)
-        private readonly shareModel: ShareModel,
+        @InjectModel(VUE_REALISATION_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly vueModel: VueRealisationModel,
+        @InjectModel(SHARE_REALISATION_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly shareModel: ShareRealisationModel,
+        @InjectModel(LIKE_REALISATION_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly likeModel: LikeRealisationModel,
 
         private readonly actuService: ActuService,
     ) {
@@ -87,15 +91,15 @@ export class ShareController {
         const actu = await this.actuService.findOneById(id);
         const actuFromDTP = ActuResponseDto.fromActu(
             actu,
-
+null,
             this.realisationFileModel,
             this.agendaModel,
             this.positionModel,
             this.realisationModel,
-
             this.rendezVousModel,
             this.vueModel,
             this.shareModel,
+            this.likeModel,
             this.profileService,
         );
         return this.fillTemplate({
@@ -103,7 +107,7 @@ export class ShareController {
             title: (await actuFromDTP).title,
             description:
                 (await actuFromDTP).nombre_vues +
-                'Vues et ' +
+                'VueRealisations et ' +
                 (await actuFromDTP).nombre_partages +
                 'Partages',
             image:

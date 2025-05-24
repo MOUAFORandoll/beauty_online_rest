@@ -1,5 +1,5 @@
 // profile.controller.ts
-import { Controller, Get, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
+import { Controller, Delete, Get, Post, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ActuResponseDto } from '../dto';
 import { ActuService } from '../providers';
@@ -15,10 +15,12 @@ import {
     AGENDA_MODEL_NAME,
     REALISATION_MODEL_NAME,
     RealisationModel,
-    VUE_MODEL_NAME,
-    VueModel,
-    SHARE_MODEL_NAME,
-    ShareModel,
+    VUE_REALISATION_MODEL_NAME,
+    VueRealisationModel,
+    SHARE_REALISATION_MODEL_NAME,
+    ShareRealisationModel,
+    LIKE_REALISATION_MODEL_NAME,
+    LikeRealisationModel,
 } from 'src/databases/services/entities';
 import {
     DATABASE_CONNECTION,
@@ -48,12 +50,15 @@ export class ActuController {
 
         @InjectModel(RENDEZ_VOUS_MODEL_NAME, DATABASE_CONNECTION)
         private readonly rendezVousModel: RendezVousModel,
-        @InjectModel(VUE_MODEL_NAME, DATABASE_CONNECTION)
-        private readonly vueModel: VueModel,
-        @InjectModel(SHARE_MODEL_NAME, DATABASE_CONNECTION)
-        private readonly shareModel: ShareModel,
+        @InjectModel(VUE_REALISATION_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly vueModel: VueRealisationModel,
+        @InjectModel(SHARE_REALISATION_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly shareModel: ShareRealisationModel,
+        @InjectModel(LIKE_REALISATION_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly likeModel: LikeRealisationModel,
 
         private readonly profileService: ProfileService,
+
         private readonly dbUsersService: Database.UsersService,
     ) {}
 
@@ -62,15 +67,17 @@ export class ActuController {
         summary: 'Find All profile',
     })
     @ApiOkResponse({ type: PaginationPayloadDto })
-    @Public()
     async findAll(
         @Query() pagination: PaginationPayloadDto,
+        @GetUser('id') userId: string,
     ): Promise<PaginationResponseDto<ActuResponseDto>> {
+        console.log(userId);
         const { data, total } = await this.actuService.findAll(pagination);
 
         return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) =>
             ActuResponseDto.fromActu(
                 l,
+                userId,
                 this.realisationFileModel,
                 this.agendaModel,
                 this.positionModel,
@@ -78,6 +85,7 @@ export class ActuController {
                 this.rendezVousModel,
                 this.vueModel,
                 this.shareModel,
+                this.likeModel,
                 this.profileService,
             ),
         );
@@ -87,12 +95,15 @@ export class ActuController {
     @ApiOperation({
         summary: 'Find actu by id',
     })
-    @Public()
     @ApiOkResponse({ type: ActuResponseDto })
-    async findOneById(@Param('id') id: string): Promise<ActuResponseDto> {
+    async findOneById(
+        @Param('id') id: string,
+        @GetUser('id') userId: string,
+    ): Promise<ActuResponseDto> {
         const actu = await this.actuService.findOneById(id);
         return ActuResponseDto.fromActu(
             actu,
+            userId,
             this.realisationFileModel,
             this.agendaModel,
             this.positionModel,
@@ -100,13 +111,14 @@ export class ActuController {
             this.rendezVousModel,
             this.vueModel,
             this.shareModel,
+            this.likeModel,
             this.profileService,
         );
     }
     @Get(':id/share')
     @ApiOkResponse({ type: ShareLink })
     @ApiOperation({
-        summary: 'Actu Share link',
+        summary: 'Actu Share  link',
     })
     @HttpCode(HttpStatus.OK)
     async shareActu(
@@ -119,7 +131,7 @@ export class ActuController {
     }
     @Get(':id/vue')
     @ApiOperation({
-        summary: 'Actu Share link',
+        summary: 'Actu Share  link',
     })
     @HttpCode(HttpStatus.OK)
     vueActu(
@@ -129,5 +141,17 @@ export class ActuController {
     ): void {
         console.log(actuId, userId);
         this.actuService.vueActu(actuId, userId);
+    }
+    @HttpCode(HttpStatus.OK)
+    @Post(':id/like')
+    like(@Param('id') id: string, @GetUser('id') userId: string) {
+        return this.actuService.likeRealisation(userId, id);
+    }
+ 
+
+    @HttpCode(HttpStatus.OK)
+    @Get(':id/likes')
+    getLikeCount(@Param('id') id: string) {
+        return this.actuService.countLikes(id);
     }
 }
