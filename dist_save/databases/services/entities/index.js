@@ -18,4 +18,6 @@ __exportStar(require("./creneaux.schema"), exports);
 __exportStar(require("./agendas.schema"), exports);
 __exportStar(require("./realisations.schema"), exports);
 __exportStar(require("./rendez_vous.schema"), exports);
+__exportStar(require("./vue.schema"), exports);
+__exportStar(require("./share.schema"), exports);
 //# sourceMappingURL=index.js.map

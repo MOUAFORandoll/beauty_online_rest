@@ -57,29 +57,36 @@ const main_database_connection_1 = require("../../../databases/main.database.con
 const mongoose_1 = require("@nestjs/mongoose");
 const providers_2 = require("../../profile_professionnels/providers");
 const response_dto_1 = require("../../../common/ClassActions/response.dto");
+const decorators_1 = require("../../users/decorators");
 let ActuController = class ActuController {
-    constructor(realisationFileModel, actuService, agendaModel, positionModel, realisationModel, rendezVousModel, profileService, dbUsersService) {
+    constructor(realisationFileModel, actuService, agendaModel, positionModel, realisationModel, rendezVousModel, vueModel, shareModel, profileService, dbUsersService) {
         this.realisationFileModel = realisationFileModel;
         this.actuService = actuService;
         this.agendaModel = agendaModel;
         this.positionModel = positionModel;
         this.realisationModel = realisationModel;
         this.rendezVousModel = rendezVousModel;
+        this.vueModel = vueModel;
+        this.shareModel = shareModel;
         this.profileService = profileService;
         this.dbUsersService = dbUsersService;
     }
     async findAll(pagination) {
         const { data, total } = await this.actuService.findAll(pagination);
-        return apiutils_1.PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) => dto_1.ActuResponseDto.fromActu(l, this.realisationFileModel, this.agendaModel, this.positionModel, this.realisationModel, this.rendezVousModel, this.profileService));
+        return apiutils_1.PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) => dto_1.ActuResponseDto.fromActu(l, this.realisationFileModel, this.agendaModel, this.positionModel, this.realisationModel, this.rendezVousModel, this.vueModel, this.shareModel, this.profileService));
     }
     async findOneById(id) {
         const actu = await this.actuService.findOneById(id);
-        return dto_1.ActuResponseDto.fromActu(actu, this.realisationFileModel, this.agendaModel, this.positionModel, this.realisationModel, this.rendezVousModel, this.profileService);
+        return dto_1.ActuResponseDto.fromActu(actu, this.realisationFileModel, this.agendaModel, this.positionModel, this.realisationModel, this.rendezVousModel, this.vueModel, this.shareModel, this.profileService);
     }
-    shareActu(actuId) {
-        console.log(actuId);
-        const shareLink = this.actuService.shareActu(actuId);
+    async shareActu(actuId, userId) {
+        console.log(actuId, userId);
+        const shareLink = await this.actuService.shareActu(actuId, userId);
         return { shareLink };
+    }
+    vueActu(actuId, userId) {
+        console.log(actuId, userId);
+        this.actuService.vueActu(actuId, userId);
     }
 };
 exports.ActuController = ActuController;
@@ -114,12 +121,24 @@ __decorate([
         summary: 'Actu Share link',
     }),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, apiutils_1.Public)(),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, decorators_1.GetUser)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", response_dto_1.ShareLink)
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
 ], ActuController.prototype, "shareActu", null);
+__decorate([
+    (0, common_1.Get)(':id/vue'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Actu Share link',
+    }),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, decorators_1.GetUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], ActuController.prototype, "vueActu", null);
 exports.ActuController = ActuController = __decorate([
     (0, swagger_1.ApiTags)('Actus'),
     (0, common_1.Controller)('actus'),
@@ -128,6 +147,8 @@ exports.ActuController = ActuController = __decorate([
     __param(3, (0, mongoose_1.InjectModel)(main_database_connection_1.POSITION_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
     __param(4, (0, mongoose_1.InjectModel)(entities_1.REALISATION_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
     __param(5, (0, mongoose_1.InjectModel)(entities_1.RENDEZ_VOUS_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
-    __metadata("design:paramtypes", [Object, providers_1.ActuService, Object, Object, Object, Object, providers_2.ProfileService, Database.UsersService])
+    __param(6, (0, mongoose_1.InjectModel)(entities_1.VUE_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
+    __param(7, (0, mongoose_1.InjectModel)(entities_1.SHARE_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
+    __metadata("design:paramtypes", [Object, providers_1.ActuService, Object, Object, Object, Object, Object, Object, providers_2.ProfileService, Database.UsersService])
 ], ActuController);
 //# sourceMappingURL=actu.controller.js.map

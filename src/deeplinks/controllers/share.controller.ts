@@ -18,12 +18,13 @@ import {
     AGENDA_MODEL_NAME,
     REALISATION_MODEL_NAME,
     RealisationModel,
-} from 'src/databases/services/entities';
-
-import {
     DATABASE_CONNECTION,
     POSITION_MODEL_NAME,
     PositionModel,
+    VUE_MODEL_NAME,
+    VueModel,
+    SHARE_MODEL_NAME,
+    ShareModel,
 } from 'src/databases/main.database.connection';
 import { InjectModel } from '@nestjs/mongoose';
 import { ActuResponseDto } from 'src/app/actu/dto/actu.response.dto';
@@ -49,6 +50,10 @@ export class ShareController {
 
         @InjectModel(RENDEZ_VOUS_MODEL_NAME, DATABASE_CONNECTION)
         private readonly rendezVousModel: RendezVousModel,
+        @InjectModel(VUE_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly vueModel: VueModel,
+        @InjectModel(SHARE_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly shareModel: ShareModel,
 
         private readonly actuService: ActuService,
     ) {
@@ -89,12 +94,18 @@ export class ShareController {
             this.realisationModel,
 
             this.rendezVousModel,
+            this.vueModel,
+            this.shareModel,
             this.profileService,
         );
         return this.fillTemplate({
             pageTitle: this.appName,
             title: (await actuFromDTP).title,
-            description: (await actuFromDTP).profile_professionnel.name_pro,
+            description:
+                (await actuFromDTP).nombre_vues +
+                'Vues et ' +
+                (await actuFromDTP).nombre_partages +
+                'Partages',
             image:
                 (await actuFromDTP).realisation_files[0] == null
                     ? ''

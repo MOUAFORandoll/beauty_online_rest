@@ -8,6 +8,10 @@ import {
     RealisationModel,
     RealisationFileModel,
     REALISATION_FILE_MODEL_NAME,
+    VUE_MODEL_NAME,
+    VueModel,
+    ShareModel,
+    SHARE_MODEL_NAME,
 } from 'src/databases/main.database.connection';
 import { PaginationPayloadDto } from 'src/common/apiutils';
 import { Shareable, ShareableProperties } from 'src/common/ClassActions/action.shareable';
@@ -19,8 +23,12 @@ import { ConfigService } from '@nestjs/config';
 export class ActuService {
     private self: ActuService & ShareableProperties;
     constructor(
+        @InjectModel(VUE_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly vueModel: VueModel,
         @InjectModel(REALISATION_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationModel: RealisationModel,
+        @InjectModel(SHARE_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly shareModel: ShareModel,
 
         @InjectModel(REALISATION_FILE_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationFileModel: RealisationFileModel,
@@ -54,8 +62,31 @@ export class ActuService {
 
         return actu;
     }
-    shareActu(actuId: string): string {
-        console.log(actuId);
-        return this.self.share(actuId.toString());
+    async shareActu(actu_id: string, user_id: string): Promise<string> {
+        const share = new this.shareModel({
+            realisation_id: actu_id,
+
+            user_id: user_id,
+        });
+
+        await share.save();
+        return this.self.share(actu_id.toString());
+    }
+
+    async vueActu(actu_id: string, user_id: string) {
+        try {
+            console.log('=========');
+
+            const vue = new this.vueModel({
+                realisation_id: actu_id,
+
+                user_id: user_id,
+            });
+            console.log('===ddd======');
+
+            await vue.save();
+        } catch (error) {
+            throw new Error(`Failed to create profile: ${error.message}`);
+        }
     }
 }

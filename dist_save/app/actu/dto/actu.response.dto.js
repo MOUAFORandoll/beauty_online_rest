@@ -13,7 +13,15 @@ exports.ActuResponseDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const dto_1 = require("../../profile_professionnels/dto");
 class ActuResponseDto {
-    static async fromActu(realisation, realisationFileModel, agendaModel, positionModel, realisationModel, rendezVousModel, profileService) {
+    static async fromActu(realisation, realisationFileModel, agendaModel, positionModel, realisationModel, rendezVousModel, vueModel, shareModel, profileService) {
+        const numbreDeVues = await vueModel
+            .find({ realisation_id: realisation._id.toString() })
+            .countDocuments()
+            .exec();
+        const nombreDePartages = await shareModel
+            .find({ realisation_id: realisation._id.toString() })
+            .countDocuments()
+            .exec();
         const allFiles = await realisationFileModel
             .find({ realisation_id: realisation._id.toString() })
             .exec();
@@ -29,6 +37,8 @@ class ActuResponseDto {
             price: realisation.price,
             profile_professionnel: profileProfessionnel,
             realisation_files: formattedFiles,
+            nombre_vues: numbreDeVues,
+            nombre_partages: nombreDePartages,
         };
     }
 }
@@ -45,6 +55,14 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], ActuResponseDto.prototype, "price", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ActuResponseDto.prototype, "nombre_vues", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Number)
+], ActuResponseDto.prototype, "nombre_partages", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", dto_1.ProfileResponseDto)

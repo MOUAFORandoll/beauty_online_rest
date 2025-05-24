@@ -19,8 +19,10 @@ const main_database_connection_1 = require("../../../databases/main.database.con
 const action_shareable_1 = require("../../../common/ClassActions/action.shareable");
 const config_1 = require("@nestjs/config");
 let ActuService = class ActuService {
-    constructor(realisationModel, realisationFileModel, configService) {
+    constructor(vueModel, realisationModel, shareModel, realisationFileModel, configService) {
+        this.vueModel = vueModel;
         this.realisationModel = realisationModel;
+        this.shareModel = shareModel;
         this.realisationFileModel = realisationFileModel;
         this.configService = configService;
         this.self = this;
@@ -41,9 +43,27 @@ let ActuService = class ActuService {
         const actu = await this.realisationModel.findById(id).exec();
         return actu;
     }
-    shareActu(actuId) {
-        console.log(actuId);
-        return this.self.share(actuId.toString());
+    async shareActu(actu_id, user_id) {
+        const share = new this.shareModel({
+            realisation_id: actu_id,
+            user_id: user_id,
+        });
+        await share.save();
+        return this.self.share(actu_id.toString());
+    }
+    async vueActu(actu_id, user_id) {
+        try {
+            console.log('=========');
+            const vue = new this.vueModel({
+                realisation_id: actu_id,
+                user_id: user_id,
+            });
+            console.log('===ddd======');
+            await vue.save();
+        }
+        catch (error) {
+            throw new Error(`Failed to create profile: ${error.message}`);
+        }
     }
 };
 exports.ActuService = ActuService;
@@ -52,8 +72,10 @@ exports.ActuService = ActuService = __decorate([
     (0, action_shareable_1.Shareable)({
         sharePath: 'actu',
     }),
-    __param(0, (0, mongoose_1.InjectModel)(main_database_connection_1.REALISATION_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
-    __param(1, (0, mongoose_1.InjectModel)(main_database_connection_1.REALISATION_FILE_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
-    __metadata("design:paramtypes", [Object, Object, config_1.ConfigService])
+    __param(0, (0, mongoose_1.InjectModel)(main_database_connection_1.VUE_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
+    __param(1, (0, mongoose_1.InjectModel)(main_database_connection_1.REALISATION_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
+    __param(2, (0, mongoose_1.InjectModel)(main_database_connection_1.SHARE_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
+    __param(3, (0, mongoose_1.InjectModel)(main_database_connection_1.REALISATION_FILE_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, config_1.ConfigService])
 ], ActuService);
 //# sourceMappingURL=actu.service.js.map

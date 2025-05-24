@@ -39,6 +39,8 @@ exports.MainDatabaseModule = MainDatabaseModule = __decorate([
                 { name: main_database_connection_1.AGENDA_MODEL_NAME, schema: main_database_connection_1.AgendasSchema },
                 { name: main_database_connection_1.CRENEAU_MODEL_NAME, schema: main_database_connection_1.CreneauxSchema },
                 { name: main_database_connection_1.RENDEZ_VOUS_MODEL_NAME, schema: main_database_connection_1.RendezVoussSchema },
+                { name: main_database_connection_1.VUE_MODEL_NAME, schema: main_database_connection_1.VuesSchema },
+                { name: main_database_connection_1.SHARE_MODEL_NAME, schema: main_database_connection_1.SharesSchema },
             ], main_database_connection_1.DATABASE_CONNECTION),
         ],
         providers: [providers_1.UsersService],

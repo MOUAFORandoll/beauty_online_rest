@@ -57,12 +57,11 @@ const process = __importStar(require("node:process"));
 const apiutils_1 = require("../../common/apiutils");
 const providers_1 = require("../../app/profile_professionnels/providers");
 const providers_2 = require("../../app/actu/providers");
-const entities_1 = require("../../databases/services/entities");
 const main_database_connection_1 = require("../../databases/main.database.connection");
 const mongoose_1 = require("@nestjs/mongoose");
 const actu_response_dto_1 = require("../../app/actu/dto/actu.response.dto");
 let ShareController = class ShareController {
-    constructor(configService, profileService, realisationFileModel, agendaModel, positionModel, realisationModel, rendezVousModel, actuService) {
+    constructor(configService, profileService, realisationFileModel, agendaModel, positionModel, realisationModel, rendezVousModel, vueModel, shareModel, actuService) {
         this.configService = configService;
         this.profileService = profileService;
         this.realisationFileModel = realisationFileModel;
@@ -70,6 +69,8 @@ let ShareController = class ShareController {
         this.positionModel = positionModel;
         this.realisationModel = realisationModel;
         this.rendezVousModel = rendezVousModel;
+        this.vueModel = vueModel;
+        this.shareModel = shareModel;
         this.actuService = actuService;
         this.appName = this.configService.get('DEEPLINKS_APP_NAME');
         const shareTemplate = path.resolve(process.cwd(), './src/deeplinks/dto/share.template.html');
@@ -86,11 +87,14 @@ let ShareController = class ShareController {
     }
     async findOneActuById(id) {
         const actu = await this.actuService.findOneById(id);
-        const actuFromDTP = actu_response_dto_1.ActuResponseDto.fromActu(actu, this.realisationFileModel, this.agendaModel, this.positionModel, this.realisationModel, this.rendezVousModel, this.profileService);
+        const actuFromDTP = actu_response_dto_1.ActuResponseDto.fromActu(actu, this.realisationFileModel, this.agendaModel, this.positionModel, this.realisationModel, this.rendezVousModel, this.vueModel, this.shareModel, this.profileService);
         return this.fillTemplate({
             pageTitle: this.appName,
             title: (await actuFromDTP).title,
-            description: (await actuFromDTP).profile_professionnel.name_pro,
+            description: (await actuFromDTP).nombre_vues +
+                'Vues et ' +
+                (await actuFromDTP).nombre_partages +
+                'Partages',
             image: (await actuFromDTP).realisation_files[0] == null
                 ? ''
                 : (await actuFromDTP).realisation_files[0].file_path,
@@ -134,12 +138,14 @@ __decorate([
 ], ShareController.prototype, "findOneActuById", null);
 exports.ShareController = ShareController = __decorate([
     (0, common_1.Controller)(),
-    __param(2, (0, mongoose_1.InjectModel)(entities_1.REALISATION_FILE_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
-    __param(3, (0, mongoose_1.InjectModel)(entities_1.AGENDA_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
+    __param(2, (0, mongoose_1.InjectModel)(main_database_connection_1.REALISATION_FILE_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
+    __param(3, (0, mongoose_1.InjectModel)(main_database_connection_1.AGENDA_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
     __param(4, (0, mongoose_1.InjectModel)(main_database_connection_1.POSITION_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
-    __param(5, (0, mongoose_1.InjectModel)(entities_1.REALISATION_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
-    __param(6, (0, mongoose_1.InjectModel)(entities_1.RENDEZ_VOUS_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
+    __param(5, (0, mongoose_1.InjectModel)(main_database_connection_1.REALISATION_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
+    __param(6, (0, mongoose_1.InjectModel)(main_database_connection_1.RENDEZ_VOUS_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
+    __param(7, (0, mongoose_1.InjectModel)(main_database_connection_1.VUE_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
+    __param(8, (0, mongoose_1.InjectModel)(main_database_connection_1.SHARE_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
     __metadata("design:paramtypes", [config_1.ConfigService,
-        providers_1.ProfileService, Object, Object, Object, Object, Object, providers_2.ActuService])
+        providers_1.ProfileService, Object, Object, Object, Object, Object, Object, Object, providers_2.ActuService])
 ], ShareController);
 //# sourceMappingURL=share.controller.js.map
