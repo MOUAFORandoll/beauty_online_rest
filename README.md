@@ -1,145 +1,115 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  <a href="https://nestjs.com/" target="_blank">
+    <img src="https://nestjs.com/img/logo-small.svg" width="120" alt="NestJS Logo">
+  </a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+<h1 align="center">Beauty Online API & DeepLinks</h1>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+<p align="center">
+  <strong>Une architecture modulaire en <a href="https://nestjs.com" target="_blank">NestJS</a> pour construire une API REST et un système de Deep Links scalable.</strong>
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+<p align="center">
+  <a href="https://www.npmjs.com/package/@nestjs/core" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="Version NPM"></a>
+  <a href="https://github.com/nestjs/nest/blob/master/LICENSE" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="License"></a>
+  <a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI"></a>
+  <a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master" alt="Coverage"></a>
+  <a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"></a>
+</p>
 
-Nest is a framework for building efficient, scalable Node.js server-side applications. It uses modern JavaScript, is built with TypeScript and combines elements of OOP (Object Oriented Programming), FP (Functional Programming), and FRP (Functional Reactive Programming).
+---
 
-Under the hood, Nest makes use of Express, allowing for easy use of the myriad third-party libraries already available for the framework. This allows for rapid development and gives developers the freedom to choose the tools that best fit their needs.
+## 🧩 Description
 
-## Project Setup
+> **Beauty Online** est une application backend développée avec **NestJS**.  
+> Elle se compose de **deux modules indépendants** :
+> - 🌐 **REST API** : Gestion des utilisateurs, services, notifications, etc.
+> - 🔗 **DeepLinks** : Génération de liens universels pour mobile (iOS & Android).
 
-To set up the project, run the following command in your terminal:
+---
+
+## 🛠️ Installation
+
 ```bash
-$ npm install
-```
+# 1. Installer les dépendances
+npm install
 
-## Environment Variables
+# 2. Copier le fichier d'environnement
+cp .env.example .env
 
-The following environment variables are required for the project to function correctly:
+ENVIRONMENT=production
 
-```bash
-# MongoDB connection URI
-MONGO_URI=""
+# Firebase
+FIREBASE_SECRET_PATH=./firebase-adminsdk.json
 
-# Environment variable to specify the environment : development, staging or production
-ENVIRONMENT=""
+# MongoDB
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/beauty_online
 
-# Firebase configuration
-FIREBASE_SECRET_PATH="./firebase-adminsdk.json"
-
-# AWS S3 and SES settings
-AWS_ACCESS_KEY_ID=""
-AWS_ACCESS_KEY_SECRET=""
-AWS_REGION=""
-AWS_BUCKET=""
-AWS_CLOUDFRONT_URL=""
-
-AWS_SES_SENDER_EMAIL=""
-AWS_SES_SENDER_NAME=""
-
-# Applications settings
-
-# Beauty online App settings
-APP_NAME="Beauty online REST API"
+# API REST
+APP_NAME=Beauty online
 PORT=8080
+APP_API_URL=http://localhost:8080
 APP_ROUTE_PREFIX=api
-APP_ROUTE_DOCUMENTATION='/api/documentation'
-APP_API_URL="http://localhost:8080"  
+APP_ROUTE_DOCUMENTATION=/api/documentation
 
-# Firebase notification server
+# DeepLinks
+DEEPLINKS_NAME=Link app
+DEEPLINKS_PORT=8081
+DEEPLINKS_URL=http://localhost:8081
+DEEPLINKS_BASE_URL=https://share.beauty.petite-monnaie.com
+DEEPLINKS_ROUTE_DOCUMENTATION=/api/documentation
+
+APPLE_APP_SITE_ASSOCIATION_PATH=src/deeplinks/dto/apple-app-site-association.template.json
+ASSETLINKS_PATH=src/deeplinks/dto/assetlinks.template.json
+
+# AWS (S3 + SES)
+AWS_ACCESS_KEY_ID=...
+AWS_ACCESS_KEY_SECRET=...
+AWS_REGION=us-east-2
+AWS_BUCKET=mystore4274
+AWS_CLOUDFRONT_URL=https://dam8qtg35ovlt.cloudfront.net
+AWS_SES_SENDER_EMAIL=
+AWS_SES_SENDER_NAME=
+
+# Notifications
 NOTIFICATION_URL=http://localhost:2000/api/send-notification
-```
 
-## Compile and Run the Project
+# Tests unitaires
+npm run test
 
-To compile and run the project, use the following commands:
+# Tests end-to-end
+npm run test:e2e
 
-```bash
-# development
-$ npm run start
+# Rapport de couverture
+npm run test:cov
 
-# watch mode
-$ npm run start:dev
+npm run build
 
-# production mode
-$ npm run start:prod
-```
+# Fichier de deploiement
+ecosystem.config.js
 
-## Run Tests
+module.exports = {
+  apps: [
+    {
+      name: 'api-rest',
+      script: 'dist/main-rest.js',
+      env: {
+        NODE_ENV: 'production',
+      },
+    },
+    {
+      name: 'deeplinks',
+      script: 'dist/main-redirect.js',
+      env: {
+        NODE_ENV: 'production',
+      },
+    },
+  ],
+};
 
-To run the tests, use the following commands:
+# Commande de deploient
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-"# beauty_online_rest" 
-"# beauty_online_rest" 
+pm2 start ecosystem.config.js
+pm2 save
+pm2 startup
