@@ -17,4 +17,9 @@ export class UsersService {
         if (user == null) throw new NotFoundException(UserErrors['USER_NOT_FOUND']);
         return user;
     }
+    async getAllUsers(): Promise<User[]> {
+        const users = await this.userModel.find().exec();
+
+         return users;
+    }
 }

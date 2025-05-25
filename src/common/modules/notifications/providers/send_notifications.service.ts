@@ -15,8 +15,8 @@ export class SendNotificationsService {
     private readonly logger = new Logger(SendNotificationsService.name);
 
     private readonly NOTIFICATION_TYPES = {
-        GENERAL: {
-            type: 'general',
+        WELCOME: {
+            type: 'welcome',
             title: 'Bienvenue sur Beauty',
             message: "Hey, bienvenue sur l'application Beauty en ligne !",
         },
@@ -92,9 +92,27 @@ export class SendNotificationsService {
         }
     }
 
-    async sendGeneralNotification(user: any) {
-        const notification = this.prepareNotification('GENERAL', user.firebaseNotificationToken);
+    async welComeNotification(user: any) {
+        const notification = this.prepareNotification('WELCOME', user.firebaseNotificationToken);
         return this.sendNotification(notification);
+    }
+
+    async sendGeneralNotification(user: any, message: string) {
+        return this.sendNotification({
+            token: user.firebaseNotificationToken,
+            title: 'GENERAL',
+            body: message,
+            data: null,
+        });
+    }
+
+    async sendInformation(user: any, message: string) {
+        return this.sendNotification({
+            token: user.firebaseNotificationToken,
+            title: 'Informations',
+            body: message,
+            data: null,
+        });
     }
 
     async sendNewRdvNotification(user: any, rdvId: string) {

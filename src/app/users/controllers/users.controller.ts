@@ -31,6 +31,7 @@ export class UsersController {
     ) {}
 
     /**
+     *
      *  Récupère un utilisateur par son ID
      */
     @Get('/me')
@@ -48,6 +49,22 @@ export class UsersController {
     /**
      *  Récupère un utilisateur par son ID
      */
+    @Get('/all')
+    @ApiOperation({
+        summary: 'Retrieves all ',
+    })
+    @Public()
+    @ApiOkResponse({ type: UserDto })
+    @HttpCode(HttpStatus.OK)
+    async findAllUser(): Promise<UserDto[]> {
+        const users = await this.dbUsersService.getAllUsers();
+
+        return users.map((user) => UserDto.fromUser(user));
+    }
+
+    /**
+     *  Récupère un utilisateur par son ID
+     */
     @Get('/send-notif')
     @ApiOperation({
         summary: 'Retrieves a user by their  token',
@@ -55,9 +72,9 @@ export class UsersController {
     @Public()
     @HttpCode(HttpStatus.OK)
     async sendNotif() {
-       const user = await this.dbUsersService.getUser('68156b0b5ad449e5c595ebb6');
-        
-        await this.sendNotificationsService.sendGeneralNotification(user);
+        const user = await this.dbUsersService.getUser('68156b0b5ad449e5c595ebb6');
+
+        await this.sendNotificationsService.welComeNotification(user);
     }
     /**
      * update user information
