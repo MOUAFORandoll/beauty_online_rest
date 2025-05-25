@@ -6,6 +6,7 @@ import { AgendaModel, RendezVousModel, RealisationFileModel, RealisationModel, V
 import { PositionModel } from 'src/databases/main.database.connection';
 import { ProfileService } from 'src/app/profile_professionnels/providers';
 import { ShareLink } from 'src/common/ClassActions/response.dto';
+import { SearchResponseDto } from '../dto/search.response.dto';
 export declare class ActuController {
     private readonly realisationFileModel;
     private readonly actuService;
@@ -20,6 +21,7 @@ export declare class ActuController {
     private readonly dbUsersService;
     constructor(realisationFileModel: RealisationFileModel, actuService: ActuService, agendaModel: AgendaModel, positionModel: PositionModel, realisationModel: RealisationModel, rendezVousModel: RendezVousModel, vueModel: VueRealisationModel, shareModel: ShareRealisationModel, likeModel: LikeRealisationModel, profileService: ProfileService, dbUsersService: Database.UsersService);
     findAll(pagination: PaginationPayloadDto, userId: string): Promise<PaginationResponseDto<ActuResponseDto>>;
+    searchData(search: string, pagination: PaginationPayloadDto, userId: string): Promise<PaginationResponseDto<SearchResponseDto>>;
     findOneById(id: string, userId: string): Promise<ActuResponseDto>;
     shareActu(actuId: string, userId: string): Promise<ShareLink>;
     vueActu(actuId: string, userId: string): void;

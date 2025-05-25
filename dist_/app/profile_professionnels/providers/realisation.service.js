@@ -28,7 +28,6 @@ let RealisationService = class RealisationService {
         this.storageService = storageService;
     }
     async create(dto, user_id) {
-        console.log(`Creating realisation for user ${user_id}`);
         if (!dto.images || !dto.images.length) {
             throw new common_1.BadRequestException('At least one image is required');
         }
@@ -85,7 +84,6 @@ let RealisationService = class RealisationService {
         return realisation;
     }
     async findUserRealisation(idUser, pagination) {
-        console.log(`Finding realisations for user ${idUser}`);
         const profilePro = await this.profileService.findUserProfile(idUser);
         if (!profilePro) {
             throw new common_1.NotFoundException(errors_1.ProfileProErrors[errors_1.PROFILE_PRO_NOT_FOUND]);
@@ -104,7 +102,6 @@ let RealisationService = class RealisationService {
         return { data, total };
     }
     async findProfessionalRealisation(idProfessionnel, pagination) {
-        console.log(`Finding realisations for user ${idProfessionnel}`);
         const [data, total] = await Promise.all([
             this.realisationModel
                 .find({ profile_professionnel_id: idProfessionnel })
@@ -119,7 +116,6 @@ let RealisationService = class RealisationService {
         return { data, total };
     }
     async findRealisationFilter(filter, pagination) {
-        console.log(`Finding realisations with filter: ${JSON.stringify(filter)}`);
         const safeFilter = this.sanitizeFilter(filter);
         const [data, total] = await Promise.all([
             this.realisationModel
@@ -145,7 +141,6 @@ let RealisationService = class RealisationService {
         return { data, total };
     }
     async update(id, dto, options = { new: true }) {
-        console.log(`Updating realisation ${id}`);
         if (!mongoose_2.Types.ObjectId.isValid(id)) {
             throw new common_1.BadRequestException('Invalid realisation ID');
         }
@@ -162,7 +157,6 @@ let RealisationService = class RealisationService {
         return this.findById(id);
     }
     async delete(id) {
-        console.log(`Deleting realisation ${id}`);
         if (!mongoose_2.Types.ObjectId.isValid(id)) {
             throw new common_1.BadRequestException('Invalid realisation ID');
         }
@@ -193,7 +187,6 @@ let RealisationService = class RealisationService {
         }
     }
     async addFiles(id, images) {
-        console.log(`Adding files to realisation ${id}`);
         if (!mongoose_2.Types.ObjectId.isValid(id)) {
             throw new common_1.BadRequestException('Invalid realisation ID');
         }
@@ -230,7 +223,6 @@ let RealisationService = class RealisationService {
         }
     }
     async deleteFile(realisationId, fileId) {
-        console.log(`Deleting file ${fileId} from realisation ${realisationId}`);
         if (!mongoose_2.Types.ObjectId.isValid(realisationId) || !mongoose_2.Types.ObjectId.isValid(fileId)) {
             throw new common_1.BadRequestException('Invalid ID format');
         }

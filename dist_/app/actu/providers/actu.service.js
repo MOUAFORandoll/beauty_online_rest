@@ -19,11 +19,12 @@ const main_database_connection_1 = require("../../../databases/main.database.con
 const action_shareable_1 = require("../../../common/ClassActions/action.shareable");
 const config_1 = require("@nestjs/config");
 let ActuService = class ActuService {
-    constructor(vueModel, realisationModel, shareModel, likeModel, realisationFileModel, configService) {
+    constructor(vueModel, realisationModel, shareModel, likeModel, profileModel, realisationFileModel, configService) {
         this.vueModel = vueModel;
         this.realisationModel = realisationModel;
         this.shareModel = shareModel;
         this.likeModel = likeModel;
+        this.profileModel = profileModel;
         this.realisationFileModel = realisationFileModel;
         this.configService = configService;
         this.self = this;
@@ -54,12 +55,10 @@ let ActuService = class ActuService {
     }
     async vueActu(actu_id, user_id) {
         try {
-            console.log('=========');
             const vue = new this.vueModel({
                 realisation_id: actu_id,
                 user_id: user_id,
             });
-            console.log('===ddd======');
             await vue.save();
         }
         catch (error) {
@@ -94,6 +93,24 @@ let ActuService = class ActuService {
         });
         return !!liked;
     }
+    async searchData(search) {
+        const filterPro = {
+            namePro: { $regex: search, $options: 'i' },
+        };
+        const filterRea = {
+            title: { $regex: search, $options: 'i' },
+        };
+        const totalRealisation = await this.realisationModel.countDocuments(filterRea).exec();
+        const realisations = await this.realisationModel.find(filterRea).exec();
+        const totalProfile = await this.profileModel.countDocuments(filterPro).exec();
+        const profiles = await this.profileModel.find(filterPro).exec();
+        const total = totalRealisation + totalProfile;
+        return {
+            total,
+            realisations,
+            profiles,
+        };
+    }
 };
 exports.ActuService = ActuService;
 exports.ActuService = ActuService = __decorate([
@@ -105,7 +122,8 @@ exports.ActuService = ActuService = __decorate([
     __param(1, (0, mongoose_1.InjectModel)(main_database_connection_1.REALISATION_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
     __param(2, (0, mongoose_1.InjectModel)(main_database_connection_1.SHARE_REALISATION_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
     __param(3, (0, mongoose_1.InjectModel)(main_database_connection_1.LIKE_REALISATION_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
-    __param(4, (0, mongoose_1.InjectModel)(main_database_connection_1.REALISATION_FILE_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, config_1.ConfigService])
+    __param(4, (0, mongoose_1.InjectModel)(main_database_connection_1.PROFILE_PRO_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
+    __param(5, (0, mongoose_1.InjectModel)(main_database_connection_1.REALISATION_FILE_MODEL_NAME, main_database_connection_1.DATABASE_CONNECTION)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, config_1.ConfigService])
 ], ActuService);
 //# sourceMappingURL=actu.service.js.map

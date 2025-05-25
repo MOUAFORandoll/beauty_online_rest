@@ -94,12 +94,10 @@ let RendezVousService = class RendezVousService {
     }
     async findPrestataireRendezVous(user_id, pagination) {
         try {
-            console.log(user_id);
             const profile = await this.profileService.findUserProfile(user_id);
             if (!profile) {
                 return { data: [], total: 0 };
             }
-            console.log(profile);
             const pipeline = [
                 {
                     $lookup: {

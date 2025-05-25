@@ -30,17 +30,13 @@ let AuthService = class AuthService {
             throw new internal_1.AppInternalServerError('[FIREBASE] Firebase app not initialized');
         const { token } = payload;
         const { email, authProvider, userFireBase, uid } = await this.firebaseAuthService.verifyToken(token);
-        console.log(email, authProvider, userFireBase, uid);
         if (!email) {
             throw new common_1.ForbiddenException(errors_1.UserErrors[errors_1.FIREBASE_AUTH_FAILED]);
         }
         const user = await this.userModel.findOne({ email: email }).exec();
         if (!user) {
-            console.log('fdff');
             return await this.createUserWithFirebaseUID(uid, email, authProvider, userFireBase);
         }
-        console.log(1234);
-        console.log('0000');
         return user;
     }
     async createUserWithFirebaseUID(uid, email, authProvider, userFireBase) {

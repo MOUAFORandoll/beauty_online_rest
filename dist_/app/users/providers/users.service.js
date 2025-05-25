@@ -78,10 +78,7 @@ let UsersService = class UsersService {
     }
     async updateUserPhoto(photo, id) {
         try {
-            console.log('===ddd======');
             const user = await this.usersService.getUser(id);
-            console.log(photo);
-            console.log(id);
             if (photo) {
                 user.pictureUrl = await this.storageService.userProfilePath(photo, user._id.toString());
             }

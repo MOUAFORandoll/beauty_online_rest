@@ -31,14 +31,12 @@ let ProfileService = class ProfileService {
     }
     async create(dto, user_id) {
         try {
-            console.log('=========');
             const profile = new this.profileModel({
                 namePro: dto.namePro,
                 description: dto.description,
                 service: dto.service,
                 user_id: user_id,
             });
-            console.log('===ddd======');
             if (dto.cover) {
                 profile.cover = await this.storageService.uploadCoverImage(dto.cover, profile._id.toString());
             }
@@ -105,7 +103,6 @@ let ProfileService = class ProfileService {
     }
     async update(id, dto) {
         const profile = await this.findOneById(id);
-        console.log(dto);
         if (dto.name_pro)
             profile.namePro = dto.name_pro;
         if (dto.description)
@@ -132,8 +129,6 @@ let ProfileService = class ProfileService {
             if (!profile) {
                 throw new common_1.BadRequestException(errors_1.ProfileProErrors[errors_1.PROFILE_PRO_NOT_FOUND]);
             }
-            console.log(photo);
-            console.log(id);
             if (photo) {
                 profile.cover = await this.storageService.uploadCoverImage(photo, profile._id.toString());
             }

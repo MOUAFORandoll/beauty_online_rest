@@ -86,7 +86,6 @@ let StorageService = StorageService_1 = class StorageService {
     async userProfilePath(image, key) {
         try {
             const uploadKey = key + Date.now().toString();
-            console.log('=========', key, StorageService_1.userProfilePath);
             await this.upload(StorageService_1.userProfilePath, uploadKey, image);
             return this.getUrl(StorageService_1.userProfilePath, uploadKey, 600, 600);
         }

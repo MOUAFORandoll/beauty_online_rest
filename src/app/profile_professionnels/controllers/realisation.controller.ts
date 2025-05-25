@@ -54,7 +54,6 @@ export class RealisationController {
         @UploadedFiles() images: Array<Express.Multer.File>,
     ): Promise<RealisationResponseDto> {
         dto.images = images;
-        console.log(dto.images);
         await this.dbUsersService.getUser(id);
         const profile = await this.realisationService.create(dto, id);
         return RealisationResponseDto.fromRealisation(profile, this.realisationFileModel);
@@ -66,8 +65,7 @@ export class RealisationController {
     })
     @Public()
     async fakeData(): Promise<RealisationResponseDto[]> {
-        console.log('titles======', this.localDirectory);
-        const titles: string[] = [
+         const titles: string[] = [
             'Nattes collées',
             'Vanilles',
             'Tresses africaines',
@@ -82,14 +80,11 @@ export class RealisationController {
             'Braids',
             'Fulani braids',
         ];
-        console.log(titles);
-        console.log('allImageFiles======');
-
+       
         const allImageFiles = fs
             .readdirSync(this.localDirectory)
             .filter((file) => fs.statSync(path.join(this.localDirectory, file)).isFile());
-        console.log(allImageFiles);
-
+      
         const userId = '68156b0b5ad449e5c595ebb6';
         const realisations: RealisationResponseDto[] = [];
 
@@ -100,9 +95,7 @@ export class RealisationController {
 
         for (let i = 0; i < 50; i++) {
             const selectedImages = getRandomFromArray(allImageFiles, 3);
-
-            console.log(selectedImages);
-            const imagesBuffer = selectedImages.map((fileName) => {
+      const imagesBuffer = selectedImages.map((fileName) => {
                 const filePath = path.join(this.localDirectory, fileName);
                 const buffer = fs.readFileSync(filePath);
                 return {

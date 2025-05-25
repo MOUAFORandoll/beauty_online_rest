@@ -92,10 +92,16 @@ let ShareController = class ShareController {
         return this.fillTemplate({
             pageTitle: this.appName,
             title: (await actuFromDTP).title,
-            description: (await actuFromDTP).nombre_vues +
-                'VueRealisations et ' +
+            description: (await actuFromDTP).nombre_likes +
+                ' appréciation' +
+                ((await actuFromDTP).nombre_likes > 1 ? 's' : '') +
+                (await actuFromDTP).nombre_vues +
+                ' vue' +
+                ((await actuFromDTP).nombre_vues > 1 ? 's' : '') +
+                ' et ' +
                 (await actuFromDTP).nombre_partages +
-                'Partages',
+                ' partage' +
+                ((await actuFromDTP).nombre_partages > 1 ? 's' : ''),
             image: (await actuFromDTP).realisation_files[0] == null
                 ? ''
                 : (await actuFromDTP).realisation_files[0].file_path,

@@ -73,7 +73,6 @@ export class ActuController {
         @Query() pagination: PaginationPayloadDto,
         @GetUser('id') userId: string,
     ): Promise<PaginationResponseDto<ActuResponseDto>> {
-        console.log(userId);
         const { data, total } = await this.actuService.findAll(pagination);
 
         return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) =>
@@ -100,7 +99,6 @@ export class ActuController {
         @Query() pagination: PaginationPayloadDto,
         @GetUser('id') userId: string,
     ): Promise<PaginationResponseDto<SearchResponseDto>> {
-        console.log(search);
         // 1. Récupère en une seule fois tous les items
         const { total, realisations, profiles } = await this.actuService.searchData(search);
 
@@ -138,6 +136,17 @@ export class ActuController {
                     return {
                         type: 'actu',
                         title: dto.title,
+                        description:
+                            (dto.nombre_likes > 0
+                                ? `${dto.nombre_likes} appréciation${dto.nombre_likes > 1 ? 's' : ''} • `
+                                : '') +
+                            (dto.nombre_vues > 0
+                                ? `${dto.nombre_vues} vue${dto.nombre_vues > 1 ? 's' : ''} • `
+                                : '') +
+                            (dto.nombre_partages > 0
+                                ? `${dto.nombre_partages} partage${dto.nombre_partages > 1 ? 's' : ''}`
+                                : ''),
+
                         url: dto.realisation_files[0].file_path,
                         data: dto,
                     };
@@ -149,7 +158,14 @@ export class ActuController {
                         this.realisationModel,
                         this.rendezVousModel,
                     );
-                    return { type: 'pro', title: dto.name_pro, url: dto.cover, data: dto };
+                    return {
+                        type: 'pro',
+                        title: dto.name_pro,
+
+                        description: `${dto.service}${dto.nombre_catalogue > 0 ? `${dto.nombre_catalogue} catalogue${dto.nombre_catalogue > 1 ? 's' : ''}` : ''}${dto.nombre_catalogue > 0 && dto.nombre_reservation > 0 ? ' • ' : ''}${dto.nombre_reservation > 0 ? `${dto.nombre_reservation} rendez-vous effectué${dto.nombre_reservation > 1 ? 's' : ''}` : ''}`,
+                        url: dto.cover,
+                        data: dto,
+                    };
                 }
             }),
         );
@@ -191,7 +207,6 @@ export class ActuController {
         @Param('id') actuId: string,
         @GetUser('id') userId: string,
     ): Promise<ShareLink> {
-        console.log(actuId, userId);
         const shareLink = await this.actuService.shareActu(actuId, userId);
         return { shareLink };
     }
@@ -205,7 +220,6 @@ export class ActuController {
 
         @GetUser('id') userId: string,
     ): void {
-        console.log(actuId, userId);
         this.actuService.vueActu(actuId, userId);
     }
     @HttpCode(HttpStatus.OK)

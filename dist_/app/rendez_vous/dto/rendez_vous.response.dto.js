@@ -19,7 +19,6 @@ class RendezVousResponseDto {
         const _crenauReq = await creneauModel.findById(rendezVous.creneau_id);
         const _creneau = dto_2.CreneauResponseDto.fromCreneau(_crenauReq);
         const _agenda = await agendaModel.findById(_crenauReq.agenda_id);
-        console.log(rendezVous.realisation_id);
         const _realisation = await dto_2.RealisationResponseDto.fromRealisation(await realisationModel.findById(rendezVous.realisation_id), realisationFileModel);
         const profile = await profileModel.findById(_agenda.profile_professionnel_id).exec();
         const _profile = await dto_2.ProfileResponseDto.fromProfile(profile, agendaModel, positionModel, realisationModel, rendezVousModel);

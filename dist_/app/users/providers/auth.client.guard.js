@@ -41,7 +41,6 @@ let AuthClientGuard = class AuthClientGuard {
             return false;
         }
         const [bearer, token] = authHeader.split(' ');
-        console.log(bearer, token);
         if (bearer !== 'Bearer' || !token) {
             return false;
         }

@@ -44,13 +44,10 @@ export class UsersService {
 
     async updateUserPhoto(photo: Express.Multer.File, id: string): Promise<User> {
         try {
-            console.log('===ddd======');
-
+          
             const user = await this.usersService.getUser(id);
 
-            console.log(photo);
-            console.log(id);
-            if (photo) {
+             if (photo) {
                 user.pictureUrl = await this.storageService.userProfilePath(
                     photo,
                     user._id.toString(),

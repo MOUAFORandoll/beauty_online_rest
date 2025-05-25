@@ -85,15 +85,13 @@ export class ActuService {
 
     async vueActu(actu_id: string, user_id: string) {
         try {
-            console.log('=========');
-
+         
             const vue = new this.vueModel({
                 realisation_id: actu_id,
 
                 user_id: user_id,
             });
-            console.log('===ddd======');
-
+          
             await vue.save();
         } catch (error) {
             throw new Error(`Failed to create profile: ${error.message}`);
@@ -148,9 +146,6 @@ export class ActuService {
         const filterRea = {
             title: { $regex: search, $options: 'i' },
         };
-        console.log(search);
-        console.log(filterPro);
-        console.log(filterRea);
         const totalRealisation = await this.realisationModel.countDocuments(filterRea).exec();
         const realisations = await this.realisationModel.find(filterRea).exec();
         const totalProfile = await this.profileModel.countDocuments(filterPro).exec();

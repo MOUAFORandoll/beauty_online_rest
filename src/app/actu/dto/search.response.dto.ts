@@ -7,6 +7,9 @@ export class SearchResponseDto {
     title: string;
 
     @ApiProperty()
+    description: string;
+
+    @ApiProperty()
     url: string;
 
     @ApiProperty()

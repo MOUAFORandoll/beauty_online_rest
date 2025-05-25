@@ -69,13 +69,11 @@ let RealisationController = class RealisationController {
     }
     async create(id, dto, images) {
         dto.images = images;
-        console.log(dto.images);
         await this.dbUsersService.getUser(id);
         const profile = await this.realisationService.create(dto, id);
         return dto_1.RealisationResponseDto.fromRealisation(profile, this.realisationFileModel);
     }
     async fakeData() {
-        console.log('titles======', this.localDirectory);
         const titles = [
             'Nattes collées',
             'Vanilles',
@@ -91,19 +89,15 @@ let RealisationController = class RealisationController {
             'Braids',
             'Fulani braids',
         ];
-        console.log(titles);
-        console.log('allImageFiles======');
         const allImageFiles = fs
             .readdirSync(this.localDirectory)
             .filter((file) => fs.statSync(path.join(this.localDirectory, file)).isFile());
-        console.log(allImageFiles);
         const userId = '68156b0b5ad449e5c595ebb6';
         const realisations = [];
         const getRandomFromArray = (arr, count) => [...arr].sort(() => 0.5 - Math.random()).slice(0, count);
         const getRandomPrice = () => Math.floor(Math.random() * 30 + 20).toString();
         for (let i = 0; i < 50; i++) {
             const selectedImages = getRandomFromArray(allImageFiles, 3);
-            console.log(selectedImages);
             const imagesBuffer = selectedImages.map((fileName) => {
                 const filePath = path.join(this.localDirectory, fileName);
                 const buffer = fs.readFileSync(filePath);

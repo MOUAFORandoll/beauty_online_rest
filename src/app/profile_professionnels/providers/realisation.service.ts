@@ -47,8 +47,7 @@ export class RealisationService {
      * @returns The created realisation with its files
      */
     async create(dto: CreateRealisationDto, user_id: string): Promise<Realisation> {
-        console.log(`Creating realisation for user ${user_id}`);
-
+     
         // Validate input
         if (!dto.images || !dto.images.length) {
             throw new BadRequestException('At least one image is required');
@@ -142,7 +141,6 @@ export class RealisationService {
         idUser: string,
         pagination: PaginationPayloadDto,
     ): Promise<{ data: Realisation[]; total: number }> {
-        console.log(`Finding realisations for user ${idUser}`);
 
         const profilePro: ProfileProfessionnel = await this.profileService.findUserProfile(idUser);
         if (!profilePro) {
@@ -174,7 +172,6 @@ export class RealisationService {
         idProfessionnel: string,
         pagination: PaginationPayloadDto,
     ): Promise<{ data: Realisation[]; total: number }> {
-        console.log(`Finding realisations for user ${idProfessionnel}`);
 
         // const profilePro: ProfileProfessionnel =
         //     await this.profileService.findOneById(idProfessionnel);
@@ -207,7 +204,6 @@ export class RealisationService {
         filter: FindRealisationDto,
         pagination: PaginationPayloadDto,
     ): Promise<{ data: Realisation[]; total: number }> {
-        console.log(`Finding realisations with filter: ${JSON.stringify(filter)}`);
 
         // Validate filter object to prevent injection
         const safeFilter = this.sanitizeFilter(filter);
@@ -258,7 +254,6 @@ export class RealisationService {
         dto: UpdateRealisationDto,
         options: QueryOptions = { new: true },
     ): Promise<Realisation> {
-        console.log(`Updating realisation ${id}`);
 
         if (!Types.ObjectId.isValid(id)) {
             throw new BadRequestException('Invalid realisation ID');
@@ -289,7 +284,6 @@ export class RealisationService {
      * @returns True if deleted successfully
      */
     async delete(id: string): Promise<boolean> {
-        console.log(`Deleting realisation ${id}`);
 
         if (!Types.ObjectId.isValid(id)) {
             throw new BadRequestException('Invalid realisation ID');
@@ -342,7 +336,6 @@ export class RealisationService {
      * @returns The updated realisation with its files
      */
     async addFiles(id: string, images: Express.Multer.File[]): Promise<Realisation> {
-        console.log(`Adding files to realisation ${id}`);
 
         if (!Types.ObjectId.isValid(id)) {
             throw new BadRequestException('Invalid realisation ID');
@@ -403,7 +396,6 @@ export class RealisationService {
      * @returns The updated realisation with its files
      */
     async deleteFile(realisationId: string, fileId: string): Promise<Realisation> {
-        console.log(`Deleting file ${fileId} from realisation ${realisationId}`);
 
         if (!Types.ObjectId.isValid(realisationId) || !Types.ObjectId.isValid(fileId)) {
             throw new BadRequestException('Invalid ID format');

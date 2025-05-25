@@ -58,6 +58,7 @@ const mongoose_1 = require("@nestjs/mongoose");
 const providers_2 = require("../../profile_professionnels/providers");
 const response_dto_1 = require("../../../common/ClassActions/response.dto");
 const decorators_1 = require("../../users/decorators");
+const dto_2 = require("../../profile_professionnels/dto");
 let ActuController = class ActuController {
     constructor(realisationFileModel, actuService, agendaModel, positionModel, realisationModel, rendezVousModel, vueModel, shareModel, likeModel, profileService, dbUsersService) {
         this.realisationFileModel = realisationFileModel;
@@ -73,21 +74,59 @@ let ActuController = class ActuController {
         this.dbUsersService = dbUsersService;
     }
     async findAll(pagination, userId) {
-        console.log(userId);
         const { data, total } = await this.actuService.findAll(pagination);
         return apiutils_1.PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) => dto_1.ActuResponseDto.fromActu(l, userId, this.realisationFileModel, this.agendaModel, this.positionModel, this.realisationModel, this.rendezVousModel, this.vueModel, this.shareModel, this.likeModel, this.profileService));
+    }
+    async searchData(search, pagination, userId) {
+        const { total, realisations, profiles } = await this.actuService.searchData(search);
+        const allItems = [
+            ...realisations.map((r) => ({ type: 'actu', data: r })),
+            ...profiles.map((p) => ({ type: 'pro', data: p })),
+        ];
+        const start = (pagination.page - 1) * pagination.size;
+        const end = start + pagination.size;
+        const pageItems = allItems.slice(start, end);
+        const results = await Promise.all(pageItems.map(async (item) => {
+            if (item.type === 'actu') {
+                const dto = await dto_1.ActuResponseDto.fromActu(item.data, userId, this.realisationFileModel, this.agendaModel, this.positionModel, this.realisationModel, this.rendezVousModel, this.vueModel, this.shareModel, this.likeModel, this.profileService);
+                return {
+                    type: 'actu',
+                    title: dto.title,
+                    description: (dto.nombre_likes > 0
+                        ? `${dto.nombre_likes} appréciation${dto.nombre_likes > 1 ? 's' : ''} • `
+                        : '') +
+                        (dto.nombre_vues > 0
+                            ? `${dto.nombre_vues} vue${dto.nombre_vues > 1 ? 's' : ''} • `
+                            : '') +
+                        (dto.nombre_partages > 0
+                            ? `${dto.nombre_partages} partage${dto.nombre_partages > 1 ? 's' : ''}`
+                            : ''),
+                    url: dto.realisation_files[0].file_path,
+                    data: dto,
+                };
+            }
+            else {
+                const dto = await dto_2.ProfileResponseDto.fromProfile(item.data, this.agendaModel, this.positionModel, this.realisationModel, this.rendezVousModel);
+                return {
+                    type: 'pro',
+                    title: dto.name_pro,
+                    description: `${dto.service}${dto.nombre_catalogue > 0 ? `${dto.nombre_catalogue} catalogue${dto.nombre_catalogue > 1 ? 's' : ''}` : ''}${dto.nombre_catalogue > 0 && dto.nombre_reservation > 0 ? ' • ' : ''}${dto.nombre_reservation > 0 ? `${dto.nombre_reservation} rendez-vous effectué${dto.nombre_reservation > 1 ? 's' : ''}` : ''}`,
+                    url: dto.cover,
+                    data: dto,
+                };
+            }
+        }));
+        return apiutils_1.PaginationResponseDto.responseDto(pagination, results, total);
     }
     async findOneById(id, userId) {
         const actu = await this.actuService.findOneById(id);
         return dto_1.ActuResponseDto.fromActu(actu, userId, this.realisationFileModel, this.agendaModel, this.positionModel, this.realisationModel, this.rendezVousModel, this.vueModel, this.shareModel, this.likeModel, this.profileService);
     }
     async shareActu(actuId, userId) {
-        console.log(actuId, userId);
         const shareLink = await this.actuService.shareActu(actuId, userId);
         return { shareLink };
     }
     vueActu(actuId, userId) {
-        console.log(actuId, userId);
         this.actuService.vueActu(actuId, userId);
     }
     like(id, userId) {
@@ -99,7 +138,7 @@ let ActuController = class ActuController {
 };
 exports.ActuController = ActuController;
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)(''),
     (0, swagger_1.ApiOperation)({
         summary: 'Find All profile',
     }),
@@ -110,6 +149,17 @@ __decorate([
     __metadata("design:paramtypes", [apiutils_1.PaginationPayloadDto, String]),
     __metadata("design:returntype", Promise)
 ], ActuController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('/search'),
+    (0, swagger_1.ApiOkResponse)({ type: (apiutils_1.PaginationResponseDto) }),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __param(0, (0, common_1.Query)('search')),
+    __param(1, (0, common_1.Query)()),
+    __param(2, (0, decorators_1.GetUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, apiutils_1.PaginationPayloadDto, String]),
+    __metadata("design:returntype", Promise)
+], ActuController.prototype, "searchData", null);
 __decorate([
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({

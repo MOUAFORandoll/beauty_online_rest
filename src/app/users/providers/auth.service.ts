@@ -28,24 +28,20 @@ export class AuthService {
 
         const { email, authProvider, userFireBase, uid }: FirebaseVerificationDto =
             await this.firebaseAuthService.verifyToken(token);
-        console.log(email, authProvider, userFireBase, uid);
-        if (!email) {
+         if (!email) {
             throw new ForbiddenException(UserErrors[FIREBASE_AUTH_FAILED]);
         }
 
         const user = await this.userModel.findOne({ email: email }).exec();
 
         if (!user) {
-            console.log('fdff');
-            return await this.createUserWithFirebaseUID(uid, email, authProvider, userFireBase);
+             return await this.createUserWithFirebaseUID(uid, email, authProvider, userFireBase);
         }
-        console.log(1234);
-
+        
         // if (user.authProvider != authProvider) {
         //     throw new ForbiddenException(UserErrors[USER_EMAIL_ALREADY_EXISTS]);
         // }
-        console.log('0000');
-
+       
         return user;
     }
 
