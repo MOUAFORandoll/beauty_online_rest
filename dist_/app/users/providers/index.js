@@ -17,5 +17,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./users.service"), exports);
 __exportStar(require("./auth.firebase.service"), exports);
 __exportStar(require("./auth.service"), exports);
+__exportStar(require("./notifications.service"), exports);
 __exportStar(require("./auth.client.guard"), exports);
 //# sourceMappingURL=index.js.map

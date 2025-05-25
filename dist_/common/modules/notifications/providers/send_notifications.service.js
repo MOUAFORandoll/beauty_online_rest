@@ -21,8 +21,8 @@ let SendNotificationsService = SendNotificationsService_1 = class SendNotificati
         this.configService = configService;
         this.logger = new common_1.Logger(SendNotificationsService_1.name);
         this.NOTIFICATION_TYPES = {
-            GENERAL: {
-                type: 'general',
+            WELCOME: {
+                type: 'welcome',
                 title: 'Bienvenue sur Beauty',
                 message: "Hey, bienvenue sur l'application Beauty en ligne !",
             },
@@ -84,9 +84,25 @@ let SendNotificationsService = SendNotificationsService_1 = class SendNotificati
             };
         }
     }
-    async sendGeneralNotification(user) {
-        const notification = this.prepareNotification('GENERAL', user.firebaseNotificationToken);
+    async welComeNotification(user) {
+        const notification = this.prepareNotification('WELCOME', user.firebaseNotificationToken);
         return this.sendNotification(notification);
+    }
+    async sendGeneralNotification(user, message) {
+        return this.sendNotification({
+            token: user.firebaseNotificationToken,
+            title: 'GENERAL',
+            body: message,
+            data: null,
+        });
+    }
+    async sendInformation(user, message) {
+        return this.sendNotification({
+            token: user.firebaseNotificationToken,
+            title: 'Informations',
+            body: message,
+            data: null,
+        });
     }
     async sendNewRdvNotification(user, rdvId) {
         const notification = this.prepareNotification('NEW_RDV', user.firebaseNotificationToken, {

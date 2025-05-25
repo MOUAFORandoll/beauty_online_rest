@@ -65,9 +65,13 @@ let UsersController = class UsersController {
         const user = await this.dbUsersService.getUser(id);
         return dto_1.UserDto.fromUser(user);
     }
+    async findAllUser() {
+        const users = await this.dbUsersService.getAllUsers();
+        return users.map((user) => dto_1.UserDto.fromUser(user));
+    }
     async sendNotif() {
         const user = await this.dbUsersService.getUser('68156b0b5ad449e5c595ebb6');
-        await this.sendNotificationsService.sendGeneralNotification(user);
+        await this.sendNotificationsService.welComeNotification(user);
     }
     async updateUserData(id, payload) {
         const user = await this.usersService.updateUserData(id, payload);
@@ -98,6 +102,18 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "findOneUser", null);
+__decorate([
+    (0, common_1.Get)('/all'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Retrieves all ',
+    }),
+    (0, api_decorators_1.Public)(),
+    (0, swagger_1.ApiOkResponse)({ type: dto_1.UserDto }),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "findAllUser", null);
 __decorate([
     (0, common_1.Get)('/send-notif'),
     (0, swagger_1.ApiOperation)({

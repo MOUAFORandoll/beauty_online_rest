@@ -8,6 +8,7 @@ export declare class UsersController {
     private readonly sendNotificationsService;
     constructor(usersService: UsersService, dbUsersService: Database.UsersService, sendNotificationsService: SendNotificationsService);
     findOneUser(id: string): Promise<UserDto | null>;
+    findAllUser(): Promise<UserDto[]>;
     sendNotif(): Promise<void>;
     updateUserData(id: string, payload: UpdateUserDto): Promise<UserDto>;
     updateUserPicture(id: string, image?: Express.Multer.File): Promise<UserDto>;

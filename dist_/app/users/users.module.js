@@ -24,13 +24,14 @@ exports.UsersModule = UsersModule = __decorate([
             providers_1.AuthFirebaseService,
             providers_1.UsersService,
             providers_1.AuthService,
+            providers_1.NotificationsService,
             {
                 provide: core_1.APP_GUARD,
                 useClass: providers_1.AuthClientGuard,
             },
         ],
-        controllers: [controllers_1.AuthController, controllers_1.UsersController],
-        exports: [providers_1.AuthFirebaseService, providers_1.UsersService, providers_1.AuthService],
+        controllers: [controllers_1.AuthController, controllers_1.UsersController, controllers_1.NotificationsController],
+        exports: [providers_1.AuthFirebaseService, providers_1.UsersService, providers_1.AuthService, providers_1.NotificationsService],
     })
 ], UsersModule);
 //# sourceMappingURL=users.module.js.map

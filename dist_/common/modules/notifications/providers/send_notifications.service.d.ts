@@ -8,7 +8,15 @@ export declare class SendNotificationsService {
     constructor(httpService: HttpService, configService: ConfigService);
     private prepareNotification;
     private sendNotification;
-    sendGeneralNotification(user: any): Promise<{
+    welComeNotification(user: any): Promise<{
+        message: string;
+        status: boolean;
+    }>;
+    sendGeneralNotification(user: any, message: string): Promise<{
+        message: string;
+        status: boolean;
+    }>;
+    sendInformation(user: any, message: string): Promise<{
         message: string;
         status: boolean;
     }>;

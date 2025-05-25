@@ -28,6 +28,10 @@ let UsersService = class UsersService {
             throw new common_1.NotFoundException(errors_1.UserErrors['USER_NOT_FOUND']);
         return user;
     }
+    async getAllUsers() {
+        const users = await this.userModel.find().exec();
+        return users;
+    }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
