@@ -1,5 +1,5 @@
 // realisation.service.ts
-import {  Injectable,  } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
     DATABASE_CONNECTION,
@@ -14,6 +14,9 @@ import {
     SHARE_REALISATION_MODEL_NAME,
     LikeRealisationModel,
     LIKE_REALISATION_MODEL_NAME,
+    PROFILE_PRO_MODEL_NAME,
+    ProfileProfessionnelModel,
+    ProfileProfessionnel,
 } from 'src/databases/main.database.connection';
 import { PaginationPayloadDto } from 'src/common/apiutils';
 import { Shareable, ShareableProperties } from 'src/common/ClassActions/action.shareable';
@@ -33,6 +36,9 @@ export class ActuService {
         private readonly shareModel: ShareRealisationModel,
         @InjectModel(LIKE_REALISATION_MODEL_NAME, DATABASE_CONNECTION)
         private readonly likeModel: LikeRealisationModel,
+
+        @InjectModel(PROFILE_PRO_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly profileModel: ProfileProfessionnelModel,
 
         @InjectModel(REALISATION_FILE_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationFileModel: RealisationFileModel,
@@ -131,5 +137,29 @@ export class ActuService {
             realisation_id: realisationId,
         });
         return !!liked;
+    }
+
+    async searchData(
+        search: string,
+    ): Promise<{ total: number; realisations: Realisation[]; profiles: ProfileProfessionnel[] }> {
+        const filterPro = {
+            namePro: { $regex: search, $options: 'i' },
+        };
+        const filterRea = {
+            title: { $regex: search, $options: 'i' },
+        };
+        console.log(search);
+        console.log(filterPro);
+        console.log(filterRea);
+        const totalRealisation = await this.realisationModel.countDocuments(filterRea).exec();
+        const realisations = await this.realisationModel.find(filterRea).exec();
+        const totalProfile = await this.profileModel.countDocuments(filterPro).exec();
+        const profiles = await this.profileModel.find(filterPro).exec();
+        const total = totalRealisation + totalProfile;
+        return {
+            total,
+            realisations,
+            profiles,
+        };
     }
 }

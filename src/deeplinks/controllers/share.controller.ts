@@ -91,7 +91,7 @@ export class ShareController {
         const actu = await this.actuService.findOneById(id);
         const actuFromDTP = ActuResponseDto.fromActu(
             actu,
-null,
+            null,
             this.realisationFileModel,
             this.agendaModel,
             this.positionModel,
@@ -106,10 +106,16 @@ null,
             pageTitle: this.appName,
             title: (await actuFromDTP).title,
             description:
+                (await actuFromDTP).nombre_likes +
+                ' appréciation' +
+                ((await actuFromDTP).nombre_likes > 1 ? 's' : '') +
                 (await actuFromDTP).nombre_vues +
-                'VueRealisations et ' +
+                ' vue' +
+                ((await actuFromDTP).nombre_vues > 1 ? 's' : '') +
+                ' et ' +
                 (await actuFromDTP).nombre_partages +
-                'Partages',
+                ' partage' +
+                ((await actuFromDTP).nombre_partages > 1 ? 's' : ''),
             image:
                 (await actuFromDTP).realisation_files[0] == null
                     ? ''
