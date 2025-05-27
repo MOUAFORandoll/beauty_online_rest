@@ -46,14 +46,14 @@ export class RealisationController {
         summary: 'create realisation profile',
     })
     @ApiConsumes('multipart/form-data')
-    @UseInterceptors(FilesInterceptor('images[]'))
+    @UseInterceptors(FilesInterceptor('files[]'))
     @ApiOkResponse({ type: RealisationResponseDto })
     async create(
         @GetUser('id') id: string,
         @Body() dto: CreateRealisationDto,
-        @UploadedFiles() images: Array<Express.Multer.File>,
+        @UploadedFiles() files: Array<Express.Multer.File>,
     ): Promise<RealisationResponseDto> {
-        dto.images = images;
+        dto.files = files;
         await this.dbUsersService.getUser(id);
         const profile = await this.realisationService.create(dto, id);
         return RealisationResponseDto.fromRealisation(profile, this.realisationFileModel);
@@ -65,7 +65,7 @@ export class RealisationController {
     })
     @Public()
     async fakeData(): Promise<RealisationResponseDto[]> {
-         const titles: string[] = [
+        const titles: string[] = [
             'Nattes collées',
             'Vanilles',
             'Tresses africaines',
@@ -80,11 +80,11 @@ export class RealisationController {
             'Braids',
             'Fulani braids',
         ];
-       
+
         const allImageFiles = fs
             .readdirSync(this.localDirectory)
             .filter((file) => fs.statSync(path.join(this.localDirectory, file)).isFile());
-      
+
         const userId = '68156b0b5ad449e5c595ebb6';
         const realisations: RealisationResponseDto[] = [];
 
@@ -95,11 +95,11 @@ export class RealisationController {
 
         for (let i = 0; i < 50; i++) {
             const selectedImages = getRandomFromArray(allImageFiles, 3);
-      const imagesBuffer = selectedImages.map((fileName) => {
+            const filesBuffer = selectedImages.map((fileName) => {
                 const filePath = path.join(this.localDirectory, fileName);
                 const buffer = fs.readFileSync(filePath);
                 return {
-                    fieldname: 'images',
+                    fieldname: 'files',
                     originalname: fileName,
                     encoding: '7bit',
                     mimetype: 'image/jpeg', // ou image/png selon ton cas
@@ -111,7 +111,8 @@ export class RealisationController {
             const dto = {
                 title: titles[Math.floor(Math.random() * titles.length)],
                 price: getRandomPrice(),
-                images: imagesBuffer,
+                files: filesBuffer,
+                isVideo: false,
             };
 
             const realisation = await this.realisationService.create(dto, userId);

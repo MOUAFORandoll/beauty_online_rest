@@ -12,6 +12,9 @@ export class RealisationResponseDto {
     price: string;
     @ApiProperty()
     profile_professionnel_id: string;
+    
+    @ApiProperty()
+    is_video: boolean;
 
     @ApiProperty()
     realisation_files: {
@@ -32,6 +35,7 @@ export class RealisationResponseDto {
         return {
             id: realisation._id.toString(),
             title: realisation.title,
+            is_video: realisation.isVideo,
             price: realisation.price,
             profile_professionnel_id: realisation.profile_professionnel_id.toString(),
             realisation_files: formattedFiles,

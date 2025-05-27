@@ -1,6 +1,6 @@
 // profilee.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 // realisation.dto.ts
 
@@ -14,13 +14,17 @@ export class CreateRealisationDto {
     @IsNotEmpty()
     price: string;
 
+    @ApiProperty({ description: "Si c'est de type video" })
+    
+    isVideo: boolean;
+
     @ApiProperty({
         type: [String],
         required: false,
         description: 'Liste des images',
     })
     @IsOptional()
-    images?: Express.Multer.File[];
+    files?: Express.Multer.File[];
 }
 
 export class UpdateRealisationDto {

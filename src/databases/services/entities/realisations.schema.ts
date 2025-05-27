@@ -14,6 +14,8 @@ class RealisationSchema extends BaseSchema {
 
     @Prop()
     price: string;
+    @Prop()
+    isVideo: boolean;
 
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: PROFILE_PRO_MODEL_NAME })
     profile_professionnel_id: string;

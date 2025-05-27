@@ -47,9 +47,8 @@ export class RealisationService {
      * @returns The created realisation with its files
      */
     async create(dto: CreateRealisationDto, user_id: string): Promise<Realisation> {
-     
         // Validate input
-        if (!dto.images || !dto.images.length) {
+        if (!dto.files || !dto.files.length) {
             throw new BadRequestException('At least one image is required');
         }
 
@@ -72,25 +71,33 @@ export class RealisationService {
             });
             await realisation.save({ session });
 
-            // Process and save images
+            // Process and save files
             const savedFiles = [];
-            for (const image of dto.images) {
+            for (const file of dto.files) {
                 try {
                     const realisationFile = new this.realisationFileModel({
-                        image,
+                        file,
                         realisation_id: realisation._id,
                     });
-
-                    realisationFile.file_path = await this.storageService.uploadRealisationImage(
-                        image,
-                        realisationFile._id.toString(),
-                    );
+                    if (dto.isVideo) {
+                        realisationFile.file_path =
+                            await this.storageService.uploadRealisationVideo(
+                                file,
+                                realisationFile._id.toString(),
+                            );
+                    } else {
+                        realisationFile.file_path =
+                            await this.storageService.uploadRealisationImage(
+                                file,
+                                realisationFile._id.toString(),
+                            );
+                    }
 
                     await realisationFile.save({ session });
                     savedFiles.push(realisationFile);
                 } catch (error) {
-                    console.error(`Failed to upload image: ${error.message}`, error.stack);
-                    throw new Error(`Failed to upload image: ${error.message}`);
+                    console.error(`Failed to upload file: ${error.message}`, error.stack);
+                    throw new Error(`Failed to upload file: ${error.message}`);
                 }
             }
 
@@ -141,7 +148,6 @@ export class RealisationService {
         idUser: string,
         pagination: PaginationPayloadDto,
     ): Promise<{ data: Realisation[]; total: number }> {
-
         const profilePro: ProfileProfessionnel = await this.profileService.findUserProfile(idUser);
         if (!profilePro) {
             throw new NotFoundException(ProfileProErrors[PROFILE_PRO_NOT_FOUND]);
@@ -172,7 +178,6 @@ export class RealisationService {
         idProfessionnel: string,
         pagination: PaginationPayloadDto,
     ): Promise<{ data: Realisation[]; total: number }> {
-
         // const profilePro: ProfileProfessionnel =
         //     await this.profileService.findOneById(idProfessionnel);
         // if (!profilePro) {
@@ -204,7 +209,6 @@ export class RealisationService {
         filter: FindRealisationDto,
         pagination: PaginationPayloadDto,
     ): Promise<{ data: Realisation[]; total: number }> {
-
         // Validate filter object to prevent injection
         const safeFilter = this.sanitizeFilter(filter);
 
@@ -254,7 +258,6 @@ export class RealisationService {
         dto: UpdateRealisationDto,
         options: QueryOptions = { new: true },
     ): Promise<Realisation> {
-
         if (!Types.ObjectId.isValid(id)) {
             throw new BadRequestException('Invalid realisation ID');
         }
@@ -284,7 +287,6 @@ export class RealisationService {
      * @returns True if deleted successfully
      */
     async delete(id: string): Promise<boolean> {
-
         if (!Types.ObjectId.isValid(id)) {
             throw new BadRequestException('Invalid realisation ID');
         }
@@ -336,7 +338,6 @@ export class RealisationService {
      * @returns The updated realisation with its files
      */
     async addFiles(id: string, images: Express.Multer.File[]): Promise<Realisation> {
-
         if (!Types.ObjectId.isValid(id)) {
             throw new BadRequestException('Invalid realisation ID');
         }
@@ -396,7 +397,6 @@ export class RealisationService {
      * @returns The updated realisation with its files
      */
     async deleteFile(realisationId: string, fileId: string): Promise<Realisation> {
-
         if (!Types.ObjectId.isValid(realisationId) || !Types.ObjectId.isValid(fileId)) {
             throw new BadRequestException('Invalid ID format');
         }
