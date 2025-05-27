@@ -97,8 +97,22 @@ export class StorageService {
     public async uploadRealisationImage(image: Express.Multer.File, key: string): Promise<string> {
         try {
             const uploadKey = key + Date.now().toString();
-            await this.upload(StorageService.professionalRealisationPath, uploadKey, image);
-            return this.getUrl(StorageService.professionalRealisationPath, uploadKey, 600, 600);
+            await this.upload(StorageService.professionalRealisationPath + '/images', uploadKey, image);
+            return this.getUrl(StorageService.professionalRealisationPath + '/images', uploadKey, 600, 600);
+        } catch (error) {
+            console.log('=========', error);
+        }
+    }
+    public async uploadRealisationVideo(video: Express.Multer.File, key: string): Promise<string> {
+        try {
+            const uploadKey = key + Date.now().toString();
+            await this.upload(StorageService.professionalRealisationPath + '/videos', uploadKey, video);
+            return this.getUrl(
+                StorageService.professionalRealisationPath + '/videos',
+                uploadKey,
+                600,
+                600,
+            );
         } catch (error) {
             console.log('=========', error);
         }
