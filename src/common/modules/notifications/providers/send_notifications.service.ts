@@ -1,158 +1,184 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
+import { firstValueFrom } from 'rxjs';
+import {
+    NOTIFICATION_MODEL_NAME,
+    NotificationModel,
+    NotificationType,
+} from 'src/databases/users/entities/notifications.schema';
+import { DATABASE_CONNECTION, User } from 'src/databases/main.database.connection';
+import { InjectModel } from '@nestjs/mongoose';
 
 interface NotificationPayload {
     token: string;
     title: string;
+    type: string;
     body: string;
-    data: Record<string, any>;
+    data: Record<string, any> | null;
 }
+
+export const NotificationTypeDetails = {
+    [NotificationType.WELCOME]: {
+        title: 'Bienvenue sur Beauty',
+        message: "Hey, bienvenue sur l'application Beauty en ligne !",
+    },
+    [NotificationType.GENERAL]: {
+        title: 'Général',
+        message: '',
+    },
+    [NotificationType.INFORMATION]: {
+        title: 'Informations',
+        message: '',
+    },
+    [NotificationType.NEW_RDV]: {
+        title: 'Nouveau rendez-vous',
+        message: 'Un nouveau rendez-vous a été planifié sur votre agenda.',
+    },
+    [NotificationType.RDV_ACCEPTED]: {
+        title: 'Rendez-vous accepté',
+        message: 'Votre rendez-vous a été accepté avec succès.',
+    },
+    [NotificationType.RDV_REFUSED]: {
+        title: 'Rendez-vous refusé',
+        message: 'Votre rendez-vous a été refusé. Veuillez en choisir un autre.',
+    },
+    [NotificationType.NEW_FEATURE]: {
+        title: 'Nouveauté !',
+        message: 'Découvrez les nouvelles fonctionnalités de Beauty !',
+    },
+    [NotificationType.BEST_CONSULTANTS]: {
+        title: 'Top Prestataires',
+        message: 'Découvrez les prestataires les mieux notés du moment !',
+    },
+} as const;
 
 @Injectable()
 export class SendNotificationsService {
     private readonly logger = new Logger(SendNotificationsService.name);
 
-    private readonly NOTIFICATION_TYPES = {
-        WELCOME: {
-            type: 'welcome',
-            title: 'Bienvenue sur Beauty',
-            message: "Hey, bienvenue sur l'application Beauty en ligne !",
-        },
-        NEW_RDV: {
-            type: 'new_rdv',
-            title: 'Nouveau rendez-vous',
-            message: 'Un nouveau rendez-vous a été planifié sur votre agenda.',
-        },
-        RDV_ACCEPTED: {
-            type: 'rdv_accepted',
-            title: 'Rendez-vous accepté',
-            message: 'Votre rendez-vous a été accepté avec succès.',
-        },
-
-        RDV_REFUSED: {
-            type: 'rdv_refused',
-            title: 'Rendez-vous refusé',
-            message: 'Votre rendez-vous a été refusé. Veuillez en choisir un autre.',
-        },
-        NEW_FEATURE: {
-            type: 'new_feature',
-            title: 'Nouveauté !',
-            message: 'Découvrez les nouvelles fonctionnalités de Beauty !',
-        },
-        BEST_CONSULTANTS: {
-            type: 'best_consultants',
-            title: 'Top Prestataires',
-            message: 'Découvrez les prestataires les mieux notés du moment !',
-        },
-    } as const;
-
     constructor(
+        @InjectModel(NOTIFICATION_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly notificationModel: NotificationModel,
         private readonly httpService: HttpService,
         private readonly configService: ConfigService,
     ) {}
 
     private prepareNotification(
-        type: keyof typeof this.NOTIFICATION_TYPES,
+        type: NotificationType,
         token: string,
         extraData: Record<string, any> = {},
+        overrideMessage?: string,
     ): NotificationPayload {
-        const notif = this.NOTIFICATION_TYPES[type];
+        const notif = NotificationTypeDetails[type];
+
+        if (!notif) {
+            throw new Error(`Type de notification inconnu : ${type}`);
+        }
+
         return {
             token,
             title: notif.title,
-            body: notif.message,
+            type: type,
+            body: overrideMessage || notif.message,
             data: {
-                type: notif.type,
+                type,
                 ...extraData,
             },
         };
     }
 
-    private async sendNotification(payload: NotificationPayload) {
+    private async sendNotification(payload: NotificationPayload, userId: string, refId: string) {
         const url = this.configService.get<string>('NOTIFICATION_URL');
-        this.logger.log(`Envoi de notification à l'URL: ${url}`);
 
+        if (!payload.token) {
+            this.logger.warn('Token de notification manquant. Envoi annulé.');
+            return { status: false, message: 'Token manquant' };
+        }
+        this.logger.warn(userId);
+        this.logger.warn(refId);
+
+        const profile = new this.notificationModel({
+            type: payload.type,
+            message: payload.body,
+            user_id: userId,
+
+            ref_id: refId,
+        });
+        profile.save();
         try {
+            this.logger.log(`Envoi de la notification à ${url} avec type: ${payload.data?.type}`);
             const response = await firstValueFrom(this.httpService.post(url, payload));
-
-            this.logger.log(`Notification envoyée: ${JSON.stringify(response.data)}`);
+            this.logger.log(
+                `Notification envoyée avec succès: ${JSON.stringify(response.data, null, 2)}`,
+            );
 
             return {
-                message: response.status === 200 ? 'Success' : "Erreur lors de l'envoi",
                 status: response.status === 200,
+                message: 'Succès',
             };
         } catch (error) {
-            this.logger.error(`Erreur d'envoi de notification: ${error.message}`);
+            this.logger.error(
+                `Erreur d'envoi: ${error?.message || error}. Payload: ${JSON.stringify(payload)}`,
+            );
             return {
                 status: false,
-                message: "Une erreur s'est produite lors de l'envoi de la notification.",
+                message: "Erreur lors de l'envoi de la notification.",
             };
         }
     }
 
-    async welComeNotification(user: any) {
-        const notification = this.prepareNotification('WELCOME', user.firebaseNotificationToken);
-        return this.sendNotification(notification);
-    }
+    async sendPredefinedNotification(
+        user: User,
+        type: NotificationType,
+        extraData: Record<string, any> = {},
+        overrideMessage?: string,
+    ) {
+        if (!user?.firebaseNotificationToken) {
+            this.logger.warn(`Utilisateur sans token de notification. Type: ${type}`);
+            return { status: false, message: 'Utilisateur sans token' };
+        }
 
-    async sendGeneralNotification(user: any, message: string) {
-        return this.sendNotification({
-            token: user.firebaseNotificationToken,
-            title: 'GENERAL',
-            body: message,
-            data: null,
-        });
-    }
-
-    async sendInformation(user: any, message: string) {
-        return this.sendNotification({
-            token: user.firebaseNotificationToken,
-            title: 'Informations',
-            body: message,
-            data: null,
-        });
-    }
-
-    async sendNewRdvNotification(user: any, rdvId: string) {
-        const notification = this.prepareNotification('NEW_RDV', user.firebaseNotificationToken, {
-            rdvId,
-        });
-        return this.sendNotification(notification);
-    }
-
-    async sendRdvAcceptedNotification(user: any, rdvId: string) {
         const notification = this.prepareNotification(
-            'RDV_ACCEPTED',
+            type,
             user.firebaseNotificationToken,
-            { rdvId },
+            extraData,
+            overrideMessage,
         );
-        return this.sendNotification(notification);
+        return this.sendNotification(notification, user._id.toString(), overrideMessage);
     }
 
-    async sendRdvRefusedNotification(user: any, rdvId: string) {
-        const notification = this.prepareNotification(
-            'RDV_REFUSED',
-            user.firebaseNotificationToken,
-            { rdvId },
-        );
-        return this.sendNotification(notification);
+    // Méthodes simplifiées
+
+    async sendWelcome(user: User) {
+        return this.sendPredefinedNotification(user, NotificationType.WELCOME);
     }
 
-    async sendNewFeatureNotification(user: any) {
-        const notification = this.prepareNotification(
-            'NEW_FEATURE',
-            user.firebaseNotificationToken,
-        );
-        return this.sendNotification(notification);
+    async sendGeneral(user: User, message: string) {
+        return this.sendPredefinedNotification(user, NotificationType.GENERAL, {}, message);
     }
 
-    async sendBestConsultantsNotification(user: any) {
-        const notification = this.prepareNotification(
-            'BEST_CONSULTANTS',
-            user.firebaseNotificationToken,
-        );
-        return this.sendNotification(notification);
+    async sendInformation(user: User, message: string) {
+        return this.sendPredefinedNotification(user, NotificationType.INFORMATION, {}, message);
+    }
+
+    async sendNewRdv(user: User, rdvId: string) {
+        return this.sendPredefinedNotification(user, NotificationType.NEW_RDV, { rdvId });
+    }
+
+    async sendRdvAccepted(user: User, rdvId: string) {
+        return this.sendPredefinedNotification(user, NotificationType.RDV_ACCEPTED, { rdvId });
+    }
+
+    async sendRdvRefused(user: User, rdvId: string) {
+        return this.sendPredefinedNotification(user, NotificationType.RDV_REFUSED, { rdvId });
+    }
+
+    async sendNewFeature(user: User) {
+        return this.sendPredefinedNotification(user, NotificationType.NEW_FEATURE);
+    }
+
+    async sendBestConsultants(user: User) {
+        return this.sendPredefinedNotification(user, NotificationType.BEST_CONSULTANTS);
     }
 }

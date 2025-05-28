@@ -25,6 +25,8 @@ import {
     ShareRealisationsSchema,
     LIKE_REALISATION_MODEL_NAME,
     LikeRealisationsSchema,
+    NOTIFICATION_MODEL_NAME,
+    NotificationsSchema,
 } from './main.database.connection';
 import { UsersService } from './users/providers';
 
@@ -55,6 +57,7 @@ import { UsersService } from './users/providers';
                 { name: VUE_REALISATION_MODEL_NAME, schema: VueRealisationsSchema },
                 { name: SHARE_REALISATION_MODEL_NAME, schema: ShareRealisationsSchema },
                 { name: LIKE_REALISATION_MODEL_NAME, schema: LikeRealisationsSchema },
+                { name: NOTIFICATION_MODEL_NAME, schema: NotificationsSchema },
             ],
             DATABASE_CONNECTION,
         ),

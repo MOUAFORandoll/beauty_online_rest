@@ -1,17 +1,54 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
-import { GeneralNotificationDto, ParticularNotificationDto } from '../dto';
-import * as Database from '../../../databases/users/providers';
+import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { GeneralNotificationDto, NotificationResponseDto, ParticularNotificationDto } from '../dto';
+
 import { SendNotificationsService } from 'src/common/modules/notifications/providers';
 import { Public } from 'src/common/apiutils/api.decorators';
 import { NotificationsService } from '../providers/notifications.service';
-
+import { GetUser } from '../decorators';
+import { PaginationPayloadDto, PaginationResponseDto } from 'src/common/apiutils';
+import {
+    AGENDA_MODEL_NAME,
+    AgendaModel,
+    DATABASE_CONNECTION,
+    REALISATION_MODEL_NAME,
+    RealisationModel,
+    REALISATION_FILE_MODEL_NAME,
+    USER_MODEL_NAME,
+    UserModel,
+    RealisationFileModel,
+    CRENEAU_MODEL_NAME,
+    CreneauModel,
+    PositionModel,
+    POSITION_MODEL_NAME,
+    RendezVousModel,
+    RENDEZ_VOUS_MODEL_NAME,
+    PROFILE_PRO_MODEL_NAME,
+    ProfileProfessionnelModel,
+} from 'src/databases/main.database.connection';
+import { InjectModel } from '@nestjs/mongoose';
 @Controller('notifications')
 export class NotificationsController {
     constructor(
         private readonly notificationsService: NotificationsService,
-        private readonly dbUsersService: Database.UsersService,
-        private readonly sendNotificationsService: SendNotificationsService,
+        @InjectModel(USER_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly userModel: UserModel,
+        @InjectModel(AGENDA_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly agendaModel: AgendaModel,
+        @InjectModel(REALISATION_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly realisationModel: RealisationModel,
+        @InjectModel(REALISATION_FILE_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly realisationFileModel: RealisationFileModel,
+
+        @InjectModel(CRENEAU_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly creneauModel: CreneauModel,
+
+        @InjectModel(PROFILE_PRO_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly profileModel: ProfileProfessionnelModel,
+        @InjectModel(POSITION_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly positionModel: PositionModel,
+        @InjectModel(RENDEZ_VOUS_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly rendezVousModel: RendezVousModel,
     ) {}
     /**
      * Sends a welcome notification to a user by their ID
@@ -50,5 +87,38 @@ export class NotificationsController {
     @HttpCode(HttpStatus.OK)
     async sendNotificationToUser(@Body() body: ParticularNotificationDto) {
         await this.notificationsService.sendNotiftoUser(body.userId, body.message);
+    }
+
+    /**
+     *
+     *  Récupère un utilisateur par son ID
+     */
+    @Get('/me')
+    @ApiOperation({
+        summary: 'Retrieves a user by their  token',
+    })
+    @ApiOkResponse({ type: NotificationResponseDto })
+    @HttpCode(HttpStatus.OK)
+    async findUserNotification(
+        @GetUser('id') userId: string,
+        @Query() pagination: PaginationPayloadDto,
+    ): Promise<PaginationResponseDto<NotificationResponseDto>> {
+        const { data, total } = await this.notificationsService.findUserNotification(
+            userId,
+            pagination,
+        );
+
+        return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) =>
+            NotificationResponseDto.fromNotification(l, {
+                rendezVousModel: this.rendezVousModel,
+                userModel: this.userModel,
+                agendaModel: this.agendaModel,
+                realisationModel: this.realisationModel,
+                realisationFileModel: this.realisationFileModel,
+                creneauModel: this.creneauModel,
+                profileModel: this.profileModel,
+                positionModel: this.positionModel,
+            }),
+        );
     }
 }

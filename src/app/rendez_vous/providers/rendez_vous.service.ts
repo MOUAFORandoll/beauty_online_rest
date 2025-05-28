@@ -48,10 +48,7 @@ export class RendezVousService {
             );
 
             const user = await this.dbUsersService.getUser(profile.user_id);
-            await this.sendNotificationsService.sendNewRdvNotification(
-                user,
-                rendezVous._id.toString(),
-            );
+            await this.sendNotificationsService.sendNewRdv(user, rendezVous._id.toString());
 
             return this.findRendezVousById(rendezVous.id);
         } catch (error) {
@@ -163,7 +160,7 @@ export class RendezVousService {
         rendezVous.status = StatusRendezVous.ACCEPTER; // Assuming true means accepted
         const updatedRendezVous = await rendezVous.save();
         const user = await this.dbUsersService.getUser(updatedRendezVous.user_id);
-        await this.sendNotificationsService.sendRdvAcceptedNotification(user, id);
+        await this.sendNotificationsService.sendRdvAccepted(user, id);
 
         return updatedRendezVous;
     }
@@ -176,7 +173,7 @@ export class RendezVousService {
         rendezVous.status = StatusRendezVous.REFUSER;
         const updatedRendezVous = await rendezVous.save();
         const user = await this.dbUsersService.getUser(updatedRendezVous.user_id);
-        await this.sendNotificationsService.sendRdvRefusedNotification(user, id);
+        await this.sendNotificationsService.sendRdvRefused(user, id);
 
         return updatedRendezVous;
     }

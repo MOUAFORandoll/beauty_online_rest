@@ -74,7 +74,7 @@ export class UsersController {
     async sendNotif() {
         const user = await this.dbUsersService.getUser('68156b0b5ad449e5c595ebb6');
 
-        await this.sendNotificationsService.welComeNotification(user);
+        await this.sendNotificationsService.sendWelcome(user);
     }
     /**
      * update user information
