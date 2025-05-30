@@ -82,11 +82,11 @@ export class RendezVousService {
         pagination: PaginationPayloadDto,
     ): Promise<{ data: RendezVous[]; total: number }> {
         try {
-             const profile = await this.profileService.findUserProfile(user_id);
+            const profile = await this.profileService.findUserProfile(user_id);
             if (!profile) {
                 return { data: [], total: 0 };
             }
-             const pipeline: PipelineStage[] = [
+            const pipeline: PipelineStage[] = [
                 // 1. Join with Creneau
                 {
                     $lookup: {
@@ -144,7 +144,7 @@ export class RendezVousService {
      * Finds a single RendezVous by its ID.
      * Helper function to avoid repetition.
      */
-    private async findRendezVousById(id: string): Promise<RendezVous> {
+    async findRendezVousById(id: string): Promise<RendezVous> {
         const rendezVous = await this.rendezVousModel.findById(id).exec();
         if (!rendezVous) {
             throw new NotFoundException(RendezVousErrors.RENDEZ_VOUS_NOT_FOUND);

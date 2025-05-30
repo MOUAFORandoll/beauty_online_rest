@@ -1,8 +1,7 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { GeneralNotificationDto, NotificationResponseDto, ParticularNotificationDto } from '../dto';
-
-import { SendNotificationsService } from 'src/common/modules/notifications/providers';
+ 
 import { Public } from 'src/common/apiutils/api.decorators';
 import { NotificationsService } from '../providers/notifications.service';
 import { GetUser } from '../decorators';
