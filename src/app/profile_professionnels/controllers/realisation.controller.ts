@@ -10,6 +10,7 @@ import {
     Query,
     UseInterceptors,
     UploadedFiles,
+    UploadedFile,
 } from '@nestjs/common';
 import { ApiConsumes, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RealisationResponseDto } from '../dto';
@@ -19,20 +20,22 @@ import * as Database from '../../../databases/users/providers';
 import { PaginationPayloadDto, PaginationResponseDto, Public } from 'src/common/apiutils';
 import {
     CreateRealisationDto,
+    CreateRealisationVideoDto,
     FindRealisationDto,
     UpdateRealisationDto,
 } from '../dto/realisation.request.dto';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { REALISATION_FILE_MODEL_NAME, RealisationFileModel } from 'src/databases/services/entities';
 import { DATABASE_CONNECTION } from 'src/databases/main.database.connection';
 import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
 import * as path from 'path';
+import { diskStorage } from 'multer';
 
 @ApiTags('Realisations')
 @Controller('realisations')
 export class RealisationController {
-    private readonly localDirectory = path.join(__dirname, '../../../../upload');
+    private readonly localDirectory = path.join(__dirname, '../../../../assets/upload');
     constructor(
         @InjectModel(REALISATION_FILE_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationFileModel: RealisationFileModel,
@@ -41,21 +44,49 @@ export class RealisationController {
         private readonly dbUsersService: Database.UsersService,
     ) {}
 
-    @Post()
+    @Post('/with-image')
     @ApiOperation({
         summary: 'create realisation profile',
     })
     @ApiConsumes('multipart/form-data')
     @UseInterceptors(FilesInterceptor('files[]'))
     @ApiOkResponse({ type: RealisationResponseDto })
-    async create(
+    async createWithImage(
         @GetUser('id') id: string,
         @Body() dto: CreateRealisationDto,
         @UploadedFiles() files: Array<Express.Multer.File>,
     ): Promise<RealisationResponseDto> {
         dto.files = files;
         await this.dbUsersService.getUser(id);
-        const profile = await this.realisationService.create(dto, id);
+        const profile = await this.realisationService.createWithImages(dto, id);
+        return RealisationResponseDto.fromRealisation(profile, this.realisationFileModel);
+    }
+
+    @Post('/with-video')
+    @ApiOperation({
+        summary: 'create realisation profile',
+    })
+    @ApiConsumes('multipart/form-data')
+    @UseInterceptors(
+        FileInterceptor('file', {
+            storage: diskStorage({
+                destination: './assets/videos',
+                filename: (req, file, cb) => {
+                    console.log(`${Date.now()}-${file.originalname}`);
+                    cb(null, `${Date.now()}-${file.originalname}`);
+                },
+            }),
+        }),
+    )
+    @ApiOkResponse({ type: RealisationResponseDto })
+    async createWithVideo(
+        @GetUser('id') id: string,
+        @Body() dto: CreateRealisationVideoDto,
+        @UploadedFile() file: Express.Multer.File,
+    ): Promise<RealisationResponseDto> {
+        dto.file = file;
+        await this.dbUsersService.getUser(id);
+        const profile = await this.realisationService.createWithVideo(dto, id);
         return RealisationResponseDto.fromRealisation(profile, this.realisationFileModel);
     }
 
@@ -115,7 +146,7 @@ export class RealisationController {
                 isVideo: false,
             };
 
-            const realisation = await this.realisationService.create(dto, userId);
+            const realisation = await this.realisationService.createWithImages(dto, userId);
 
             const responseDto = await RealisationResponseDto.fromRealisation(
                 realisation,

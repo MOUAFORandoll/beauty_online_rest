@@ -66,29 +66,6 @@ export class RendezVousController {
         @InjectModel(RENDEZ_VOUS_MODEL_NAME, DATABASE_CONNECTION)
         private readonly rendezVousModel: RendezVousModel,
     ) {}
-
-    @Get('/:id')
-    @ApiOperation({ summary: 'Get a rendez-vous' })
-    @ApiParam({ name: 'id', description: 'Get Rendez-vous ID' })
-    @ApiOkResponse({ type: RendezVousResponseDto })
-    async fetchRdv(
-        @Param('id') id: string,
-        // @GetUser('id') userId: string,
-    ): Promise<RendezVousResponseDto> {
-        const rendezVous = await this.rendezVousService.findRendezVousById(id);
-        return RendezVousResponseDto.fromRendezVous(
-            this.userModel,
-            this.agendaModel,
-            this.realisationModel,
-            this.realisationFileModel,
-            this.creneauModel,
-            this.profileModel,
-            this.rendezVousModel,
-            this.positionModel,
-
-            rendezVous,
-        );
-    }
     @Post()
     @ApiOperation({ summary: 'Create a new rendez-vous' })
     @ApiOkResponse({ type: RendezVousResponseDto })
@@ -169,6 +146,28 @@ export class RendezVousController {
         );
     }
 
+    @Get('/:id')
+    @ApiOperation({ summary: 'Get a rendez-vous' })
+    @ApiParam({ name: 'id', description: 'Get Rendez-vous ID' })
+    @ApiOkResponse({ type: RendezVousResponseDto })
+    async fetchRdv(
+        @Param('id') id: string,
+        // @GetUser('id') userId: string,
+    ): Promise<RendezVousResponseDto> {
+        const rendezVous = await this.rendezVousService.findRendezVousById(id);
+        return RendezVousResponseDto.fromRendezVous(
+            this.userModel,
+            this.agendaModel,
+            this.realisationModel,
+            this.realisationFileModel,
+            this.creneauModel,
+            this.profileModel,
+            this.rendezVousModel,
+            this.positionModel,
+
+            rendezVous,
+        );
+    }
     @Patch('/:id/accept')
     @ApiOperation({ summary: 'Accept a rendez-vous' })
     @ApiParam({ name: 'id', description: 'Rendez-vous ID' })

@@ -1,5 +1,6 @@
 # compiled output
 #/dist
+/assets
 /node_modules
 /build
 src/testauth

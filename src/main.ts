@@ -7,12 +7,17 @@ import { InitFirebaseApp } from './common/services/firebase';
 
 import { DeepLinksAppModule } from './deeplinks.app.module';
 import { DeepLinksAppLauncher } from './deeplinks.launcher';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 async function bootstrap() {
     await bootstrapRestApp();
     await bootstrapRedirectLink();
 }
 async function bootstrapRestApp() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+    app.useStaticAssets(join(__dirname, '..', 'assets')); // ou public
+    app.useStaticAssets(join(__dirname, '..', 'assets/videos')); // ou public
     const configService = app.get(ConfigService);
     const loggerService = app.get(Logger);
     const firebaseServiceAccountPath: string = configService.get('FIREBASE_SECRET_PATH');

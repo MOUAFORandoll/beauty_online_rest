@@ -13,11 +13,8 @@ import { PROFILE_PRO_NOT_FOUND, ProfileProErrors } from '../errors';
 import { DATABASE_CONNECTION } from 'src/databases/main.database.connection';
 import { PaginationPayloadDto } from 'src/common/apiutils';
 import { UpdateUserPositionDto } from 'src/app/users/dto';
-import { StorageService } from 'src/common/modules/aws/providers';
-import {
-    Shareable,
-    ShareableProperties,
-} from 'src/common/ClassActions/action.shareable';
+import { StorageService } from 'src/common/modules/external/providers';
+import { Shareable, ShareableProperties } from 'src/common/ClassActions/action.shareable';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -41,7 +38,7 @@ export class ProfileService {
 
     async create(dto: CreateProfileDto, user_id: string): Promise<ProfileProfessionnel> {
         try {
-             const profile = new this.profileModel({
+            const profile = new this.profileModel({
                 namePro: dto.namePro,
                 description: dto.description,
                 service: dto.service,
@@ -138,7 +135,7 @@ export class ProfileService {
     }
     async update(id: string, dto: UpdateProfileDto): Promise<ProfileProfessionnel> {
         const profile = await this.findOneById(id);
-          if (dto.name_pro) profile.namePro = dto.name_pro;
+        if (dto.name_pro) profile.namePro = dto.name_pro;
         if (dto.description) profile.description = dto.description;
         return profile.save();
     }
@@ -176,7 +173,7 @@ export class ProfileService {
 
                 throw new BadRequestException(ProfileProErrors[PROFILE_PRO_NOT_FOUND]);
             }
-             if (photo) {
+            if (photo) {
                 profile.cover = await this.storageService.uploadCoverImage(
                     photo,
                     profile._id.toString(),

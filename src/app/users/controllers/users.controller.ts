@@ -21,6 +21,7 @@ import * as Database from '../../../databases/users/providers';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SendNotificationsService } from 'src/common/modules/notifications/providers';
 import { Public } from 'src/common/apiutils/api.decorators';
+import { EmailService } from 'src/common/modules/external/providers';
 
 @Controller('users')
 export class UsersController {
@@ -28,6 +29,7 @@ export class UsersController {
         private readonly usersService: UsersService,
         private readonly dbUsersService: Database.UsersService,
         private readonly sendNotificationsService: SendNotificationsService,
+        private readonly emailService: EmailService,
     ) {}
 
     /**
@@ -73,7 +75,7 @@ export class UsersController {
     @HttpCode(HttpStatus.OK)
     async sendNotif() {
         const user = await this.dbUsersService.getUser('68156b0b5ad449e5c595ebb6');
-
+        await this.emailService.sendEmail(user.email, 'Welcome', 'BienVenu');
         await this.sendNotificationsService.sendWelcome(user);
     }
     /**

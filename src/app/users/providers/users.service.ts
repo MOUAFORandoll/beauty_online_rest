@@ -9,7 +9,7 @@ import {
 import * as Database from '../../../databases/users/providers';
 import { InjectModel } from '@nestjs/mongoose';
 import { UpdateUserDto, UpdateUserPositionDto } from '../dto';
-import { StorageService } from 'src/common/modules/aws/providers';
+import { StorageService } from 'src/common/modules/external/providers';
 
 @Injectable()
 export class UsersService {
@@ -44,10 +44,9 @@ export class UsersService {
 
     async updateUserPhoto(photo: Express.Multer.File, id: string): Promise<User> {
         try {
-          
             const user = await this.usersService.getUser(id);
 
-             if (photo) {
+            if (photo) {
                 user.pictureUrl = await this.storageService.userProfilePath(
                     photo,
                     user._id.toString(),

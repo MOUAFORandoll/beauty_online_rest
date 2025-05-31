@@ -15,6 +15,7 @@ import { PaginationPayloadDto } from 'src/common/apiutils';
 import { QueryOptions, Types } from 'mongoose';
 import {
     CreateRealisationDto,
+    CreateRealisationVideoDto,
     FindRealisationDto,
     UpdateRealisationDto,
 } from '../dto/realisation.request.dto';
@@ -26,7 +27,7 @@ import {
     RealisationErrors,
 } from '../errors';
 import { ProfileService } from './profile.service';
-import { StorageService } from 'src/common/modules/aws/providers';
+import { StorageService } from 'src/common/modules/external/providers';
 
 @Injectable()
 export class RealisationService {
@@ -40,13 +41,14 @@ export class RealisationService {
         private readonly profileService: ProfileService,
         private readonly storageService: StorageService,
     ) {}
+
     /**
      * Create a new realisation with associated files
      * @param dto The realisation data
      * @param user_id The user ID
      * @returns The created realisation with its files
      */
-    async create(dto: CreateRealisationDto, user_id: string): Promise<Realisation> {
+    async createWithImages(dto: CreateRealisationDto, user_id: string): Promise<Realisation> {
         // Validate input
         if (!dto.files || !dto.files.length) {
             throw new BadRequestException('At least one image is required');
@@ -67,6 +69,8 @@ export class RealisationService {
             // Create the realisation
             const realisation = new this.realisationModel({
                 ...dto,
+                isVideo: false,
+
                 profile_professionnel_id: profilePro._id,
             });
             await realisation.save({ session });
@@ -79,19 +83,11 @@ export class RealisationService {
                         file,
                         realisation_id: realisation._id,
                     });
-                    if (dto.isVideo) {
-                        realisationFile.file_path =
-                            await this.storageService.uploadRealisationVideo(
-                                file,
-                                realisationFile._id.toString(),
-                            );
-                    } else {
-                        realisationFile.file_path =
-                            await this.storageService.uploadRealisationImage(
-                                file,
-                                realisationFile._id.toString(),
-                            );
-                    }
+
+                    realisationFile.file_path = await this.storageService.uploadRealisationImage(
+                        file,
+                        realisationFile._id.toString(),
+                    );
 
                     await realisationFile.save({ session });
                     savedFiles.push(realisationFile);
@@ -119,7 +115,72 @@ export class RealisationService {
             throw new Error(`Failed to create realisation: ${error.message}`);
         }
     }
+    /**
+     * Create a new realisation with associated files
+     * @param dto The realisation data
+     * @param user_id The user ID
+     * @returns The created realisation with a video
+     */
+    async createWithVideo(dto: CreateRealisationVideoDto, user_id: string): Promise<Realisation> {
+        // Validate input
+        if (!dto.file) {
+            throw new BadRequestException('At least one video is required');
+        }
 
+        // Use a session for transaction
+        const session = await this.realisationModel.db.startSession();
+        session.startTransaction();
+
+        try {
+            // Find the professional profile
+            const profilePro: ProfileProfessionnel =
+                await this.profileService.findUserProfile(user_id);
+            if (!profilePro) {
+                throw new NotFoundException(ProfileProErrors[PROFILE_PRO_NOT_FOUND]);
+            }
+
+            // Create the realisation
+            const realisation = new this.realisationModel({
+                ...dto,
+                isVideo: true,
+                profile_professionnel_id: profilePro._id,
+            });
+            await realisation.save({ session });
+
+            try {
+                const realisationFile = new this.realisationFileModel({
+                    realisation_id: realisation._id,
+                });
+
+                realisationFile.file_path = await this.storageService.uploadRealisationVideo(
+                    dto.file,
+                    realisationFile._id.toString(),
+                );
+
+                await realisationFile.save({ session });
+            } catch (error) {
+                console.error(`Failed to upload file: ${error.message}`, error.stack);
+                throw new Error(`Failed to upload file: ${error.message}`);
+            }
+
+            await session.commitTransaction();
+            await session.endSession();
+
+            // Return the complete realisation with files
+            return this.findById(realisation._id.toString());
+        } catch (error) {
+            await session.abortTransaction();
+            await session.endSession();
+
+            console.error(`Failed to create realisation: ${error.message}`, error.stack);
+
+            if (error instanceof NotFoundException || error instanceof BadRequestException) {
+                throw error;
+            }
+
+            throw new Error(`Failed to create realisation: ${error.message}`);
+        }
+    }
     /**
      * Find a realisation by ID with its files
      * @param id The realisation ID

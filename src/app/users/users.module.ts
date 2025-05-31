@@ -9,11 +9,11 @@ import {
 } from './providers';
 import { APP_GUARD } from '@nestjs/core';
 import { MainDatabaseModule } from '../../databases/main.database.module';
-import { AwsModule } from '../../common/modules/aws/aws.module';
+import { ExternalModule } from '../../common/modules/external/external.module';
 import { NotificationsModule } from '../../common/modules/notifications/notifications.module';
 
 @Module({
-    imports: [MainDatabaseModule, AwsModule, NotificationsModule],
+    imports: [MainDatabaseModule, ExternalModule, NotificationsModule],
     providers: [
         AuthFirebaseService,
 

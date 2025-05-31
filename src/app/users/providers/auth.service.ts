@@ -12,13 +12,15 @@ import {
     USER_MODEL_NAME,
     UserModel,
 } from '../../../databases/main.database.connection';
+import { SendNotificationsService } from 'src/common/modules/notifications/providers';
+
 @Injectable()
 export class AuthService {
     constructor(
         @InjectModel(USER_MODEL_NAME, DATABASE_CONNECTION)
         private userModel: UserModel,
         private firebaseAuthService: AuthFirebaseService,
-        // private readonly storageService: StorageService,
+        private readonly sendNotificationsService: SendNotificationsService,
     ) {}
 
     async authentication(payload: UserAuthenticationDto): Promise<User> {
@@ -28,20 +30,20 @@ export class AuthService {
 
         const { email, authProvider, userFireBase, uid }: FirebaseVerificationDto =
             await this.firebaseAuthService.verifyToken(token);
-         if (!email) {
+        if (!email) {
             throw new ForbiddenException(UserErrors[FIREBASE_AUTH_FAILED]);
         }
 
         const user = await this.userModel.findOne({ email: email }).exec();
 
         if (!user) {
-             return await this.createUserWithFirebaseUID(uid, email, authProvider, userFireBase);
+            return await this.createUserWithFirebaseUID(uid, email, authProvider, userFireBase);
         }
-        
+
         // if (user.authProvider != authProvider) {
         //     throw new ForbiddenException(UserErrors[USER_EMAIL_ALREADY_EXISTS]);
         // }
-       
+
         return user;
     }
 
@@ -71,7 +73,7 @@ export class AuthService {
             // }
         }
         newUser = await newUser.save();
-
+        await this.sendNotificationsService.sendWelcome(newUser);
         // création de l'abonnement
 
         return newUser;

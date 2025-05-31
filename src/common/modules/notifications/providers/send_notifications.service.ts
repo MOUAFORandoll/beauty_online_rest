@@ -9,13 +9,17 @@ import {
 } from 'src/databases/users/entities/notifications.schema';
 import { DATABASE_CONNECTION, User } from 'src/databases/main.database.connection';
 import { InjectModel } from '@nestjs/mongoose';
+import { EmailService } from 'src/common/modules/external/providers';
 
 interface NotificationPayload {
     token: string;
     title: string;
-    type: string;
     body: string;
-    data: Record<string, any> | null;
+    data: {
+        type: NotificationType;
+        ref_id?: string;
+        [key: string]: any;
+    };
 }
 
 export const NotificationTypeDetails = {
@@ -62,6 +66,7 @@ export class SendNotificationsService {
         private readonly notificationModel: NotificationModel,
         private readonly httpService: HttpService,
         private readonly configService: ConfigService,
+        private readonly emailService: EmailService,
     ) {}
 
     private prepareNotification(
@@ -79,36 +84,37 @@ export class SendNotificationsService {
         return {
             token,
             title: notif.title,
-            type: type,
             body: overrideMessage || notif.message,
             data: {
                 type,
-                ...extraData,
+                ...extraData, // ref_id inclus ici
             },
         };
     }
 
-    private async sendNotification(payload: NotificationPayload, userId: string, refId: string) {
+    private async sendNotification(payload: NotificationPayload, userId: string) {
         const url = this.configService.get<string>('NOTIFICATION_URL');
 
         if (!payload.token) {
             this.logger.warn('Token de notification manquant. Envoi annulé.');
             return { status: false, message: 'Token manquant' };
         }
-        this.logger.warn(userId);
-        this.logger.warn(refId);
 
-        const profile = new this.notificationModel({
-            type: payload.type,
+        const refId = payload.data?.ref_id || null;
+
+        const notificationDoc = new this.notificationModel({
+            type: payload.data.type,
             message: payload.body,
             user_id: userId,
-
             ref_id: refId,
         });
-        profile.save();
+
+        await notificationDoc.save();
+
         try {
-            this.logger.log(`Envoi de la notification à ${url} avec type: ${payload.data?.type}`);
+            this.logger.log(`Envoi de la notification à ${url} avec type: ${payload.data.type}`);
             const response = await firstValueFrom(this.httpService.post(url, payload));
+
             this.logger.log(
                 `Notification envoyée avec succès: ${JSON.stringify(response.data, null, 2)}`,
             );
@@ -145,7 +151,9 @@ export class SendNotificationsService {
             extraData,
             overrideMessage,
         );
-        return this.sendNotification(notification, user._id.toString(), overrideMessage);
+        await this.emailService.sendEmail(user.email, notification.title, notification.body);
+
+        return this.sendNotification(notification, user._id.toString());
     }
 
     // Méthodes simplifiées
@@ -163,15 +171,19 @@ export class SendNotificationsService {
     }
 
     async sendNewRdv(user: User, rdvId: string) {
-        return this.sendPredefinedNotification(user, NotificationType.NEW_RDV, { rdvId });
+        return this.sendPredefinedNotification(user, NotificationType.NEW_RDV, { ref_id: rdvId });
     }
 
     async sendRdvAccepted(user: User, rdvId: string) {
-        return this.sendPredefinedNotification(user, NotificationType.RDV_ACCEPTED, { rdvId });
+        return this.sendPredefinedNotification(user, NotificationType.RDV_ACCEPTED, {
+            ref_id: rdvId,
+        });
     }
 
     async sendRdvRefused(user: User, rdvId: string) {
-        return this.sendPredefinedNotification(user, NotificationType.RDV_REFUSED, { rdvId });
+        return this.sendPredefinedNotification(user, NotificationType.RDV_REFUSED, {
+            ref_id: rdvId,
+        });
     }
 
     async sendNewFeature(user: User) {

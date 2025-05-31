@@ -17,6 +17,7 @@ import {
     PROFILE_PRO_MODEL_NAME,
     ProfileProfessionnelModel,
     ProfileProfessionnel,
+    RealisationFile,
 } from 'src/databases/main.database.connection';
 import { PaginationPayloadDto } from 'src/common/apiutils';
 import { Shareable, ShareableProperties } from 'src/common/ClassActions/action.shareable';
@@ -72,6 +73,11 @@ export class ActuService {
 
         return actu;
     }
+    async findOneRealisationFileById(id: string): Promise<RealisationFile> {
+        const realisation = await this.realisationFileModel.findById(id).exec();
+
+        return realisation;
+    }
     async shareActu(actu_id: string, user_id: string): Promise<string> {
         const share = new this.shareModel({
             realisation_id: actu_id,
@@ -85,13 +91,12 @@ export class ActuService {
 
     async vueActu(actu_id: string, user_id: string) {
         try {
-         
             const vue = new this.vueModel({
                 realisation_id: actu_id,
 
                 user_id: user_id,
             });
-          
+
             await vue.save();
         } catch (error) {
             throw new Error(`Failed to create profile: ${error.message}`);
