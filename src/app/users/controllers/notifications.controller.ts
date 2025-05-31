@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { GeneralNotificationDto, NotificationResponseDto, ParticularNotificationDto } from '../dto';
- 
+
 import { Public } from 'src/common/apiutils/api.decorators';
 import { NotificationsService } from '../providers/notifications.service';
 import { GetUser } from '../decorators';
@@ -26,6 +26,8 @@ import {
     ProfileProfessionnelModel,
 } from 'src/databases/main.database.connection';
 import { InjectModel } from '@nestjs/mongoose';
+import { ConfigService } from '@nestjs/config';
+
 @Controller('notifications')
 export class NotificationsController {
     constructor(
@@ -48,6 +50,7 @@ export class NotificationsController {
         private readonly positionModel: PositionModel,
         @InjectModel(RENDEZ_VOUS_MODEL_NAME, DATABASE_CONNECTION)
         private readonly rendezVousModel: RendezVousModel,
+        private readonly configService: ConfigService,
     ) {}
     /**
      * Sends a welcome notification to a user by their ID
@@ -117,6 +120,7 @@ export class NotificationsController {
                 creneauModel: this.creneauModel,
                 profileModel: this.profileModel,
                 positionModel: this.positionModel,
+                configService: this.configService,
             }),
         );
     }

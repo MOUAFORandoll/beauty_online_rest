@@ -11,6 +11,7 @@ import {
 import { PositionModel, ProfileProfessionnelModel, UserModel } from 'src/databases/users/entities';
 
 import { RendezVousResponseDto } from 'src/app/rendez_vous/dto';
+import { ConfigService } from '@nestjs/config';
 
 export class NotificationResponseDto {
     @ApiProperty({ type: String, required: true })
@@ -42,6 +43,7 @@ export class NotificationResponseDto {
             creneauModel: CreneauModel;
             profileModel: ProfileProfessionnelModel;
             positionModel: PositionModel;
+            configService: ConfigService;
         },
     ): Promise<NotificationResponseDto> {
         const typesRequérantChargementRdv = [
@@ -82,6 +84,7 @@ export class NotificationResponseDto {
             creneauModel: CreneauModel;
             profileModel: ProfileProfessionnelModel;
             positionModel: PositionModel;
+            configService: ConfigService;
         },
     ): Promise<NotificationResponseDto> {
         const { rendezVousModel, ...models } = deps;
@@ -101,6 +104,7 @@ export class NotificationResponseDto {
             rendezVousModel,
             models.positionModel,
             rendezVous,
+            deps.configService,
         );
 
         return {

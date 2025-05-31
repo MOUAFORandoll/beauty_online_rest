@@ -101,6 +101,7 @@ export class ShareController {
             this.shareModel,
             this.likeModel,
             this.profileService,
+            this.configService,
         );
         return this.fillTemplate({
             pageTitle: this.appName,

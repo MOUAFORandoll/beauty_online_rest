@@ -39,6 +39,7 @@ import {
 } from 'src/databases/main.database.connection';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('RendezVous')
 @ApiBearerAuth()
@@ -65,6 +66,7 @@ export class RendezVousController {
         private readonly positionModel: PositionModel,
         @InjectModel(RENDEZ_VOUS_MODEL_NAME, DATABASE_CONNECTION)
         private readonly rendezVousModel: RendezVousModel,
+        private readonly configService: ConfigService,
     ) {}
     @Post()
     @ApiOperation({ summary: 'Create a new rendez-vous' })
@@ -85,6 +87,7 @@ export class RendezVousController {
             this.positionModel,
 
             rendezVous,
+            this.configService,
         );
     }
 
@@ -107,8 +110,8 @@ export class RendezVousController {
                 this.profileModel,
                 this.rendezVousModel,
                 this.positionModel,
-
                 l,
+            this.    configService,
             ),
         );
     }
@@ -142,6 +145,7 @@ export class RendezVousController {
                 this.positionModel,
 
                 l,
+                this.configService,
             ),
         );
     }
@@ -166,6 +170,7 @@ export class RendezVousController {
             this.positionModel,
 
             rendezVous,
+            this.configService,
         );
     }
     @Patch('/:id/accept')
@@ -188,6 +193,7 @@ export class RendezVousController {
             this.positionModel,
 
             rendezVous,
+            this.configService,
         );
     }
 
@@ -209,8 +215,8 @@ export class RendezVousController {
             this.profileModel,
             this.rendezVousModel,
             this.positionModel,
-
             rendezVous,
+            this.configService,
         );
     }
 

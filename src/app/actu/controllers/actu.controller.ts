@@ -9,14 +9,12 @@ import {
     Query,
     Res,
     BadRequestException,
-    NotFoundException,
-    InternalServerErrorException,
+    NotFoundException, 
     Req,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ActuResponseDto } from '../dto';
-import { ActuService } from '../providers';
-import * as Database from '../../../databases/users/providers';
+import { ActuService } from '../providers'; 
 import { PaginationPayloadDto, PaginationResponseDto, Public } from 'src/common/apiutils';
 
 import {
@@ -51,6 +49,7 @@ import { Request, Response } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Actus')
 @Controller('actus')
@@ -78,8 +77,7 @@ export class ActuController {
         private readonly likeModel: LikeRealisationModel,
 
         private readonly profileService: ProfileService,
-
-        private readonly dbUsersService: Database.UsersService,
+        private configService: ConfigService,
     ) {}
 
     @Get('')
@@ -106,6 +104,7 @@ export class ActuController {
                 this.shareModel,
                 this.likeModel,
                 this.profileService,
+                this.configService
             ),
         );
     }
@@ -150,6 +149,7 @@ export class ActuController {
                         this.shareModel,
                         this.likeModel,
                         this.profileService,
+                        this.configService
                     );
                     return {
                         type: 'actu',
@@ -213,6 +213,7 @@ export class ActuController {
             this.shareModel,
             this.likeModel,
             this.profileService,
+            this.configService,
         );
     }
     @Get(':id/share')
@@ -306,7 +307,7 @@ export class ActuController {
             };
             console.log('baseHeaders=========', baseHeaders);
             const range = req.headers.range;
-            console.log('range=========',range);
+            console.log('range=========', range);
 
             if (range) {
                 // Gestion des Range Requests pour le streaming partiel

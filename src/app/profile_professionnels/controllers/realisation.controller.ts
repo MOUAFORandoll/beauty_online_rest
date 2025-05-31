@@ -31,6 +31,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
 import * as path from 'path';
 import { diskStorage } from 'multer';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Realisations')
 @Controller('realisations')
@@ -42,6 +43,7 @@ export class RealisationController {
         private readonly realisationService: RealisationService,
 
         private readonly dbUsersService: Database.UsersService,
+        private configService: ConfigService,
     ) {}
 
     @Post('/with-image')
@@ -59,7 +61,12 @@ export class RealisationController {
         dto.files = files;
         await this.dbUsersService.getUser(id);
         const profile = await this.realisationService.createWithImages(dto, id);
-        return RealisationResponseDto.fromRealisation(profile, this.realisationFileModel);
+        return RealisationResponseDto.fromRealisation(
+            profile,
+            this.realisationFileModel,
+
+            this.configService,
+        );
     }
 
     @Post('/with-video')
@@ -87,7 +94,12 @@ export class RealisationController {
         dto.file = file;
         await this.dbUsersService.getUser(id);
         const profile = await this.realisationService.createWithVideo(dto, id);
-        return RealisationResponseDto.fromRealisation(profile, this.realisationFileModel);
+        return RealisationResponseDto.fromRealisation(
+            profile,
+            this.realisationFileModel,
+
+            this.configService,
+        );
     }
 
     @Get('/fake-data')
@@ -151,6 +163,8 @@ export class RealisationController {
             const responseDto = await RealisationResponseDto.fromRealisation(
                 realisation,
                 this.realisationService['realisationFileModel'],
+
+                this.configService,
             );
             realisations.push(responseDto);
         }
@@ -171,7 +185,11 @@ export class RealisationController {
             pagination,
         );
         return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) =>
-            RealisationResponseDto.fromRealisation(l, this.realisationFileModel),
+            RealisationResponseDto.fromRealisation(
+                l,
+                this.realisationFileModel,
+                this.configService,
+            ),
         );
     }
     @Get('/professional/:idProfessionnel')
@@ -188,7 +206,12 @@ export class RealisationController {
         );
 
         return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) =>
-            RealisationResponseDto.fromRealisation(l, this.realisationFileModel),
+            RealisationResponseDto.fromRealisation(
+                l,
+                this.realisationFileModel,
+
+                this.configService,
+            ),
         );
     }
 
@@ -207,7 +230,12 @@ export class RealisationController {
         );
 
         return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) =>
-            RealisationResponseDto.fromRealisation(l, this.realisationFileModel),
+            RealisationResponseDto.fromRealisation(
+                l,
+                this.realisationFileModel,
+
+                this.configService,
+            ),
         );
     }
 
@@ -222,7 +250,12 @@ export class RealisationController {
         const { data, total } = await this.realisationService.findAll(pagination);
 
         return PaginationResponseDto.responseDto(pagination, data, total).mapPromise((l) =>
-            RealisationResponseDto.fromRealisation(l, this.realisationFileModel),
+            RealisationResponseDto.fromRealisation(
+                l,
+                this.realisationFileModel,
+
+                this.configService,
+            ),
         );
     }
 
@@ -237,7 +270,12 @@ export class RealisationController {
     ): Promise<RealisationResponseDto> {
         await this.dbUsersService.getUser(idUser);
         const profile = await this.realisationService.update(id, dto);
-        return RealisationResponseDto.fromRealisation(profile, this.realisationFileModel);
+        return RealisationResponseDto.fromRealisation(
+            profile,
+            this.realisationFileModel,
+
+            this.configService,
+        );
     }
 
     @Delete(':id')

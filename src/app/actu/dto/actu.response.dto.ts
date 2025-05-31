@@ -8,10 +8,11 @@ import {
     RendezVousModel,
     VueRealisationModel,
     ShareRealisationModel,
-    LikeRealisationModel
+    LikeRealisationModel,
 } from 'src/databases/main.database.connection';
 import { ProfileResponseDto } from 'src/app/profile_professionnels/dto';
 import { ProfileService } from 'src/app/profile_professionnels/providers';
+import { ConfigService } from '@nestjs/config';
 
 export class ActuResponseDto {
     @ApiProperty()
@@ -30,6 +31,12 @@ export class ActuResponseDto {
 
     @ApiProperty()
     has_liked: boolean;
+
+    @ApiProperty()
+    is_video: boolean;
+
+    @ApiProperty()
+    video_link: string;
     @ApiProperty()
     nombre_partages: number;
 
@@ -53,6 +60,7 @@ export class ActuResponseDto {
         shareModel: ShareRealisationModel,
         likeModel: LikeRealisationModel,
         profileService: ProfileService,
+        configService: ConfigService,
     ): Promise<ActuResponseDto> {
         const numbreDeVues = await vueModel
             .find({ realisation_id: realisation._id.toString() })
@@ -99,6 +107,13 @@ export class ActuResponseDto {
             nombre_likes: numbreDeLikes,
             nombre_partages: nombreDePartages,
             has_liked: hasLiked,
+            is_video: realisation.isVideo,
+            video_link: realisation.isVideo
+                ? configService.get('APP_API_URL') +
+                  '/api/actus/' +
+                  formattedFiles[0].id +
+                  '/stream'
+                : null,
         };
     }
 }

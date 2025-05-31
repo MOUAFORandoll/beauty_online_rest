@@ -14,6 +14,8 @@ import {
     ProfileResponseDto,
     RealisationResponseDto,
 } from 'src/app/profile_professionnels/dto';
+import { ConfigService } from '@nestjs/config';
+
 export class RendezVousResponseDto {
     @ApiProperty()
     id: string;
@@ -48,6 +50,7 @@ export class RendezVousResponseDto {
         positionModel: PositionModel,
 
         rendezVous: RendezVous,
+        configService: ConfigService,
     ): Promise<RendezVousResponseDto> {
         const _user: UserDto = UserDto.fromUser(await userModel.findById(rendezVous.user_id));
 
@@ -56,9 +59,10 @@ export class RendezVousResponseDto {
         const _creneau: CreneauResponseDto = CreneauResponseDto.fromCreneau(_crenauReq);
         const _agenda = await agendaModel.findById(_crenauReq.agenda_id);
 
-          const _realisation: RealisationResponseDto = await RealisationResponseDto.fromRealisation(
+        const _realisation: RealisationResponseDto = await RealisationResponseDto.fromRealisation(
             await realisationModel.findById(rendezVous.realisation_id),
             realisationFileModel,
+            configService,
         );
 
         const profile = await profileModel.findById(_agenda.profile_professionnel_id).exec();
