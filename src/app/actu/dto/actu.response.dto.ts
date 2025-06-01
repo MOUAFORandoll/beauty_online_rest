@@ -9,6 +9,7 @@ import {
     VueRealisationModel,
     ShareRealisationModel,
     LikeRealisationModel,
+    RealisationVideoModel,
 } from 'src/databases/main.database.connection';
 import { ProfileResponseDto } from 'src/app/profile_professionnels/dto';
 import { ProfileService } from 'src/app/profile_professionnels/providers';
@@ -36,7 +37,11 @@ export class ActuResponseDto {
     is_video: boolean;
 
     @ApiProperty()
-    video_link: string;
+    video: {
+        id: string;
+        video_link: string;
+        thumbnail: string;
+    };
     @ApiProperty()
     nombre_partages: number;
 
@@ -52,6 +57,7 @@ export class ActuResponseDto {
         realisation: Realisation,
         userId: string,
         realisationFileModel: RealisationFileModel,
+        realisationVideoModel: RealisationVideoModel,
         agendaModel: AgendaModel,
         positionModel: PositionModel,
         realisationModel: RealisationModel,
@@ -97,6 +103,17 @@ export class ActuResponseDto {
             realisationModel,
             rendezVousModel,
         );
+        const video = await realisationVideoModel
+            .findOne({ realisation_id: realisation._id })
+            .exec();
+        const formattedVideo = video
+            ? {
+                  id: video._id.toString(),
+                  video_link:
+                      configService.get('APP_API_URL') + '/api/stream/' + video._id.toString(),
+                  thumbnail: video.thumbnail,
+              }
+            : null;
         return {
             id: realisation._id.toString(),
             title: realisation.title,
@@ -108,12 +125,7 @@ export class ActuResponseDto {
             nombre_partages: nombreDePartages,
             has_liked: hasLiked,
             is_video: realisation.isVideo,
-            video_link: realisation.isVideo
-                ? configService.get('APP_API_URL') +
-                  '/api/actus/' +
-                  formattedFiles[0].id +
-                  '/stream'
-                : null,
+            video: realisation.isVideo ? formattedVideo : undefined,
         };
     }
 }

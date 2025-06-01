@@ -10,6 +10,8 @@ import {
     RealisationFileModel,
     RealisationFile,
     REALISATION_FILE_MODEL_NAME,
+    REALISATION_VIDEO_MODEL_NAME,
+    RealisationVideoModel,
 } from 'src/databases/main.database.connection';
 import { PaginationPayloadDto } from 'src/common/apiutils';
 import { QueryOptions, Types } from 'mongoose';
@@ -37,6 +39,9 @@ export class RealisationService {
 
         @InjectModel(REALISATION_FILE_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationFileModel: RealisationFileModel,
+
+        @InjectModel(REALISATION_VIDEO_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly realisationVideoModel: RealisationVideoModel,
 
         private readonly profileService: ProfileService,
         private readonly storageService: StorageService,
@@ -148,16 +153,19 @@ export class RealisationService {
             await realisation.save({ session });
 
             try {
-                const realisationFile = new this.realisationFileModel({
+                const realisationVideoFile = new this.realisationVideoModel({
                     realisation_id: realisation._id,
                 });
 
-                realisationFile.file_path = await this.storageService.uploadRealisationVideo(
-                    dto.file,
-                    realisationFile._id.toString(),
-                );
+               const storedVideo = await this.storageService.processAndStoreVideoWithThumbnail(
+                   dto.file,
+                   realisationVideoFile._id.toString(),
+               );
 
-                await realisationFile.save({ session });
+                realisationVideoFile.video_path = storedVideo.filename;
+                realisationVideoFile.thumbnail = storedVideo.thumbnailUrl;
+
+                await realisationVideoFile.save({ session });
             } catch (error) {
                 console.error(`Failed to upload file: ${error.message}`, error.stack);
                 throw new Error(`Failed to upload file: ${error.message}`);

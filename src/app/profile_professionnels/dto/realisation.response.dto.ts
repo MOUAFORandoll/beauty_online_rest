@@ -1,6 +1,10 @@
 import { ConfigService } from '@nestjs/config';
 import { ApiProperty } from '@nestjs/swagger';
-import { Realisation, RealisationFileModel } from 'src/databases/main.database.connection';
+import {
+    Realisation,
+    RealisationFileModel,
+    RealisationVideoModel,
+} from 'src/databases/main.database.connection';
 
 export class RealisationResponseDto {
     @ApiProperty()
@@ -18,7 +22,11 @@ export class RealisationResponseDto {
     is_video: boolean;
 
     @ApiProperty()
-    video_link: string;
+    video: {
+        id: string;
+        video_link: string;
+        thumbnail: string;
+    };
     @ApiProperty()
     realisation_files: {
         id: string;
@@ -27,21 +35,29 @@ export class RealisationResponseDto {
     static async fromRealisation(
         realisation: Realisation,
         realisationFileModel: RealisationFileModel,
+        realisationVideoModel: RealisationVideoModel,
         configService: ConfigService,
     ): Promise<RealisationResponseDto> {
         const allFiles = await realisationFileModel
             .find({ realisation_id: realisation._id })
             .exec();
+
+        const video = await realisationVideoModel
+            .findOne({ realisation_id: realisation._id })
+            .exec();
+        const formattedVideo = video
+            ? {
+                  id: video._id.toString(),
+                  video_link:
+                      configService.get('APP_API_URL') + '/api/stream/' + video._id.toString(),
+                  thumbnail: video.thumbnail,
+              }
+            : null;
         const formattedFiles = allFiles.map((file) => ({
             id: file._id.toString(),
             file_path: file.file_path,
         }));
-        const videoLink = realisation.isVideo
-            ? configService.get('APP_API_URL') +
-              '/api/actus/' +
-              formattedFiles[0].id.toString() +
-              '/stream'
-            : null;
+
         return {
             id: realisation._id.toString(),
             title: realisation.title,
@@ -49,7 +65,7 @@ export class RealisationResponseDto {
             profile_professionnel_id: realisation.profile_professionnel_id.toString(),
             realisation_files: formattedFiles,
             is_video: realisation.isVideo,
-            video_link: videoLink,
+            video: realisation.isVideo ? formattedVideo : undefined,
         };
     }
 }

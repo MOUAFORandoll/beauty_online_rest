@@ -25,7 +25,12 @@ import {
     UpdateRealisationDto,
 } from '../dto/realisation.request.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { REALISATION_FILE_MODEL_NAME, RealisationFileModel } from 'src/databases/services/entities';
+import {
+    REALISATION_FILE_MODEL_NAME,
+    RealisationFileModel,
+    REALISATION_VIDEO_MODEL_NAME,
+    RealisationVideoModel,
+} from 'src/databases/services/entities';
 import { DATABASE_CONNECTION } from 'src/databases/main.database.connection';
 import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
@@ -40,6 +45,9 @@ export class RealisationController {
     constructor(
         @InjectModel(REALISATION_FILE_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationFileModel: RealisationFileModel,
+        @InjectModel(REALISATION_VIDEO_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly realisationVideoModel: RealisationVideoModel,
+
         private readonly realisationService: RealisationService,
 
         private readonly dbUsersService: Database.UsersService,
@@ -64,6 +72,7 @@ export class RealisationController {
         return RealisationResponseDto.fromRealisation(
             profile,
             this.realisationFileModel,
+            this.realisationVideoModel,
 
             this.configService,
         );
@@ -97,6 +106,7 @@ export class RealisationController {
         return RealisationResponseDto.fromRealisation(
             profile,
             this.realisationFileModel,
+            this.realisationVideoModel,
 
             this.configService,
         );
@@ -162,8 +172,8 @@ export class RealisationController {
 
             const responseDto = await RealisationResponseDto.fromRealisation(
                 realisation,
-                this.realisationService['realisationFileModel'],
-
+                this.realisationFileModel,
+                this.realisationVideoModel,
                 this.configService,
             );
             realisations.push(responseDto);
@@ -188,6 +198,7 @@ export class RealisationController {
             RealisationResponseDto.fromRealisation(
                 l,
                 this.realisationFileModel,
+                this.realisationVideoModel,
                 this.configService,
             ),
         );
@@ -209,6 +220,7 @@ export class RealisationController {
             RealisationResponseDto.fromRealisation(
                 l,
                 this.realisationFileModel,
+                this.realisationVideoModel,
 
                 this.configService,
             ),
@@ -233,6 +245,7 @@ export class RealisationController {
             RealisationResponseDto.fromRealisation(
                 l,
                 this.realisationFileModel,
+                this.realisationVideoModel,
 
                 this.configService,
             ),
@@ -253,6 +266,7 @@ export class RealisationController {
             RealisationResponseDto.fromRealisation(
                 l,
                 this.realisationFileModel,
+                this.realisationVideoModel,
 
                 this.configService,
             ),
@@ -273,6 +287,7 @@ export class RealisationController {
         return RealisationResponseDto.fromRealisation(
             profile,
             this.realisationFileModel,
+            this.realisationVideoModel,
 
             this.configService,
         );

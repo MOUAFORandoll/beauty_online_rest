@@ -7,6 +7,7 @@ import {
     RealisationFileModel,
     CreneauModel,
     RendezVousModel,
+    RealisationVideoModel,
 } from '../../../databases/services/entities';
 import { PositionModel, ProfileProfessionnelModel, UserModel } from 'src/databases/users/entities';
 
@@ -40,6 +41,7 @@ export class NotificationResponseDto {
             agendaModel: AgendaModel;
             realisationModel: RealisationModel;
             realisationFileModel: RealisationFileModel;
+            realisationVideoModel: RealisationVideoModel;
             creneauModel: CreneauModel;
             profileModel: ProfileProfessionnelModel;
             positionModel: PositionModel;
@@ -81,6 +83,7 @@ export class NotificationResponseDto {
             agendaModel: AgendaModel;
             realisationModel: RealisationModel;
             realisationFileModel: RealisationFileModel;
+            realisationVideoModel: RealisationVideoModel;
             creneauModel: CreneauModel;
             profileModel: ProfileProfessionnelModel;
             positionModel: PositionModel;
@@ -99,6 +102,7 @@ export class NotificationResponseDto {
             models.agendaModel,
             models.realisationModel,
             models.realisationFileModel,
+            models.realisationVideoModel,
             models.creneauModel,
             models.profileModel,
             rendezVousModel,

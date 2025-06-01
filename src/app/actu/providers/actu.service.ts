@@ -17,7 +17,9 @@ import {
     PROFILE_PRO_MODEL_NAME,
     ProfileProfessionnelModel,
     ProfileProfessionnel,
-    RealisationFile,
+    RealisationVideoModel,
+    RealisationVideo,
+    REALISATION_VIDEO_MODEL_NAME,
 } from 'src/databases/main.database.connection';
 import { PaginationPayloadDto } from 'src/common/apiutils';
 import { Shareable, ShareableProperties } from 'src/common/ClassActions/action.shareable';
@@ -33,6 +35,8 @@ export class ActuService {
         private readonly vueModel: VueRealisationModel,
         @InjectModel(REALISATION_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationModel: RealisationModel,
+        @InjectModel(REALISATION_VIDEO_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly realisationVideoModel: RealisationVideoModel,
         @InjectModel(SHARE_REALISATION_MODEL_NAME, DATABASE_CONNECTION)
         private readonly shareModel: ShareRealisationModel,
         @InjectModel(LIKE_REALISATION_MODEL_NAME, DATABASE_CONNECTION)
@@ -73,8 +77,8 @@ export class ActuService {
 
         return actu;
     }
-    async findOneRealisationFileById(id: string): Promise<RealisationFile> {
-        const realisation = await this.realisationFileModel.findById(id).exec();
+    async findOneRealisationVideoById(id: string): Promise<RealisationVideo> {
+        const realisation = await this.realisationVideoModel.findById(id).exec();
 
         return realisation;
     }

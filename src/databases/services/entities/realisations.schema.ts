@@ -41,3 +41,22 @@ export type RealisationFileModel = Model<RealisationFileSchema>;
 export const RealisationFilesSchema = applySortedMongooseAdditionalFunctions(
     SchemaFactory.createForClass(RealisationFileSchema),
 );
+
+// REALISATION_VIDEO
+export const REALISATION_VIDEO_MODEL_NAME = 'realisation_video';
+@Schema({ collection: REALISATION_VIDEO_MODEL_NAME })
+class RealisationVideoSchema extends BaseSchema {
+    @Prop({ type: MongooseSchema.Types.ObjectId, ref: REALISATION_MODEL_NAME })
+    realisation_id: string;
+
+    @Prop()
+    video_path: string;
+
+    @Prop()
+    thumbnail: string;
+}
+export type RealisationVideo = RealisationVideoSchema & Document;
+export type RealisationVideoModel = Model<RealisationVideoSchema>;
+export const RealisationVideosSchema = applySortedMongooseAdditionalFunctions(
+    SchemaFactory.createForClass(RealisationVideoSchema),
+);

@@ -24,6 +24,8 @@ import {
     RENDEZ_VOUS_MODEL_NAME,
     PROFILE_PRO_MODEL_NAME,
     ProfileProfessionnelModel,
+    REALISATION_VIDEO_MODEL_NAME,
+    RealisationVideoModel,
 } from 'src/databases/main.database.connection';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
@@ -40,6 +42,8 @@ export class NotificationsController {
         private readonly realisationModel: RealisationModel,
         @InjectModel(REALISATION_FILE_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationFileModel: RealisationFileModel,
+        @InjectModel(REALISATION_VIDEO_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly realisationVideoModel: RealisationVideoModel,
 
         @InjectModel(CRENEAU_MODEL_NAME, DATABASE_CONNECTION)
         private readonly creneauModel: CreneauModel,
@@ -117,6 +121,7 @@ export class NotificationsController {
                 agendaModel: this.agendaModel,
                 realisationModel: this.realisationModel,
                 realisationFileModel: this.realisationFileModel,
+                realisationVideoModel: this.realisationVideoModel,
                 creneauModel: this.creneauModel,
                 profileModel: this.profileModel,
                 positionModel: this.positionModel,

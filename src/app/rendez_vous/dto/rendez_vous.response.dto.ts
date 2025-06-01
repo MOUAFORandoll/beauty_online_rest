@@ -4,8 +4,10 @@ import {
     RealisationModel,
     RendezVous,
     RealisationFileModel,
+    RealisationVideoModel,
     CreneauModel,
     RendezVousModel,
+
 } from '../../../databases/services/entities';
 import { UserDto } from 'src/app/users/dto';
 import { PositionModel, ProfileProfessionnelModel, UserModel } from 'src/databases/users/entities';
@@ -44,6 +46,7 @@ export class RendezVousResponseDto {
         agendaModel: AgendaModel,
         realisationModel: RealisationModel,
         realisationFileModel: RealisationFileModel,
+        realisationVideoModel: RealisationVideoModel,
         creneauModel: CreneauModel,
         profileModel: ProfileProfessionnelModel,
         rendezVousModel: RendezVousModel,
@@ -62,6 +65,7 @@ export class RendezVousResponseDto {
         const _realisation: RealisationResponseDto = await RealisationResponseDto.fromRealisation(
             await realisationModel.findById(rendezVous.realisation_id),
             realisationFileModel,
+            realisationVideoModel,
             configService,
         );
 

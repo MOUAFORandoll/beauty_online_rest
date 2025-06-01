@@ -36,6 +36,8 @@ import {
     RENDEZ_VOUS_MODEL_NAME,
     PROFILE_PRO_MODEL_NAME,
     ProfileProfessionnelModel,
+    REALISATION_VIDEO_MODEL_NAME,
+    RealisationVideoModel,
 } from 'src/databases/main.database.connection';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
@@ -56,6 +58,8 @@ export class RendezVousController {
         private readonly realisationModel: RealisationModel,
         @InjectModel(REALISATION_FILE_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationFileModel: RealisationFileModel,
+        @InjectModel(REALISATION_VIDEO_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly realisationVideoModel: RealisationVideoModel,
 
         @InjectModel(CRENEAU_MODEL_NAME, DATABASE_CONNECTION)
         private readonly creneauModel: CreneauModel,
@@ -81,6 +85,7 @@ export class RendezVousController {
             this.agendaModel,
             this.realisationModel,
             this.realisationFileModel,
+            this.realisationVideoModel,
             this.creneauModel,
             this.profileModel,
             this.rendezVousModel,
@@ -106,12 +111,13 @@ export class RendezVousController {
                 this.agendaModel,
                 this.realisationModel,
                 this.realisationFileModel,
+                this.realisationVideoModel,
                 this.creneauModel,
                 this.profileModel,
                 this.rendezVousModel,
                 this.positionModel,
                 l,
-            this.    configService,
+                this.configService,
             ),
         );
     }
@@ -139,6 +145,7 @@ export class RendezVousController {
                 this.agendaModel,
                 this.realisationModel,
                 this.realisationFileModel,
+                this.realisationVideoModel,
                 this.creneauModel,
                 this.profileModel,
                 this.rendezVousModel,
@@ -164,6 +171,7 @@ export class RendezVousController {
             this.agendaModel,
             this.realisationModel,
             this.realisationFileModel,
+            this.realisationVideoModel,
             this.creneauModel,
             this.profileModel,
             this.rendezVousModel,
@@ -187,6 +195,7 @@ export class RendezVousController {
             this.agendaModel,
             this.realisationModel,
             this.realisationFileModel,
+            this.realisationVideoModel,
             this.creneauModel,
             this.profileModel,
             this.rendezVousModel,
@@ -211,6 +220,7 @@ export class RendezVousController {
             this.agendaModel,
             this.realisationModel,
             this.realisationFileModel,
+            this.realisationVideoModel,
             this.creneauModel,
             this.profileModel,
             this.rendezVousModel,

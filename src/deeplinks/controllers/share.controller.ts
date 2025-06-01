@@ -27,6 +27,8 @@ import {
     ShareRealisationModel,
     LIKE_REALISATION_MODEL_NAME,
     LikeRealisationModel,
+    REALISATION_VIDEO_MODEL_NAME,
+    RealisationVideoModel,
 } from 'src/databases/main.database.connection';
 import { InjectModel } from '@nestjs/mongoose';
 import { ActuResponseDto } from 'src/app/actu/dto/actu.response.dto';
@@ -40,7 +42,8 @@ export class ShareController {
         private readonly profileService: ProfileService,
         @InjectModel(REALISATION_FILE_MODEL_NAME, DATABASE_CONNECTION)
         private readonly realisationFileModel: RealisationFileModel,
-
+        @InjectModel(REALISATION_VIDEO_MODEL_NAME, DATABASE_CONNECTION)
+        private readonly realisationVideoModel: RealisationVideoModel,
         @InjectModel(AGENDA_MODEL_NAME, DATABASE_CONNECTION)
         private readonly agendaModel: AgendaModel,
 
@@ -93,6 +96,7 @@ export class ShareController {
             actu,
             null,
             this.realisationFileModel,
+            this.realisationVideoModel,
             this.agendaModel,
             this.positionModel,
             this.realisationModel,
@@ -117,10 +121,13 @@ export class ShareController {
                 (await actuFromDTP).nombre_partages +
                 ' partage' +
                 ((await actuFromDTP).nombre_partages > 1 ? 's' : ''),
-            image:
-                (await actuFromDTP).realisation_files[0] == null
+            image: (await actuFromDTP).is_video
+                ? (await actuFromDTP).video == null
                     ? ''
-                    : (await actuFromDTP).realisation_files[0].file_path,
+                    : (await actuFromDTP).video.thumbnail
+                : (await actuFromDTP).realisation_files[0] == null
+                  ? ''
+                  : (await actuFromDTP).realisation_files[0].file_path,
         });
     }
 
