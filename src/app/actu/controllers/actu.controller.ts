@@ -1,13 +1,5 @@
 // profile.controller.ts
-import {
-    Controller,
-    Get,
-    Post,
-    HttpCode,
-    HttpStatus,
-    Param,
-    Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ActuResponseDto } from '../dto';
 import { ActuService } from '../providers';
@@ -164,7 +156,9 @@ export class ActuController {
                                 ? `${dto.nombre_partages} partage${dto.nombre_partages > 1 ? 's' : ''}`
                                 : ''),
 
-                        url: dto.realisation_files[0].file_path,
+                        url: dto.is_video
+                            ? dto.video.video_link
+                            : dto.realisation_files[0].file_path,
                         data: dto,
                     };
                 } else {
@@ -251,5 +245,5 @@ export class ActuController {
     @Get(':id/likes')
     getLikeCount(@Param('id') id: string) {
         return this.actuService.countLikes(id);
-    } 
+    }
 }
