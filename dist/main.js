@@ -8,10 +8,13 @@ const app_launcher_1 = require("./app.launcher");
 const firebase_1 = require("./common/services/firebase");
 const deeplinks_app_module_1 = require("./deeplinks.app.module");
 const deeplinks_launcher_1 = require("./deeplinks.launcher");
+const stream_app_module_1 = require("./stream.app.module");
+const stream_launcher_1 = require("./stream.launcher");
 const path_1 = require("path");
 async function bootstrap() {
     await bootstrapRestApp();
     await bootstrapRedirectLink();
+    await bootstrapStream();
 }
 async function bootstrapRestApp() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
@@ -32,6 +35,14 @@ async function bootstrapRedirectLink() {
     const dLAppLauncher = new deeplinks_launcher_1.DeepLinksAppLauncher(deepLinksApp, dLConfigService, dLLoggerService);
     dLAppLauncher.setup();
     await dLAppLauncher.launch();
+}
+async function bootstrapStream() {
+    const streamApp = await core_1.NestFactory.create(stream_app_module_1.StreamAppModule, {});
+    const streamConfigService = streamApp.get(config_1.ConfigService);
+    const streamLoggerService = streamApp.get(common_1.Logger);
+    const streamAppLauncher = new stream_launcher_1.StreamAppLauncher(streamApp, streamConfigService, streamLoggerService);
+    streamAppLauncher.setup();
+    await streamAppLauncher.launch();
 }
 void bootstrap();
 //# sourceMappingURL=main.js.map

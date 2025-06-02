@@ -10,59 +10,20 @@ import {
     NotFoundException,
     Req,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { ActuService } from '../providers';
+import { ApiTags } from '@nestjs/swagger'; 
 import { Public } from 'src/common/apiutils';
 
-import {
-    RendezVousModel,
-    RENDEZ_VOUS_MODEL_NAME,
-    REALISATION_MODEL_NAME,
-    RealisationModel,
-    VUE_REALISATION_MODEL_NAME,
-    VueRealisationModel,
-    SHARE_REALISATION_MODEL_NAME,
-    ShareRealisationModel,
-    LIKE_REALISATION_MODEL_NAME,
-    LikeRealisationModel,
-    REALISATION_VIDEO_MODEL_NAME,
-    RealisationVideoModel,
-} from 'src/databases/services/entities';
-import {
-    DATABASE_CONNECTION,
-} from 'src/databases/main.database.connection';
-import { InjectModel } from '@nestjs/mongoose';
-import { ProfileService } from 'src/app/profile_professionnels/providers';
 
 import { Request, Response } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as crypto from 'crypto';
-import { ConfigService } from '@nestjs/config';
+import * as crypto from 'crypto'; 
+import { ActuService } from 'src/app/actu/providers';
 
 @ApiTags('Stream')
 @Controller('stream')
 export class StreamController {
-    constructor(
-        private readonly actuService: ActuService,
-
-        @InjectModel(REALISATION_MODEL_NAME, DATABASE_CONNECTION)
-        private readonly realisationModel: RealisationModel,
-        @InjectModel(REALISATION_VIDEO_MODEL_NAME, DATABASE_CONNECTION)
-        private readonly realisationVideoModel: RealisationVideoModel,
-
-        @InjectModel(RENDEZ_VOUS_MODEL_NAME, DATABASE_CONNECTION)
-        private readonly rendezVousModel: RendezVousModel,
-        @InjectModel(VUE_REALISATION_MODEL_NAME, DATABASE_CONNECTION)
-        private readonly vueModel: VueRealisationModel,
-        @InjectModel(SHARE_REALISATION_MODEL_NAME, DATABASE_CONNECTION)
-        private readonly shareModel: ShareRealisationModel,
-        @InjectModel(LIKE_REALISATION_MODEL_NAME, DATABASE_CONNECTION)
-        private readonly likeModel: LikeRealisationModel,
-
-        private readonly profileService: ProfileService,
-        private configService: ConfigService,
-    ) {}
+    constructor(private readonly actuService: ActuService) {}
 
     @HttpCode(HttpStatus.OK)
     @Get(':id')

@@ -61,6 +61,16 @@ DEEPLINKS_URL=http://localhost:8081
 DEEPLINKS_BASE_URL=https://share.beauty.petite-monnaie.com
 DEEPLINKS_ROUTE_DOCUMENTATION=/api/documentation
 
+
+# Link App settings
+STREAM_NAME="STREAM app"
+STREAM_PORT=8082
+STREAM_ROUTE_DOCUMENTATION='/api/documentation'
+STREAM_URL="http://localhost:8082"
+STREAM_BASE_URL="https://stream.beauty.petite-monnaie.com"
+
+
+
 APPLE_APP_SITE_ASSOCIATION_PATH=src/deeplinks/dto/apple-app-site-association.template.json
 ASSETLINKS_PATH=src/deeplinks/dto/assetlinks.template.json
 
@@ -70,8 +80,12 @@ AWS_ACCESS_KEY_SECRET=...
 AWS_REGION=us-east-2
 AWS_BUCKET=mystore4274
 AWS_CLOUDFRONT_URL=https://dam8qtg35ovlt.cloudfront.net
-AWS_SES_SENDER_EMAIL=
-AWS_SES_SENDER_NAME=
+
+
+
+MAIL_USER=hari.randoll@gmail.com
+MAIL_PASS=sfisvbboqrlmxblf
+MAIL_FROM_NAME=Beauty Online
 
 # Notifications
 NOTIFICATION_URL=http://localhost:2000/api/send-notification

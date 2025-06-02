@@ -7,11 +7,15 @@ import { InitFirebaseApp } from './common/services/firebase';
 
 import { DeepLinksAppModule } from './deeplinks.app.module';
 import { DeepLinksAppLauncher } from './deeplinks.launcher';
+
+import { StreamAppModule } from './stream.app.module';
+import { StreamAppLauncher } from './stream.launcher';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 async function bootstrap() {
     await bootstrapRestApp();
     await bootstrapRedirectLink();
+    await bootstrapStream();
 }
 async function bootstrapRestApp() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -39,5 +43,21 @@ async function bootstrapRedirectLink() {
     const dLAppLauncher = new DeepLinksAppLauncher(deepLinksApp, dLConfigService, dLLoggerService);
     dLAppLauncher.setup();
     await dLAppLauncher.launch();
+}
+async function bootstrapStream() {
+    ///////////////////////////////////////////////////////////////////////////
+
+    const streamApp = await NestFactory.create(StreamAppModule, {});
+
+    const streamConfigService = streamApp.get(ConfigService);
+    const streamLoggerService = streamApp.get(Logger);
+
+    const streamAppLauncher = new StreamAppLauncher(
+        streamApp,
+        streamConfigService,
+        streamLoggerService,
+    );
+    streamAppLauncher.setup();
+    await streamAppLauncher.launch();
 }
 void bootstrap();

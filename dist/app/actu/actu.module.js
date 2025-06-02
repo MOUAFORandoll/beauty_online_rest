@@ -21,7 +21,7 @@ exports.ActuModule = ActuModule = __decorate([
     (0, common_1.Module)({
         imports: [main_database_module_1.MainDatabaseModule, external_module_1.ExternalModule],
         providers: [providers_2.ProfileService, providers_1.ActuService],
-        controllers: [controllers_2.ProfileController, controllers_1.ActuController, controllers_1.StreamController],
+        controllers: [controllers_2.ProfileController, controllers_1.ActuController],
         exports: [providers_2.ProfileService, providers_1.ActuService],
     })
 ], ActuModule);

@@ -22,7 +22,7 @@ class RealisationResponseDto {
         const formattedVideo = video
             ? {
                 id: video._id.toString(),
-                video_link: configService.get('APP_API_URL') + '/api/stream/' + video._id.toString(),
+                video_link: configService.get('STREAM_URL') + '/stream/' + video._id.toString(),
                 thumbnail: video.thumbnail,
             }
             : null;

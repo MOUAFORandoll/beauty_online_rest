@@ -8,5 +8,9 @@ module.exports = {
             name: 'api-deeplink',
             script: 'dist/main_deeplink.js',
         },
+        {
+            name: 'api-stream',
+            script: 'dist/main_stream.js',
+        },
     ],
 };
