@@ -138,7 +138,7 @@ export class RealisationController {
             .readdirSync(this.localDirectory)
             .filter((file) => fs.statSync(path.join(this.localDirectory, file)).isFile());
 
-        const userId = '68156b0b5ad449e5c595ebb6';
+        const userId = '683e0f897e9608524988a4e9';
         const realisations: RealisationResponseDto[] = [];
 
         const getRandomFromArray = <T>(arr: T[], count: number): T[] =>

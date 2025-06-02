@@ -102,7 +102,7 @@ let RealisationController = class RealisationController {
         const allImageFiles = fs
             .readdirSync(this.localDirectory)
             .filter((file) => fs.statSync(path.join(this.localDirectory, file)).isFile());
-        const userId = '68156b0b5ad449e5c595ebb6';
+        const userId = '683e0f897e9608524988a4e9';
         const realisations = [];
         const getRandomFromArray = (arr, count) => [...arr].sort(() => 0.5 - Math.random()).slice(0, count);
         const getRandomPrice = () => Math.floor(Math.random() * 30 + 20).toString();
