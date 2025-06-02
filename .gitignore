@@ -1,7 +1,6 @@
 # compiled output
-# /dist
-/assets/videos
-/assets/thumbnails
+/dist
+/assets
 /node_modules
 /build
 src/testauth
