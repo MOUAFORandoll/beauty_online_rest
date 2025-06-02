@@ -1,0 +1,31 @@
+import { ActuResponseDto } from '../dto';
+import { ActuService } from '../providers';
+import { PaginationPayloadDto, PaginationResponseDto } from 'src/common/apiutils';
+import { AgendaModel, RendezVousModel, RealisationFileModel, RealisationModel, VueRealisationModel, ShareRealisationModel, LikeRealisationModel, RealisationVideoModel } from 'src/databases/services/entities';
+import { PositionModel } from 'src/databases/main.database.connection';
+import { ProfileService } from 'src/app/profile_professionnels/providers';
+import { ShareLink } from 'src/common/ClassActions/response.dto';
+import { SearchResponseDto } from '../dto/search.response.dto';
+import { ConfigService } from '@nestjs/config';
+export declare class ActuController {
+    private readonly realisationFileModel;
+    private readonly actuService;
+    private readonly agendaModel;
+    private readonly positionModel;
+    private readonly realisationModel;
+    private readonly realisationVideoModel;
+    private readonly rendezVousModel;
+    private readonly vueModel;
+    private readonly shareModel;
+    private readonly likeModel;
+    private readonly profileService;
+    private configService;
+    constructor(realisationFileModel: RealisationFileModel, actuService: ActuService, agendaModel: AgendaModel, positionModel: PositionModel, realisationModel: RealisationModel, realisationVideoModel: RealisationVideoModel, rendezVousModel: RendezVousModel, vueModel: VueRealisationModel, shareModel: ShareRealisationModel, likeModel: LikeRealisationModel, profileService: ProfileService, configService: ConfigService);
+    findAll(pagination: PaginationPayloadDto, userId: string): Promise<PaginationResponseDto<ActuResponseDto>>;
+    searchData(search: string, pagination: PaginationPayloadDto, userId: string): Promise<PaginationResponseDto<SearchResponseDto>>;
+    findOneById(id: string, userId: string): Promise<ActuResponseDto>;
+    shareActu(actuId: string, userId: string): Promise<ShareLink>;
+    vueActu(actuId: string, userId: string): void;
+    like(id: string, userId: string): Promise<void>;
+    getLikeCount(id: string): Promise<number>;
+}

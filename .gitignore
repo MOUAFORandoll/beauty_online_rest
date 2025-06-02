@@ -1,5 +1,5 @@
 # compiled output
-/dist
+# /dist
 /assets
 /node_modules
 /build
