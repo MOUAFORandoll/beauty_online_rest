@@ -6,10 +6,10 @@
         ],
         "target": {
             "namespace": "android_app",
-            "package_name": "app.beauty.online",
+            "package_name": "my.beauty.online",
             "sha256_cert_fingerprints": [
-                "CD:19:CC:1C:CA:95:1D:63:2A:01:D8:AF:19:B1:6A:47:AB:0C:7A:75:57:1F:65:5F:26:A6:2F:2A:D3:DB:45:53"
+                "93:06:94:5A:10:B8:DA:EE:3E:B8:BE:3F:BB:9D:E6:4B:F7:4D:0F:4A:1A:66:C5:59:6E:DF:76:E3:C4:39:55:B6"
             ]
         }
     }
-] 
+]
